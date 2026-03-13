@@ -13,8 +13,6 @@ import {
 } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { storage } from "../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function Absen() {
   const navigate = useNavigate(); // <-- TAMBAHKAN INI
@@ -27,14 +25,18 @@ export default function Absen() {
   const canvasRef = useRef(null);
 
   const startCamera = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" },
-    });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+      });
 
-    setCameraOpen(true);
+      setCameraOpen(true);
 
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      alert("Kamera tidak bisa diakses");
     }
   };
 
@@ -50,12 +52,43 @@ export default function Absen() {
     ctx.drawImage(video, 0, 0);
 
     canvas.toBlob(
-      (blob) => {
-        handleAbsen(blob);
+      async (blob) => {
+        setLoading(true);
+
+        await handleAbsen(blob);
+
+        const stream = video.srcObject;
+        const tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop());
+
+        setCameraOpen(false);
       },
       "image/jpeg",
       0.8,
     );
+  };
+
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", "absensi_upload");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dbefoaekm/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    const data = await res.json();
+
+    if (!data.secure_url) {
+      throw new Error("Upload foto gagal");
+    }
+
+    return data.secure_url;
   };
 
   const compressImage = (file) => {
@@ -69,7 +102,7 @@ export default function Absen() {
 
         const scale = Math.min(MAX_WIDTH / img.width, 1);
 
-        canvas.width = MAX_WIDTH;
+        canvas.width = img.width * scale;
         canvas.height = img.height * scale;
 
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -166,14 +199,7 @@ export default function Absen() {
           if (photoFile) {
             const compressedPhoto = await compressImage(photoFile);
 
-            const photoRef = ref(
-              storage,
-              `attendance/${user.uid}/${Date.now()}.jpg`,
-            );
-
-            await uploadBytes(photoRef, compressedPhoto);
-
-            photoURL = await getDownloadURL(photoRef);
+            photoURL = await uploadToCloudinary(compressedPhoto);
           }
 
           const q = query(
@@ -379,14 +405,21 @@ export default function Absen() {
 
           <button
             onClick={startCamera}
+            disabled={loading}
             className="w-full block bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold shadow-md"
           >
-            {loading ? "Mengambil lokasi..." : "Absen Sekarang"}
+            {loading ? "Memproses Absensi..." : "Absen Sekarang"}
           </button>
 
           {cameraOpen && (
             <div className="space-y-4">
-              <video ref={videoRef} autoPlay className="rounded-xl w-full" />
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="rounded-xl w-full"
+              />
 
               <button
                 onClick={takePhoto}
