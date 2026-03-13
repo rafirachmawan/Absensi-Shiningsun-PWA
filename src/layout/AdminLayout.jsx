@@ -40,64 +40,84 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex">
+      {/* OVERLAY */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/30 z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen bg-white border-r transition-all duration-300 ${
-          sidebarOpen ? "w-64" : "w-16"
-        }`}
+        className={`fixed left-0 top-0 z-40 h-screen w-64 bg-white border-r transform transition-transform duration-300
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* LOGO */}
-        <div className="h-[64px] flex items-center border-b px-3">
+        <div className="h-[64px] flex items-center border-b px-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-lg font-semibold">
               S
             </div>
 
-            {sidebarOpen && (
-              <div>
-                <h2 className="font-bold text-blue-600">SHININGSUN</h2>
-                <p className="text-xs text-gray-500">Super Admin Panel</p>
-              </div>
-            )}
+            <div>
+              <h2 className="font-bold text-blue-600">SHININGSUN</h2>
+              <p className="text-xs text-gray-500">Super Admin Panel</p>
+            </div>
           </div>
         </div>
 
         {/* MENU */}
         <nav className="p-3 space-y-1">
           <button
-            onClick={() => navigate("/admin/dashboard")}
+            onClick={() => {
+              navigate("/admin/dashboard");
+              setSidebarOpen(false);
+            }}
             className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
           >
-            🏠 {sidebarOpen && "Dashboard"}
+            🏠 Dashboard
           </button>
 
           <button
-            onClick={() => navigate("/admin/users")}
+            onClick={() => {
+              navigate("/admin/users");
+              setSidebarOpen(false);
+            }}
             className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
           >
-            👨‍🏫 {sidebarOpen && "Kelola Guru"}
+            👨‍🏫 Kelola Guru
           </button>
 
           <button
-            onClick={() => navigate("/admin/branches")}
+            onClick={() => {
+              navigate("/admin/branches");
+              setSidebarOpen(false);
+            }}
             className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
           >
-            🏫 {sidebarOpen && "Kelola Cabang"}
+            🏫 Kelola Cabang
           </button>
 
           <button
-            onClick={() => navigate("/admin/settings")}
+            onClick={() => {
+              navigate("/admin/settings");
+              setSidebarOpen(false);
+            }}
             className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
           >
-            ⏰ {sidebarOpen && "Pengaturan Jam"}
+            ⏰ Pengaturan Jam
           </button>
 
           <button
-            onClick={() => navigate("/admin/attendance")}
+            onClick={() => {
+              navigate("/admin/attendance");
+              setSidebarOpen(false);
+            }}
             className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
           >
-            📊 {sidebarOpen && "Rekap Absensi"}
+            📊 Rekap Absensi
           </button>
         </nav>
 
@@ -107,17 +127,13 @@ export default function AdminLayout() {
             onClick={handleLogout}
             className="flex items-center gap-3 text-red-500"
           >
-            🚪 {sidebarOpen && "Logout"}
+            🚪 Logout
           </button>
         </div>
       </aside>
 
       {/* MAIN AREA */}
-      <div
-        className={`transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-16"
-        }`}
-      >
+      <div className="flex-1 flex flex-col w-full">
         {/* HEADER */}
         <header className="bg-blue-600 text-white h-[64px] flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
@@ -130,7 +146,6 @@ export default function AdminLayout() {
 
             <div>
               <h1 className="font-semibold">Dashboard Super Admin</h1>
-
               <p className="text-xs text-blue-100">{time}</p>
             </div>
           </div>
@@ -140,8 +155,8 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        {/* PAGE CONTENT */}
-        <main className="p-6 md:p-8">
+        {/* PAGE */}
+        <main className="flex-1 p-4 md:p-8">
           <Outlet />
         </main>
       </div>
