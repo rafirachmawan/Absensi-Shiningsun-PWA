@@ -111,21 +111,25 @@ export default function AbsenPulang() {
 
     /* CARI ABSEN MASUK HARI INI */
 
-    const q = query(
-      collection(db, "attendance"),
-      where("uid", "==", user.uid),
-      where("tanggal", "==", today),
-    );
+    const attendanceId = `${user.uid}_${today}`;
 
-    const snap = await getDocs(q);
+    const attendanceRef = doc(db, "attendance", attendanceId);
 
-    if (snap.empty) {
-      alert("Anda belum absen masuk hari ini");
+    const docSnap = await getDoc(attendanceRef);
+
+    if (!docSnap.exists()) {
+      setMessage("Anda belum melakukan absensi masuk hari ini.");
+      setShowResult(true);
       setLoading(false);
       return;
     }
 
-    const docData = snap.docs[0];
+    if (docSnap.data().jamPulang) {
+      setMessage("Anda sudah melakukan absensi pulang hari ini.");
+      setShowResult(true);
+      setLoading(false);
+      return;
+    }
 
     if (docData.data().jamPulang) {
       alert("Anda sudah absen pulang");
@@ -153,7 +157,7 @@ export default function AbsenPulang() {
 
         /* UPDATE FIRESTORE */
 
-        await updateDoc(doc(db, "attendance", docData.id), {
+        await updateDoc(attendanceRef, {
           jamPulang,
           fotoPulang: photoURL,
           latitudePulang: lat,
@@ -213,12 +217,20 @@ export default function AbsenPulang() {
           )}
 
           {showResult && (
-            <div className="bg-green-100 text-green-700 p-4 rounded-xl text-center">
-              {message}
+            <div className="bg-white rounded-2xl shadow-lg p-6 text-center space-y-4 animate-fade-in">
+              <div className="text-4xl">🏠</div>
+
+              <h2 className="text-lg font-semibold text-gray-800">
+                Absensi Pulang
+              </h2>
+
+              <div className="bg-green-100 text-green-700 px-4 py-3 rounded-xl text-sm font-medium">
+                {message}
+              </div>
 
               <button
                 onClick={() => navigate("/dashboard")}
-                className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
               >
                 Kembali ke Dashboard
               </button>
