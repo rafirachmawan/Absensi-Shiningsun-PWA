@@ -200,6 +200,25 @@ export default function Absen() {
 
           const userData = userSnap.data();
 
+          /* ================= CEK ABSEN HARI INI ================= */
+
+          const today = new Date().toISOString().split("T")[0];
+
+          const cekAbsen = query(
+            collection(db, "attendance"),
+            where("uid", "==", user.uid),
+            where("tanggal", "==", today),
+          );
+
+          const cekSnapshot = await getDocs(cekAbsen);
+
+          if (!cekSnapshot.empty) {
+            setMessage("Anda sudah melakukan absensi hari ini.");
+            setShowResult(true);
+            setLoading(false);
+            return;
+          }
+
           let photoURL = null;
 
           if (photoFile) {
@@ -330,7 +349,8 @@ export default function Absen() {
             nama: userData.nama,
             cabang: userData.cabang,
 
-            tanggal: now.toISOString().split("T")[0],
+            tanggal: today,
+
             waktu: now.toLocaleTimeString("id-ID", {
               hour: "2-digit",
               minute: "2-digit",
