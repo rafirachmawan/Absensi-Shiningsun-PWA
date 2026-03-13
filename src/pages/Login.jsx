@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 import InstallPWA from "../components/InstallPWA";
@@ -20,6 +20,17 @@ export default function Login() {
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
+
+  /* LOAD USERNAME JIKA PERNAH DISIMPAN */
+  useEffect(() => {
+    const saved = localStorage.getItem("rememberUser");
+
+    if (saved) {
+      setIdentifier(saved);
+      setRemember(true);
+    }
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -65,6 +76,14 @@ export default function Login() {
         return;
       }
 
+      /* SIMPAN USERNAME JIKA DICENTANG */
+
+      if (remember) {
+        localStorage.setItem("rememberUser", identifier);
+      } else {
+        localStorage.removeItem("rememberUser");
+      }
+
       if (userData.role === "superadmin") {
         navigate("/admin/dashboard");
       } else {
@@ -78,7 +97,8 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700">
-      {/* LEFT SIDE (DESKTOP ONLY) */}
+      {/* LEFT SIDE */}
+
       <div className="hidden md:flex md:w-1/2 flex-col justify-center items-center text-white p-10">
         <div className="max-w-md text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-4 mb-6">
@@ -102,10 +122,12 @@ export default function Login() {
         </div>
       </div>
 
-      {/* RIGHT SIDE LOGIN */}
+      {/* RIGHT SIDE */}
+
       <div className="flex flex-1 items-center justify-center p-6">
         <div className="w-full max-w-md">
           {/* MOBILE HEADER */}
+
           <div className="text-center mb-8 md:hidden">
             <div className="flex justify-center mb-4">
               <div className="w-14 h-14 bg-white text-blue-600 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
@@ -119,6 +141,7 @@ export default function Login() {
           </div>
 
           {/* LOGIN CARD */}
+
           <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
               Login Guru
@@ -126,7 +149,8 @@ export default function Login() {
 
             <InstallPWA />
 
-            {/* IDENTIFIER */}
+            {/* USERNAME */}
+
             <div className="mb-4">
               <label className="text-sm text-gray-600">Email / Nama</label>
 
@@ -134,12 +158,13 @@ export default function Login() {
                 placeholder="Masukkan email atau nama"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="mt-1 w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                className="mt-1 w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"
               />
             </div>
 
             {/* PASSWORD */}
-            <div className="mb-6">
+
+            <div className="mb-3">
               <label className="text-sm text-gray-600">Password</label>
 
               <input
@@ -147,11 +172,25 @@ export default function Login() {
                 placeholder="Masukkan password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none transition"
+                className="mt-1 w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"
               />
             </div>
 
-            {/* BUTTON */}
+            {/* REMEMBER */}
+
+            <div className="flex items-center mb-6">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="mr-2"
+              />
+
+              <span className="text-sm text-gray-600">Simpan username</span>
+            </div>
+
+            {/* LOGIN BUTTON */}
+
             <button
               onClick={handleLogin}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold py-3 rounded-lg shadow-lg transition"
@@ -161,6 +200,7 @@ export default function Login() {
           </div>
 
           {/* FOOTER */}
+
           <p className="text-center text-white/70 text-sm mt-6">
             © 2026 Shiningsun
           </p>
