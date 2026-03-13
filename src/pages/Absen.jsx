@@ -205,14 +205,6 @@ export default function Absen() {
 
           const today = new Date().toISOString().split("T")[0];
 
-          let photoURL = null;
-
-          if (photoFile) {
-            const compressedPhoto = await compressImage(photoFile);
-
-            photoURL = await uploadToCloudinary(compressedPhoto);
-          }
-
           const q = query(
             collection(db, "branches"),
             where("nama", "==", userData.cabang),
@@ -341,6 +333,13 @@ export default function Absen() {
             setShowResult(true);
             setLoading(false);
             return;
+          }
+
+          let photoURL = null;
+
+          if (photoFile) {
+            const compressedPhoto = await compressImage(photoFile);
+            photoURL = await uploadToCloudinary(compressedPhoto);
           }
 
           await setDoc(attendanceRef, {
