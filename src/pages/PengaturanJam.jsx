@@ -3,6 +3,8 @@ import { db } from "../firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function PengaturanJam() {
+  const [jamBuka, setJamBuka] = useState("06:00");
+
   const [jamMasuk, setJamMasuk] = useState("07:00");
   const [jamPulang, setJamPulang] = useState("15:00");
   const [batasTelat, setBatasTelat] = useState(15);
@@ -18,6 +20,7 @@ export default function PengaturanJam() {
     if (snapshot.exists()) {
       const data = snapshot.data();
 
+      setJamBuka(data.jamBuka || "06:00");
       setJamMasuk(data.jamMasuk);
       setJamPulang(data.jamPulang);
       setBatasTelat(data.batasTelat);
@@ -34,6 +37,7 @@ export default function PengaturanJam() {
       setLoading(true);
 
       await setDoc(settingsRef, {
+        jamBuka,
         jamMasuk,
         jamPulang,
         batasTelat: parseInt(batasTelat),
@@ -65,6 +69,17 @@ export default function PengaturanJam() {
       <div className="bg-white p-6 rounded-xl shadow-sm border max-w-lg">
         <div className="space-y-4">
           <div>
+            <div>
+              <label className="text-sm text-gray-600">Jam Buka Absensi</label>
+
+              <input
+                type="time"
+                value={jamBuka}
+                onChange={(e) => setJamBuka(e.target.value)}
+                className="border rounded-lg px-4 py-2 w-full mt-1"
+              />
+            </div>
+
             <label className="text-sm text-gray-600">Jam Masuk</label>
 
             <input
