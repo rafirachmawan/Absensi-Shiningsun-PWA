@@ -81,6 +81,12 @@ export default function Absen() {
           const userRef = doc(db, "users", user.uid);
           const userSnap = await getDoc(userRef);
 
+          if (!userSnap.exists()) {
+            alert("Data user tidak ditemukan");
+            setLoading(false);
+            return;
+          }
+
           const userData = userSnap.data();
 
           const q = query(
@@ -132,27 +138,50 @@ export default function Absen() {
 
           const [jam, menit] = jamMasuk.split(":");
 
-          const jamMasukDate = new Date();
-          jamMasukDate.setHours(parseInt(jam));
-          jamMasukDate.setMinutes(parseInt(menit));
-          jamMasukDate.setSeconds(0);
-          jamMasukDate.setMilliseconds(0);
+          // jam masuk dalam menit
+          const jamMasukMinutes = parseInt(jam) * 60 + parseInt(menit);
 
-          const selisihMenit = Math.floor((now - jamMasukDate) / 60000);
+          // waktu sekarang dalam menit
+          const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+          // selisih menit
+          const selisihMenit = nowMinutes - jamMasukMinutes;
+
+          const startAbsensi = 5 * 60; // 05:00
+          const endAbsensi = 12 * 60; // 12:00
+
+          if (nowMinutes < startAbsensi) {
+            setMessage("Absensi belum dibuka.");
+            setShowResult(true);
+            setLoading(false);
+            return;
+          }
+
+          if (nowMinutes > endAbsensi) {
+            setMessage("Waktu absensi sudah ditutup.");
+            setShowResult(true);
+            setLoading(false);
+            return;
+          }
 
           let status = "Hadir";
           let attention = "";
           let terlambatMenit = 0;
 
-          if (selisihMenit <= 0) {
+          if (selisihMenit < 0) {
+            const lebihAwal = Math.abs(selisihMenit);
+
+            status = "Lebih Awal";
+            attention = `🌅 Anda datang ${lebihAwal} menit lebih awal.`;
+          } else if (selisihMenit === 0) {
             status = "Tepat Waktu";
             attention =
-              "🎉 Hadir Tepat Waktu! Terima kasih atas kedisiplinan Anda.";
+              "🎉 Hadir tepat waktu. Terima kasih atas kedisiplinan Anda.";
           } else if (selisihMenit <= batasTelat) {
             status = "Terlambat";
             terlambatMenit = selisihMenit;
 
-            attention = `⏱ Anda terlambat ${selisihMenit} menit. Mohon lebih disiplin besok.`;
+            attention = `⏱ Anda terlambat ${selisihMenit} menit.`;
           } else {
             status = "Terlambat Berat";
             terlambatMenit = selisihMenit;
