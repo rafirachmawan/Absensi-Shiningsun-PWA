@@ -11,11 +11,13 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 export default function Absen() {
+  const navigate = useNavigate(); // <-- TAMBAHKAN INI
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
 
@@ -129,6 +131,11 @@ export default function Absen() {
           });
 
           setMessage("Absensi berhasil");
+
+          // tunggu 1 detik lalu kembali ke dashboard
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 1000);
         } catch (err) {
           alert(err.message);
         }

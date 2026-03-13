@@ -9,6 +9,9 @@ import {
   query,
   where,
   getDocs,
+  onSnapshot,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 
 export default function Dashboard() {
@@ -45,7 +48,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadUser();
-    loadRiwayat();
+
+    const unsub = listenRiwayat();
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   const loadUser = async () => {
@@ -61,21 +69,24 @@ export default function Dashboard() {
     }
   };
 
-  const loadRiwayat = async () => {
+  const listenRiwayat = () => {
     const currentUser = auth.currentUser;
 
     if (!currentUser) return;
 
     const q = query(
-      collection(db, "absensi"),
+      collection(db, "attendance"),
       where("uid", "==", currentUser.uid),
+      orderBy("createdAt", "desc"),
+      limit(5),
     );
 
-    const snapshot = await getDocs(q);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => doc.data());
+      setRiwayat(data);
+    });
 
-    const data = snapshot.docs.map((doc) => doc.data());
-
-    setRiwayat(data.slice(0, 5));
+    return unsubscribe;
   };
 
   return (
