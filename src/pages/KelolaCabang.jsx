@@ -40,8 +40,8 @@ export default function KelolaCabang() {
 
   /* TAMBAH CABANG */
   const tambahCabang = async () => {
-    if (!nama || !latitude || !longitude) {
-      alert("Lengkapi data cabang");
+    if (!nama) {
+      alert("Nama cabang wajib diisi");
       return;
     }
 
@@ -50,16 +50,16 @@ export default function KelolaCabang() {
 
       await addDoc(branchesRef, {
         nama,
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
-        radius: parseInt(radius),
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
+        radius: radius ? parseInt(radius) : null,
         createdAt: new Date(),
       });
 
       setNama("");
       setLatitude("");
       setLongitude("");
-      setRadius(100);
+      setRadius("");
 
       loadBranches();
 
@@ -169,9 +169,11 @@ export default function KelolaCabang() {
               {branches.map((b) => (
                 <tr key={b.id} className="border-t">
                   <td className="p-4">{b.nama}</td>
-                  <td className="p-4">{b.latitude}</td>
-                  <td className="p-4">{b.longitude}</td>
-                  <td className="p-4">{b.radius} m</td>
+                  <td className="p-4">{b.latitude ?? "-"}</td>
+                  <td className="p-4">{b.longitude ?? "-"}</td>
+                  <td className="p-4">
+                    {b.radius ? `${b.radius} m` : "Bebas Lokasi"}
+                  </td>
 
                   <td className="p-4">
                     <button
@@ -197,14 +199,16 @@ export default function KelolaCabang() {
               <h3 className="font-semibold text-gray-800">{b.nama}</h3>
 
               <p className="text-sm text-gray-500 break-all">
-                Latitude: {b.latitude}
+                Latitude: {b.latitude ?? "-"}
               </p>
 
               <p className="text-sm text-gray-500 break-all">
-                Longitude: {b.longitude}
+                Longitude: {b.longitude ?? "-"}
               </p>
 
-              <p className="text-sm">Radius: {b.radius} meter</p>
+              <p className="text-sm">
+                Radius: {b.radius ? `${b.radius} meter` : "Bebas Lokasi"}
+              </p>
 
               <button
                 onClick={() => setEditData(b)}

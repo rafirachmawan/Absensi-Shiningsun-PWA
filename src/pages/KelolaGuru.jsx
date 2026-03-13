@@ -224,7 +224,7 @@ export default function KelolaGuru() {
                   <td className="p-4">{g.cabang}</td>
 
                   <td className="p-4">
-                    {g.aktif ? (
+                    {g.email === "admin@shiningsun.com" || g.aktif ? (
                       <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
                         Aktif
                       </span>
@@ -270,7 +270,7 @@ export default function KelolaGuru() {
               <div className="flex justify-between items-center">
                 <h3 className="font-semibold text-gray-800">{g.nama}</h3>
 
-                {g.aktif ? (
+                {g.email === "admin@shiningsun.com" || g.aktif ? (
                   <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
                     Aktif
                   </span>
