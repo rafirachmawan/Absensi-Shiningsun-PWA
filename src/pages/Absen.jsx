@@ -93,17 +93,17 @@ export default function Absen() {
 
           const branch = branchSnap.docs[0].data();
 
-          const distance = getDistance(
-            lat,
-            lon,
-            branch.latitude,
-            branch.longitude,
-          );
+          let distance = null;
 
-          if (distance > branch.radius) {
-            setMessage("Anda berada di luar radius cabang");
-            setLoading(false);
-            return;
+          // Jika cabang memiliki lokasi
+          if (branch.latitude && branch.longitude && branch.radius) {
+            distance = getDistance(lat, lon, branch.latitude, branch.longitude);
+
+            if (distance > branch.radius) {
+              setMessage("Anda berada di luar radius cabang");
+              setLoading(false);
+              return;
+            }
           }
 
           const now = new Date();
@@ -113,10 +113,10 @@ export default function Absen() {
             nama: userData.nama,
             cabang: userData.cabang,
 
-            tanggal: now.toISOString(),
+            tanggal: now.toISOString().split("T")[0],
             waktu: now.toLocaleTimeString("id-ID"),
 
-            status: "hadir",
+            status: "Hadir",
 
             latitude: lat,
             longitude: lon,
@@ -155,18 +155,61 @@ export default function Absen() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-6 rounded-xl shadow w-full max-w-md">
-        <h1 className="text-lg font-semibold mb-4">Absensi Guru</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* CARD */}
+        <div className="bg-white rounded-3xl shadow-2xl p-6 space-y-6">
+          {/* HEADER */}
+          <div className="text-center">
+            <div className="text-4xl mb-2">📍</div>
 
-        <button
-          onClick={handleAbsen}
-          className="bg-green-600 text-white w-full py-3 rounded-lg"
-        >
-          {loading ? "Memproses..." : "Absen Sekarang"}
-        </button>
+            <h1 className="text-xl font-bold text-gray-800">Absensi Guru</h1>
 
-        {message && <p className="text-center mt-4 text-sm">{message}</p>}
+            <p className="text-sm text-gray-500 mt-1">
+              Tekan tombol untuk melakukan absensi hari ini
+            </p>
+          </div>
+
+          {/* INFO BOX */}
+          <div className="bg-gray-50 rounded-xl p-4 text-center border">
+            <p className="text-xs text-gray-500">
+              Sistem akan mendeteksi lokasi Anda
+            </p>
+
+            <p className="text-xs text-gray-400 mt-1">Pastikan GPS aktif</p>
+          </div>
+
+          {/* BUTTON */}
+          <button
+            onClick={handleAbsen}
+            disabled={loading}
+            className="w-full bg-green-600 hover:bg-green-700 active:scale-95 transition text-white py-3 rounded-xl font-semibold shadow-md"
+          >
+            {loading ? "Mengambil lokasi..." : "Absen Sekarang"}
+          </button>
+
+          {/* STATUS MESSAGE */}
+          {message && (
+            <div className="text-center">
+              {message === "Absensi berhasil" && (
+                <div className="bg-green-100 text-green-700 px-4 py-3 rounded-xl text-sm font-medium">
+                  ✅ {message}
+                </div>
+              )}
+
+              {message !== "Absensi berhasil" && (
+                <div className="bg-red-100 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+                  ⚠️ {message}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER */}
+        <p className="text-center text-white text-xs mt-4 opacity-80">
+          Shining Sun Attendance System
+        </p>
       </div>
     </div>
   );
