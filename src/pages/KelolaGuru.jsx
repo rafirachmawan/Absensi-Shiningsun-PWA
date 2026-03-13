@@ -26,7 +26,7 @@ export default function KelolaGuru() {
   const usersRef = collection(db, "users");
   const branchesRef = collection(db, "branches");
 
-  /* ================= LOAD GURU ================= */
+  /* LOAD GURU */
 
   const loadGuru = async () => {
     const snapshot = await getDocs(usersRef);
@@ -39,7 +39,7 @@ export default function KelolaGuru() {
     setGuru(data);
   };
 
-  /* ================= LOAD CABANG ================= */
+  /* LOAD CABANG */
 
   const loadBranches = async () => {
     const snapshot = await getDocs(branchesRef);
@@ -57,7 +57,7 @@ export default function KelolaGuru() {
     loadBranches();
   }, []);
 
-  /* ================= TAMBAH GURU ================= */
+  /* TAMBAH GURU */
 
   const tambahGuru = async () => {
     if (!nama || !email || !password || !cabang) {
@@ -103,7 +103,7 @@ export default function KelolaGuru() {
     setLoading(false);
   };
 
-  /* ================= UPDATE GURU ================= */
+  /* UPDATE GURU */
 
   const updateGuru = async () => {
     try {
@@ -124,7 +124,7 @@ export default function KelolaGuru() {
     }
   };
 
-  /* ================= NONAKTIFKAN GURU ================= */
+  /* NONAKTIFKAN */
 
   const toggleStatus = async (user) => {
     const ref = doc(db, "users", user.id);
@@ -137,8 +137,8 @@ export default function KelolaGuru() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* TITLE */}
+    <div className="space-y-8">
+      {/* HEADER */}
 
       <div>
         <h1 className="text-2xl font-semibold text-gray-800">Kelola Guru</h1>
@@ -148,19 +148,19 @@ export default function KelolaGuru() {
 
       {/* FORM TAMBAH */}
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border">
-        <h2 className="font-semibold mb-4">Tambah Guru</h2>
+      <div className="bg-white border rounded-2xl shadow-sm p-6">
+        <h2 className="font-semibold text-gray-700 mb-4">Tambah Guru</h2>
 
         <div className="grid md:grid-cols-5 gap-4">
           <input
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Nama Guru"
             value={nama}
             onChange={(e) => setNama(e.target.value)}
           />
 
           <input
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -168,7 +168,7 @@ export default function KelolaGuru() {
 
           <input
             type="password"
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -191,23 +191,22 @@ export default function KelolaGuru() {
           <button
             onClick={tambahGuru}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
           >
             {loading ? "Menyimpan..." : "Tambah Guru"}
           </button>
         </div>
       </div>
 
-      {/* TABLE */}
+      {/* TABLE DATA */}
 
-      {/* ================= DATA GURU ================= */}
+      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+        {/* DESKTOP */}
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        {/* DESKTOP TABLE */}
         <div className="hidden md:block">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr className="text-sm text-gray-600">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
                 <th className="p-4 text-left">Nama</th>
                 <th className="p-4 text-left">Email</th>
                 <th className="p-4 text-left">Cabang</th>
@@ -219,17 +218,19 @@ export default function KelolaGuru() {
             <tbody>
               {guru.map((g) => (
                 <tr key={g.id} className="border-t">
-                  <td className="p-4">{g.nama}</td>
-                  <td className="p-4">{g.email}</td>
+                  <td className="p-4 font-medium">{g.nama}</td>
+
+                  <td className="p-4 text-gray-500">{g.email}</td>
+
                   <td className="p-4">{g.cabang}</td>
 
                   <td className="p-4">
                     {g.email === "admin@shiningsun.com" || g.aktif ? (
-                      <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                      <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
                         Aktif
                       </span>
                     ) : (
-                      <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
+                      <span className="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full">
                         Nonaktif
                       </span>
                     )}
@@ -239,7 +240,7 @@ export default function KelolaGuru() {
                     {g.role !== "superadmin" && (
                       <button
                         onClick={() => setEditData(g)}
-                        className="bg-yellow-500 text-white px-3 py-1 rounded"
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
                       >
                         Edit
                       </button>
@@ -248,7 +249,7 @@ export default function KelolaGuru() {
                     {g.role !== "superadmin" && (
                       <button
                         onClick={() => toggleStatus(g)}
-                        className="bg-gray-700 text-white px-3 py-1 rounded"
+                        className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded text-xs"
                       >
                         {g.aktif ? "Nonaktifkan" : "Aktifkan"}
                       </button>
@@ -260,13 +261,11 @@ export default function KelolaGuru() {
           </table>
         </div>
 
-        {/* MOBILE CARD LIST */}
+        {/* MOBILE */}
+
         <div className="md:hidden p-4 space-y-4">
           {guru.map((g) => (
-            <div
-              key={g.id}
-              className="border rounded-xl p-4 space-y-2 shadow-sm"
-            >
+            <div key={g.id} className="border rounded-xl p-4 shadow-sm">
               <div className="flex justify-between items-center">
                 <h3 className="font-semibold text-gray-800">{g.nama}</h3>
 
@@ -281,13 +280,13 @@ export default function KelolaGuru() {
                 )}
               </div>
 
-              <p className="text-sm text-gray-500">{g.email}</p>
+              <p className="text-sm text-gray-500 mt-1">{g.email}</p>
 
-              <p className="text-sm">
+              <p className="text-sm mt-1">
                 <span className="text-gray-400">Cabang:</span> {g.cabang}
               </p>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2 mt-3">
                 {g.role !== "superadmin" && (
                   <button
                     onClick={() => setEditData(g)}
@@ -310,7 +309,8 @@ export default function KelolaGuru() {
           ))}
         </div>
       </div>
-      {/* ================= MODAL EDIT ================= */}
+
+      {/* MODAL EDIT */}
 
       {editData && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -319,51 +319,36 @@ export default function KelolaGuru() {
               Edit Data Guru
             </h2>
 
-            <p className="text-sm text-gray-500 mt-1 mb-4">
-              Ubah nama atau cabang guru.
-            </p>
+            <div className="space-y-4 mt-4">
+              <input
+                className="border rounded-lg px-4 py-2 w-full text-sm"
+                value={editData.nama}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    nama: e.target.value,
+                  })
+                }
+              />
 
-            <div className="space-y-4">
-              {/* NAMA */}
-              <div>
-                <label className="text-sm text-gray-600">Nama Guru</label>
-
-                <input
-                  className="border rounded-lg px-4 py-2 w-full mt-1 text-sm"
-                  value={editData.nama}
-                  onChange={(e) =>
-                    setEditData({
-                      ...editData,
-                      nama: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              {/* CABANG */}
-              <div>
-                <label className="text-sm text-gray-600">Cabang</label>
-
-                <select
-                  className="border rounded-lg px-4 py-2 w-full mt-1 text-sm"
-                  value={editData.cabang}
-                  onChange={(e) =>
-                    setEditData({
-                      ...editData,
-                      cabang: e.target.value,
-                    })
-                  }
-                >
-                  {branches.map((b) => (
-                    <option key={b.id} value={b.nama}>
-                      {b.nama}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <select
+                className="border rounded-lg px-4 py-2 w-full text-sm"
+                value={editData.cabang}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    cabang: e.target.value,
+                  })
+                }
+              >
+                {branches.map((b) => (
+                  <option key={b.id} value={b.nama}>
+                    {b.nama}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* BUTTON */}
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setEditData(null)}
@@ -374,7 +359,7 @@ export default function KelolaGuru() {
 
               <button
                 onClick={updateGuru}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
               >
                 Simpan
               </button>

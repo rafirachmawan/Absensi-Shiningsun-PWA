@@ -23,6 +23,7 @@ export default function KelolaCabang() {
   const branchesRef = collection(db, "branches");
 
   /* LOAD DATA */
+
   const loadBranches = async () => {
     const snapshot = await getDocs(branchesRef);
 
@@ -39,6 +40,7 @@ export default function KelolaCabang() {
   }, []);
 
   /* TAMBAH CABANG */
+
   const tambahCabang = async () => {
     if (!nama) {
       alert("Nama cabang wajib diisi");
@@ -72,6 +74,7 @@ export default function KelolaCabang() {
   };
 
   /* UPDATE CABANG */
+
   const updateCabang = async () => {
     try {
       const ref = doc(db, "branches", editData.id);
@@ -94,8 +97,9 @@ export default function KelolaCabang() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* TITLE */}
+    <div className="space-y-8">
+      {/* HEADER */}
+
       <div>
         <h1 className="text-2xl font-semibold text-gray-800">Kelola Cabang</h1>
 
@@ -105,26 +109,27 @@ export default function KelolaCabang() {
       </div>
 
       {/* FORM TAMBAH */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border">
-        <h2 className="font-semibold mb-4">Tambah Cabang</h2>
+
+      <div className="bg-white border rounded-2xl shadow-sm p-6">
+        <h2 className="font-semibold text-gray-700 mb-4">Tambah Cabang</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <input
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Nama Cabang"
             value={nama}
             onChange={(e) => setNama(e.target.value)}
           />
 
           <input
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Latitude"
             value={latitude}
             onChange={(e) => setLatitude(e.target.value)}
           />
 
           <input
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Longitude"
             value={longitude}
             onChange={(e) => setLongitude(e.target.value)}
@@ -132,7 +137,7 @@ export default function KelolaCabang() {
 
           <input
             type="number"
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Radius (meter)"
             value={radius}
             onChange={(e) => setRadius(e.target.value)}
@@ -141,22 +146,22 @@ export default function KelolaCabang() {
           <button
             onClick={tambahCabang}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
           >
-            {loading ? "Menyimpan..." : "Tambah"}
+            {loading ? "Menyimpan..." : "Tambah Cabang"}
           </button>
         </div>
       </div>
 
-      {/* TABLE */}
-      {/* ================= DATA CABANG ================= */}
+      {/* DATA CABANG */}
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
         {/* DESKTOP TABLE */}
+
         <div className="hidden md:block">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr className="text-sm text-gray-600">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
                 <th className="p-4 text-left">Nama Cabang</th>
                 <th className="p-4 text-left">Latitude</th>
                 <th className="p-4 text-left">Longitude</th>
@@ -168,17 +173,20 @@ export default function KelolaCabang() {
             <tbody>
               {branches.map((b) => (
                 <tr key={b.id} className="border-t">
-                  <td className="p-4">{b.nama}</td>
-                  <td className="p-4">{b.latitude ?? "-"}</td>
-                  <td className="p-4">{b.longitude ?? "-"}</td>
+                  <td className="p-4 font-medium">{b.nama}</td>
+
+                  <td className="p-4 text-gray-500">{b.latitude ?? "-"}</td>
+
+                  <td className="p-4 text-gray-500">{b.longitude ?? "-"}</td>
+
                   <td className="p-4">
-                    {b.radius ? `${b.radius} m` : "Bebas Lokasi"}
+                    {b.radius ? `${b.radius} meter` : "Bebas Lokasi"}
                   </td>
 
                   <td className="p-4">
                     <button
                       onClick={() => setEditData(b)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded"
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
                     >
                       Edit
                     </button>
@@ -190,15 +198,13 @@ export default function KelolaCabang() {
         </div>
 
         {/* MOBILE CARD */}
+
         <div className="md:hidden p-4 space-y-4">
           {branches.map((b) => (
-            <div
-              key={b.id}
-              className="border rounded-xl p-4 shadow-sm space-y-2"
-            >
+            <div key={b.id} className="border rounded-xl p-4 shadow-sm">
               <h3 className="font-semibold text-gray-800">{b.nama}</h3>
 
-              <p className="text-sm text-gray-500 break-all">
+              <p className="text-sm text-gray-500 break-all mt-1">
                 Latitude: {b.latitude ?? "-"}
               </p>
 
@@ -206,13 +212,13 @@ export default function KelolaCabang() {
                 Longitude: {b.longitude ?? "-"}
               </p>
 
-              <p className="text-sm">
+              <p className="text-sm mt-1">
                 Radius: {b.radius ? `${b.radius} meter` : "Bebas Lokasi"}
               </p>
 
               <button
                 onClick={() => setEditData(b)}
-                className="w-full bg-yellow-500 text-white py-2 rounded-lg text-sm mt-2"
+                className="w-full bg-yellow-500 text-white py-2 rounded-lg text-sm mt-3"
               >
                 Edit Cabang
               </button>
@@ -222,14 +228,15 @@ export default function KelolaCabang() {
       </div>
 
       {/* MODAL EDIT */}
-      {editData && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl w-[500px]">
-            <h2 className="font-semibold text-lg mb-4">Edit Cabang</h2>
 
-            <div className="space-y-3">
+      {editData && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-xl shadow-xl border p-6">
+            <h2 className="text-lg font-semibold text-gray-800">Edit Cabang</h2>
+
+            <div className="space-y-3 mt-4">
               <input
-                className="border rounded-lg px-4 py-2 w-full"
+                className="border rounded-lg px-4 py-2 w-full text-sm"
                 value={editData.nama}
                 onChange={(e) =>
                   setEditData({ ...editData, nama: e.target.value })
@@ -237,7 +244,7 @@ export default function KelolaCabang() {
               />
 
               <input
-                className="border rounded-lg px-4 py-2 w-full"
+                className="border rounded-lg px-4 py-2 w-full text-sm"
                 value={editData.latitude}
                 onChange={(e) =>
                   setEditData({ ...editData, latitude: e.target.value })
@@ -245,7 +252,7 @@ export default function KelolaCabang() {
               />
 
               <input
-                className="border rounded-lg px-4 py-2 w-full"
+                className="border rounded-lg px-4 py-2 w-full text-sm"
                 value={editData.longitude}
                 onChange={(e) =>
                   setEditData({ ...editData, longitude: e.target.value })
@@ -253,7 +260,7 @@ export default function KelolaCabang() {
               />
 
               <input
-                className="border rounded-lg px-4 py-2 w-full"
+                className="border rounded-lg px-4 py-2 w-full text-sm"
                 value={editData.radius}
                 onChange={(e) =>
                   setEditData({ ...editData, radius: e.target.value })
@@ -264,14 +271,14 @@ export default function KelolaCabang() {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setEditData(null)}
-                className="px-4 py-2 border rounded"
+                className="px-4 py-2 border rounded-lg text-sm"
               >
                 Batal
               </button>
 
               <button
                 onClick={updateCabang}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
               >
                 Simpan
               </button>

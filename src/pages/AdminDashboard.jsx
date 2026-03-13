@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function AdminDashboard() {
   const [totalGuru, setTotalGuru] = useState(0);
   const [totalCabang, setTotalCabang] = useState(0);
   const [nonaktif, setNonaktif] = useState(0);
+  const [aktivitas, setAktivitas] = useState([]);
 
   const loadData = async () => {
     const guruSnap = await getDocs(collection(db, "users"));
@@ -18,13 +19,28 @@ export default function AdminDashboard() {
 
     guruSnap.docs.forEach((doc) => {
       const data = doc.data();
-
       if (data.aktif === false) {
         nonaktifCount++;
       }
     });
 
     setNonaktif(nonaktifCount);
+
+    // aktivitas terbaru (limit agar hemat read)
+    const q = query(
+      collection(db, "attendance"),
+      orderBy("createdAt", "desc"),
+      limit(5),
+    );
+
+    const absensiSnap = await getDocs(q);
+
+    const data = absensiSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setAktivitas(data);
   };
 
   useEffect(() => {
@@ -36,7 +52,7 @@ export default function AdminDashboard() {
       {/* HEADER */}
 
       <div>
-        <h1 className="text-2xl font-semibold text-gray-800">
+        <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">
           Dashboard Super Admin
         </h1>
 
@@ -45,54 +61,76 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* STATISTIK */}
+      {/* STATISTIK SISTEM */}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* TOTAL GURU */}
+      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+        <div className="px-6 py-4 border-b bg-gray-50 font-semibold text-gray-700">
+          Statistik Sistem
+        </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-500">Total Guru</p>
+        <div className="divide-y">
+          <div className="flex justify-between px-6 py-4">
+            <span className="text-gray-600">Total Guru</span>
+            <span className="font-semibold">{totalGuru}</span>
+          </div>
 
-          <h2 className="text-3xl font-bold text-gray-800 mt-2">{totalGuru}</h2>
+          <div className="flex justify-between px-6 py-4">
+            <span className="text-gray-600">Total Cabang</span>
+            <span className="font-semibold">{totalCabang}</span>
+          </div>
 
-          <p className="text-xs text-gray-400 mt-2">
-            Jumlah akun guru terdaftar
+          <div className="flex justify-between px-6 py-4">
+            <span className="text-gray-600">Guru Nonaktif</span>
+            <span className="font-semibold text-red-600">{nonaktif}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* AKTIVITAS TERBARU */}
+
+      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+        <div className="px-6 py-4 border-b bg-gray-50 font-semibold text-gray-700">
+          Aktivitas Absensi Terbaru
+        </div>
+
+        {aktivitas.length === 0 ? (
+          <p className="px-6 py-6 text-sm text-gray-500">
+            Belum ada aktivitas absensi
           </p>
-        </div>
+        ) : (
+          <div className="divide-y">
+            {aktivitas.map((item) => (
+              <div
+                key={item.id}
+                className="flex justify-between items-center px-6 py-4 text-sm"
+              >
+                <div>
+                  <p className="font-medium text-gray-700">
+                    {item.nama || "Guru"}
+                  </p>
 
-        {/* TOTAL CABANG */}
+                  <p className="text-gray-500 text-xs">
+                    {new Date(item.tanggal).toLocaleDateString("id-ID")}
+                  </p>
+                </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-500">Total Cabang</p>
+                <div className="text-right">
+                  <p className="font-semibold">{item.waktu}</p>
 
-          <h2 className="text-3xl font-bold text-gray-800 mt-2">
-            {totalCabang}
-          </h2>
-
-          <p className="text-xs text-gray-400 mt-2">Lokasi cabang aktif</p>
-        </div>
-
-        {/* ABSENSI HARI INI */}
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-500">Absensi Hari Ini</p>
-
-          <h2 className="text-3xl font-bold text-gray-800 mt-2">0</h2>
-
-          <p className="text-xs text-gray-400 mt-2">
-            Jumlah guru yang sudah absen
-          </p>
-        </div>
-
-        {/* GURU NONAKTIF */}
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <p className="text-sm text-gray-500">Guru Nonaktif</p>
-
-          <h2 className="text-3xl font-bold text-gray-800 mt-2">{nonaktif}</h2>
-
-          <p className="text-xs text-gray-400 mt-2">Akun guru dinonaktifkan</p>
-        </div>
+                  <p
+                    className={`text-xs ${
+                      item.status === "Tepat Waktu"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {item.status}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

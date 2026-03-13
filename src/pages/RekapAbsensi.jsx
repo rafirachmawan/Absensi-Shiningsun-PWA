@@ -18,6 +18,7 @@ export default function RekapAbsensi() {
   const [search, setSearch] = useState("");
 
   /* LOAD DATA ABSENSI */
+
   const loadData = async () => {
     const snapshot = await getDocs(collection(db, "attendance"));
 
@@ -27,10 +28,11 @@ export default function RekapAbsensi() {
     }));
 
     setData(result);
-    setFiltered([]); // kosong sebelum filter
+    setFiltered([]);
   };
 
   /* LOAD CABANG */
+
   const loadCabang = async () => {
     const snapshot = await getDocs(collection(db, "branches"));
 
@@ -45,6 +47,7 @@ export default function RekapAbsensi() {
   }, []);
 
   /* FILTER */
+
   const applyFilter = () => {
     let result = [...data];
 
@@ -64,13 +67,13 @@ export default function RekapAbsensi() {
       );
     }
 
-    /* URUTKAN DATANG PALING CEPAT */
     result.sort((a, b) => a.waktu.localeCompare(b.waktu));
 
     setFiltered(result);
   };
 
   /* EXPORT EXCEL */
+
   const exportExcel = () => {
     const exportData = filtered.map((d) => ({
       Nama: d.nama,
@@ -100,35 +103,39 @@ export default function RekapAbsensi() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* TITLE */}
+    <div className="space-y-8">
+      {/* HEADER */}
+
       <div>
         <h1 className="text-2xl font-semibold text-gray-800">Rekap Absensi</h1>
 
-        <p className="text-gray-500 text-sm">Laporan kehadiran guru</p>
+        <p className="text-gray-500 text-sm">
+          Laporan kehadiran guru berdasarkan tanggal dan cabang
+        </p>
       </div>
 
       {/* FILTER */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border">
+
+      <div className="bg-white border rounded-2xl shadow-sm p-6">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <input
             type="date"
             value={tanggalMulai}
             onChange={(e) => setTanggalMulai(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm"
           />
 
           <input
             type="date"
             value={tanggalSelesai}
             onChange={(e) => setTanggalSelesai(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm"
           />
 
           <select
             value={cabang}
             onChange={(e) => setCabang(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm"
           >
             <option value="">Semua Cabang</option>
 
@@ -143,12 +150,12 @@ export default function RekapAbsensi() {
             placeholder="Cari nama guru..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm"
           />
 
           <button
             onClick={applyFilter}
-            className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 text-sm font-medium"
           >
             Filter
           </button>
@@ -156,25 +163,27 @@ export default function RekapAbsensi() {
       </div>
 
       {/* EXPORT */}
+
       {filtered.length > 0 && (
         <button
           onClick={exportExcel}
-          className="bg-green-600 text-white rounded-lg px-4 py-2 text-sm"
+          className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2 text-sm font-medium"
         >
           Export Excel
         </button>
       )}
 
       {/* TABLE */}
+
       {filtered.length === 0 ? (
-        <div className="bg-white p-10 rounded-xl shadow text-center text-gray-400">
+        <div className="bg-white border rounded-2xl shadow-sm p-12 text-center text-gray-400">
           Silakan pilih filter tanggal terlebih dahulu
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
-          <table className="min-w-[750px] w-full">
-            <thead className="bg-gray-50">
-              <tr className="text-sm text-gray-600">
+        <div className="bg-white border rounded-2xl shadow-sm overflow-x-auto">
+          <table className="min-w-[750px] w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
                 <th className="p-4 text-left">Nama</th>
                 <th className="p-4 text-left">Cabang</th>
                 <th className="p-4 text-left">Tanggal</th>
@@ -188,7 +197,7 @@ export default function RekapAbsensi() {
             <tbody>
               {filtered.map((d) => (
                 <tr key={d.id} className="border-t">
-                  <td className="p-4">{d.nama}</td>
+                  <td className="p-4 font-medium">{d.nama}</td>
 
                   <td className="p-4">{d.cabang}</td>
 
