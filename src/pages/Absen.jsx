@@ -1,4 +1,7 @@
 import { useState, useRef } from "react";
+import { useEffect } from "react";
+
+const [stream, setStream] = useState(null);
 
 import { auth, db } from "../firebase";
 
@@ -26,19 +29,23 @@ export default function Absen() {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
+        audio: false,
       });
 
+      setStream(mediaStream);
       setCameraOpen(true);
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
     } catch (err) {
       alert("Kamera tidak bisa diakses");
     }
   };
+
+  useEffect(() => {
+    if (cameraOpen && videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [cameraOpen, stream]);
 
   const takePhoto = () => {
     const video = videoRef.current;
@@ -57,9 +64,9 @@ export default function Absen() {
 
         await handleAbsen(blob);
 
-        const stream = video.srcObject;
-        const tracks = stream.getTracks();
-        tracks.forEach((track) => track.stop());
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+        }
 
         setCameraOpen(false);
       },
