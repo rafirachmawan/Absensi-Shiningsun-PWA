@@ -116,6 +116,48 @@ export default function Absen() {
 
           const now = new Date();
 
+          const settingsRef = doc(db, "settings", "attendance");
+          const settingsSnap = await getDoc(settingsRef);
+
+          let jamMasuk = "07:00";
+          let batasTelat = 15;
+
+          if (settingsSnap.exists()) {
+            const settings = settingsSnap.data();
+            jamMasuk = settings.jamMasuk;
+            batasTelat = settings.batasTelat;
+          }
+
+          const [jam, menit] = jamMasuk.split(":");
+
+          const jamMasukDate = new Date();
+          jamMasukDate.setHours(parseInt(jam));
+          jamMasukDate.setMinutes(parseInt(menit));
+          jamMasukDate.setSeconds(0);
+          jamMasukDate.setMilliseconds(0);
+
+          const selisihMenit = Math.floor((now - jamMasukDate) / 60000);
+
+          let status = "Hadir";
+          let attention = "";
+          let terlambatMenit = 0;
+
+          if (selisihMenit <= 0) {
+            status = "Tepat Waktu";
+            attention =
+              "🎉 Hadir Tepat Waktu! Terima kasih atas kedisiplinan Anda.";
+          } else if (selisihMenit <= batasTelat) {
+            status = "Terlambat";
+            terlambatMenit = selisihMenit;
+
+            attention = `⏱ Anda terlambat ${selisihMenit} menit. Mohon lebih disiplin besok.`;
+          } else {
+            status = "Terlambat Berat";
+            terlambatMenit = selisihMenit;
+
+            attention = `⚠ Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
+          }
+
           await addDoc(collection(db, "attendance"), {
             uid: user.uid,
             nama: userData.nama,
@@ -127,7 +169,8 @@ export default function Absen() {
               minute: "2-digit",
             }),
 
-            status: "Hadir",
+            status,
+            terlambatMenit,
 
             latitude: lat,
             longitude: lon,
@@ -135,7 +178,7 @@ export default function Absen() {
             createdAt: serverTimestamp(),
           });
 
-          setMessage("Absensi berhasil");
+          setMessage(attention);
 
           // tunggu 1 detik lalu kembali ke dashboard
           setTimeout(() => {
@@ -209,17 +252,17 @@ export default function Absen() {
           {/* STATUS MESSAGE */}
           {message && (
             <div className="text-center">
-              {message === "Absensi berhasil" && (
-                <div className="bg-green-100 text-green-700 px-4 py-3 rounded-xl text-sm font-medium">
-                  ✅ {message}
-                </div>
-              )}
-
-              {message !== "Absensi berhasil" && (
-                <div className="bg-red-100 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
-                  ⚠️ {message}
-                </div>
-              )}
+              <div
+                className={`px-4 py-3 rounded-xl text-sm font-medium ${
+                  message.includes("Terlambat Berat")
+                    ? "bg-red-100 text-red-700"
+                    : message.includes("Terlambat")
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-700"
+                }`}
+              >
+                {message}
+              </div>
             </div>
           )}
         </div>
