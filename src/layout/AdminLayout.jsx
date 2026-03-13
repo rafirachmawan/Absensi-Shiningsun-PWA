@@ -1,0 +1,150 @@
+import { useNavigate, Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
+
+export default function AdminLayout() {
+  const navigate = useNavigate();
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+
+      const timeString = now.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const dateString = now.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      setTime(`${dateString} • ${timeString}`);
+    };
+
+    updateClock();
+    const interval = setInterval(updateClock, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/");
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* SIDEBAR */}
+      <aside
+        className={`fixed left-0 top-0 z-40 h-screen bg-white border-r transition-all duration-300 ${
+          sidebarOpen ? "w-64" : "w-16"
+        }`}
+      >
+        {/* LOGO */}
+        <div className="h-[64px] flex items-center border-b px-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-lg font-semibold">
+              S
+            </div>
+
+            {sidebarOpen && (
+              <div>
+                <h2 className="font-bold text-blue-600">SHININGSUN</h2>
+                <p className="text-xs text-gray-500">Super Admin Panel</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* MENU */}
+        <nav className="p-3 space-y-1">
+          <button
+            onClick={() => navigate("/admin/dashboard")}
+            className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
+          >
+            🏠 {sidebarOpen && "Dashboard"}
+          </button>
+
+          <button
+            onClick={() => navigate("/admin/users")}
+            className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
+          >
+            👨‍🏫 {sidebarOpen && "Kelola Guru"}
+          </button>
+
+          <button
+            onClick={() => navigate("/admin/branches")}
+            className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
+          >
+            🏫 {sidebarOpen && "Kelola Cabang"}
+          </button>
+
+          <button
+            onClick={() => navigate("/admin/settings")}
+            className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
+          >
+            ⏰ {sidebarOpen && "Pengaturan Jam"}
+          </button>
+
+          <button
+            onClick={() => navigate("/admin/attendance")}
+            className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
+          >
+            📊 {sidebarOpen && "Rekap Absensi"}
+          </button>
+        </nav>
+
+        {/* LOGOUT */}
+        <div className="absolute bottom-0 w-full p-3 border-t">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 text-red-500"
+          >
+            🚪 {sidebarOpen && "Logout"}
+          </button>
+        </div>
+      </aside>
+
+      {/* MAIN AREA */}
+      <div
+        className={`transition-all duration-300 ${
+          sidebarOpen ? "ml-64" : "ml-16"
+        }`}
+      >
+        {/* HEADER */}
+        <header className="bg-blue-600 text-white h-[64px] flex items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="text-2xl"
+            >
+              ☰
+            </button>
+
+            <div>
+              <h1 className="font-semibold">Dashboard Super Admin</h1>
+
+              <p className="text-xs text-blue-100">{time}</p>
+            </div>
+          </div>
+
+          <div className="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center font-semibold">
+            A
+          </div>
+        </header>
+
+        {/* PAGE CONTENT */}
+        <main className="p-6 md:p-8">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
