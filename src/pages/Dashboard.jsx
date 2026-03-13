@@ -201,34 +201,54 @@ export default function Dashboard() {
           {riwayat.length === 0 ? (
             <p className="text-sm text-gray-500">Belum ada riwayat absensi</p>
           ) : (
-            <div className="space-y-3">
+            <div className="overflow-hidden rounded-xl border">
+              {/* HEADER TABLE */}
+
+              <div className="grid grid-cols-3 bg-gray-50 text-xs font-semibold text-gray-600 px-4 py-3">
+                <div>Tanggal</div>
+                <div className="text-center">Jam Datang</div>
+                <div className="text-right">Status</div>
+              </div>
+
+              {/* DATA */}
+
               {riwayat.map((item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between items-center border-b pb-2 text-sm"
+                  className="grid grid-cols-3 items-center px-4 py-3 text-sm border-t hover:bg-gray-50 transition"
                 >
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-700">
-                      {new Date(item.tanggal).toLocaleDateString("id-ID")}
-                    </span>
+                  {/* TANGGAL */}
 
-                    <span className="text-xs text-gray-500">
-                      🕒 {item.waktu}
-                    </span>
+                  <div className="text-gray-700">
+                    {new Date(item.tanggal).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </div>
 
-                  <span
-                    className={`font-medium ${
-                      item.status === "Tepat Waktu" ||
-                      item.status === "Lebih Awal"
-                        ? "text-green-600"
-                        : item.status === "Terlambat"
-                          ? "text-yellow-600"
-                          : "text-red-500"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
+                  {/* JAM */}
+
+                  <div className="text-center text-gray-600 font-medium">
+                    {item.waktu}
+                  </div>
+
+                  {/* STATUS */}
+
+                  <div className="text-right">
+                    <span
+                      className={`text-sm font-medium ${
+                        item.status === "Tepat Waktu" ||
+                        item.status === "Lebih Awal"
+                          ? "text-green-600"
+                          : item.status === "Terlambat"
+                            ? "text-yellow-600"
+                            : "text-red-600"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
