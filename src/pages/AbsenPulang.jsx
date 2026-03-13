@@ -131,15 +131,19 @@ export default function AbsenPulang() {
       return;
     }
 
-    if (docData.data().jamPulang) {
-      alert("Anda sudah absen pulang");
-      setLoading(false);
-      return;
-    }
-
     /* AMBIL GPS */
 
     navigator.geolocation.getCurrentPosition(async (position) => {
+      ((error) => {
+        alert("Gagal mendapatkan lokasi");
+        setLoading(false);
+      },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        });
+
       try {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
