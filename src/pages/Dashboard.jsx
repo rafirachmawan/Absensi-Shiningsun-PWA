@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 
 import { auth, db } from "../firebase";
 
@@ -52,49 +52,44 @@ export default function Dashboard() {
   /* LOAD USER */
 
   useEffect(() => {
-    loadUser();
+    let unsubRiwayat = null;
 
-    const unsub = listenRiwayat();
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) return;
 
-    return () => {
-      if (unsub) unsub();
-    };
-  }, []);
+      /* LOAD USER */
 
-  const loadUser = async () => {
-    const currentUser = auth.currentUser;
+      const ref = doc(db, "users", currentUser.uid);
+      const snap = await getDoc(ref);
 
-    if (!currentUser) return;
+      if (snap.exists()) {
+        setUser(snap.data());
+      }
 
-    const ref = doc(db, "users", currentUser.uid);
-    const snap = await getDoc(ref);
+      /* LISTEN RIWAYAT */
 
-    if (snap.exists()) {
-      setUser(snap.data());
-    }
-  };
+      const q = query(
+        collection(db, "attendance"),
+        where("uid", "==", currentUser.uid),
+        orderBy("createdAt", "desc"),
+        limit(5),
+      );
 
-  /* RIWAYAT */
+      unsubRiwayat = onSnapshot(q, (snapshot) => {
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-  const listenRiwayat = () => {
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) return;
-
-    const q = query(
-      collection(db, "attendance"),
-      where("uid", "==", currentUser.uid),
-      orderBy("createdAt", "desc"),
-      limit(5),
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => doc.data());
-      setRiwayat(data);
+        setRiwayat(data);
+      });
     });
 
-    return unsubscribe;
-  };
+    return () => {
+      if (unsubRiwayat) unsubRiwayat();
+      unsubscribeAuth();
+    };
+  }, []);
 
   /* LOGOUT */
 
@@ -207,9 +202,9 @@ export default function Dashboard() {
             <p className="text-sm text-gray-500">Belum ada riwayat absensi</p>
           ) : (
             <div className="space-y-3">
-              {riwayat.map((item, index) => (
+              {riwayat.map((item) => (
                 <div
-                  key={index}
+                  key={item.id}
                   className="flex justify-between items-center border-b pb-2 text-sm"
                 >
                   <span>
