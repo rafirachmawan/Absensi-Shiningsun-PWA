@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Absen from "./pages/Absen";
+import AbsenPulang from "./pages/AbsenPulang"; // TAMBAHAN
 
 import AdminLayout from "./layout/AdminLayout";
 
@@ -22,8 +23,11 @@ function App() {
 
         <Route path="/dashboard" element={<Dashboard />} />
 
-        {/* HALAMAN ABSEN (GPS + RADIUS) */}
+        {/* ABSEN MASUK */}
         <Route path="/absen" element={<Absen />} />
+
+        {/* ABSEN PULANG */}
+        <Route path="/absen-pulang" element={<AbsenPulang />} />
 
         {/* ================= ADMIN ================= */}
 
