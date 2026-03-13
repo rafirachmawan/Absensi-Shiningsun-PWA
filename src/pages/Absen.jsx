@@ -1,7 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { useEffect } from "react";
-
-const [stream, setStream] = useState(null);
 
 import { auth, db } from "../firebase";
 
@@ -48,12 +45,6 @@ export default function Absen() {
       alert("Kamera tidak bisa diakses");
     }
   };
-
-  useEffect(() => {
-    if (cameraOpen && videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-    }
-  }, [cameraOpen, stream]);
 
   const takePhoto = () => {
     const video = videoRef.current;
