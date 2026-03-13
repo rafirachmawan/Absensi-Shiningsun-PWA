@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useEffect } from "react";
 
 const [stream, setStream] = useState(null);
@@ -26,6 +26,14 @@ export default function Absen() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  const [stream, setStream] = useState(null);
+
+  useEffect(() => {
+    if (cameraOpen && videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [cameraOpen, stream]);
 
   const startCamera = async () => {
     try {
