@@ -165,8 +165,8 @@ export default function Absen() {
       },
 
       {
-        enableHighAccuracy: true,
-        timeout: 20000,
+        enableHighAccuracy: false,
+        timeout: 60000,
         maximumAge: 60000,
       },
     );
