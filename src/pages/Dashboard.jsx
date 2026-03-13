@@ -207,15 +207,24 @@ export default function Dashboard() {
                   key={item.id}
                   className="flex justify-between items-center border-b pb-2 text-sm"
                 >
-                  <span>
-                    {new Date(item.tanggal).toLocaleDateString("id-ID")}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="font-medium text-gray-700">
+                      {new Date(item.tanggal).toLocaleDateString("id-ID")}
+                    </span>
+
+                    <span className="text-xs text-gray-500">
+                      🕒 {item.waktu}
+                    </span>
+                  </div>
 
                   <span
                     className={`font-medium ${
-                      item.status === "Hadir"
+                      item.status === "Tepat Waktu" ||
+                      item.status === "Lebih Awal"
                         ? "text-green-600"
-                        : "text-red-500"
+                        : item.status === "Terlambat"
+                          ? "text-yellow-600"
+                          : "text-red-500"
                     }`}
                   >
                     {item.status}
