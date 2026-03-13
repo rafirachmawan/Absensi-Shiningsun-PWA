@@ -10,6 +10,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 
 export default function Absen() {
   const [loading, setLoading] = useState(false);
@@ -108,18 +109,23 @@ export default function Absen() {
 
           const now = new Date();
 
-          await addDoc(collection(db, "absensi"), {
+          await addDoc(collection(db, "attendance"), {
             uid: user.uid,
             nama: userData.nama,
             cabang: userData.cabang,
 
             tanggal: now.toISOString().split("T")[0],
-            waktu: now.toLocaleTimeString("id-ID"),
+            waktu: now.toLocaleTimeString("id-ID", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
 
             status: "Hadir",
 
             latitude: lat,
             longitude: lon,
+
+            createdAt: serverTimestamp(),
           });
 
           setMessage("Absensi berhasil");
