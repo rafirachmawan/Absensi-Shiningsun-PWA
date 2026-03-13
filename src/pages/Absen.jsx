@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+
 import { auth, db } from "../firebase";
 
 import {
@@ -12,13 +13,79 @@ import {
 } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { storage } from "../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function Absen() {
   const navigate = useNavigate(); // <-- TAMBAHKAN INI
-
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showResult, setShowResult] = useState(false);
+
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const startCamera = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" },
+    });
+
+    setCameraOpen(true);
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  };
+
+  const takePhoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(video, 0, 0);
+
+    canvas.toBlob(
+      (blob) => {
+        handleAbsen(blob);
+      },
+      "image/jpeg",
+      0.8,
+    );
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      img.onload = () => {
+        const MAX_WIDTH = 480;
+
+        const scale = Math.min(MAX_WIDTH / img.width, 1);
+
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scale;
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob);
+          },
+          "image/jpeg",
+          0.5,
+        );
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
 
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
@@ -38,7 +105,12 @@ export default function Absen() {
     return R * c;
   };
 
-  const handleAbsen = async () => {
+  const handleAbsen = async (photoFile) => {
+    if (!photoFile) {
+      alert("Foto wajib diambil untuk absensi.");
+      return;
+    }
+
     if (!navigator.geolocation) {
       alert("GPS tidak tersedia");
       return;
@@ -88,6 +160,21 @@ export default function Absen() {
           }
 
           const userData = userSnap.data();
+
+          let photoURL = null;
+
+          if (photoFile) {
+            const compressedPhoto = await compressImage(photoFile);
+
+            const photoRef = ref(
+              storage,
+              `attendance/${user.uid}/${Date.now()}.jpg`,
+            );
+
+            await uploadBytes(photoRef, compressedPhoto);
+
+            photoURL = await getDownloadURL(photoRef);
+          }
 
           const q = query(
             collection(db, "branches"),
@@ -223,6 +310,8 @@ export default function Absen() {
             latitude: lat,
             longitude: lon,
 
+            photoURL,
+
             createdAt: serverTimestamp(),
           });
 
@@ -287,15 +376,29 @@ export default function Absen() {
           </div>
 
           {/* BUTTON */}
-          {!showResult && (
-            <button
-              onClick={handleAbsen}
-              disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 active:scale-95 transition text-white py-3 rounded-xl font-semibold shadow-md"
-            >
-              {loading ? "Mengambil lokasi..." : "Absen Sekarang"}
-            </button>
+
+          <button
+            onClick={startCamera}
+            className="w-full block bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold shadow-md"
+          >
+            {loading ? "Mengambil lokasi..." : "Absen Sekarang"}
+          </button>
+
+          {cameraOpen && (
+            <div className="space-y-4">
+              <video ref={videoRef} autoPlay className="rounded-xl w-full" />
+
+              <button
+                onClick={takePhoto}
+                className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold"
+              >
+                Ambil Foto
+              </button>
+
+              <canvas ref={canvasRef} className="hidden"></canvas>
+            </div>
           )}
+
           {/* RESULT CARD */}
 
           {showResult && (
