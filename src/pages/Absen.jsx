@@ -200,10 +200,10 @@ export default function Absen() {
           }
 
           const userData = userSnap.data();
-
           /* ================= CEK ABSEN HARI INI ================= */
 
-          const today = new Date().toISOString().split("T")[0];
+          const now = new Date();
+          const today = now.toLocaleDateString("en-CA");
 
           const q = query(
             collection(db, "branches"),
@@ -237,8 +237,6 @@ export default function Absen() {
               return;
             }
           }
-
-          const now = new Date();
 
           const settingsRef = doc(db, "settings", "attendance");
           const settingsSnap = await getDoc(settingsRef);

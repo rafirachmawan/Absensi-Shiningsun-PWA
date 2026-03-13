@@ -107,7 +107,8 @@ export default function AbsenPulang() {
       return;
     }
 
-    const today = new Date().toISOString().split("T")[0];
+    const now = new Date();
+    const today = now.toLocaleDateString("en-CA");
 
     /* CARI ABSEN MASUK HARI INI */
 
