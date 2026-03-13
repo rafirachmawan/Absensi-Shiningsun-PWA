@@ -129,26 +129,43 @@ export default function Absen() {
 
           let jamMasuk = "07:00";
           let batasTelat = 15;
+          let jamBuka = "06:00";
+          let jamTutup = "12:00";
 
           if (settingsSnap.exists()) {
             const settings = settingsSnap.data();
-            jamMasuk = settings.jamMasuk;
-            batasTelat = settings.batasTelat;
+
+            jamMasuk = settings.jamMasuk || "07:00";
+            batasTelat = settings.batasTelat || 15;
+            jamBuka = settings.jamBuka || "06:00";
+            jamTutup = settings.jamTutup || "12:00";
           }
-
+          // jam masuk
           const [jam, menit] = jamMasuk.split(":");
+          const jamMasukMinutes = parseInt(jam, 10) * 60 + parseInt(menit, 10);
 
-          // jam masuk dalam menit
-          const jamMasukMinutes = parseInt(jam) * 60 + parseInt(menit);
-
-          // waktu sekarang dalam menit
+          // waktu sekarang
           const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-          // selisih menit
+          // selisih
           const selisihMenit = nowMinutes - jamMasukMinutes;
 
-          const startAbsensi = 5 * 60; // 05:00
-          const endAbsensi = 12 * 60; // 12:00
+          // jam buka
+          const [bukaJam, bukaMenit] = jamBuka.split(":");
+          const startAbsensi =
+            parseInt(bukaJam, 10) * 60 + parseInt(bukaMenit, 10);
+
+          // jam tutup
+          const [tutupJam, tutupMenit] = jamTutup.split(":");
+          const endAbsensi =
+            parseInt(tutupJam, 10) * 60 + parseInt(tutupMenit, 10);
+
+          console.log("Jam buka:", jamBuka);
+          console.log("Jam masuk:", jamMasuk);
+          console.log("Jam tutup:", jamTutup);
+          console.log("Now minutes:", nowMinutes);
+          console.log("Start absensi:", startAbsensi);
+          console.log("End absensi:", endAbsensi);
 
           if (nowMinutes < startAbsensi) {
             setMessage("Absensi belum dibuka.");
