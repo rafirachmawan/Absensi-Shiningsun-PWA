@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 export default function RekapAbsensi() {
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
-  const [tanggal, setTanggal] = useState("");
+  const [tanggalMulai, setTanggalMulai] = useState("");
+  const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [cabang, setCabang] = useState("");
 
   const attendanceRef = collection(db, "attendance");
@@ -32,8 +36,10 @@ export default function RekapAbsensi() {
   const applyFilter = () => {
     let result = [...data];
 
-    if (tanggal) {
-      result = result.filter((d) => d.tanggal === tanggal);
+    if (tanggalMulai && tanggalSelesai) {
+      result = result.filter(
+        (d) => d.tanggal >= tanggalMulai && d.tanggal <= tanggalSelesai,
+      );
     }
 
     if (cabang) {
@@ -41,6 +47,32 @@ export default function RekapAbsensi() {
     }
 
     setFiltered(result);
+  };
+
+  const exportExcel = () => {
+    const exportData = filtered.map((d) => ({
+      Nama: d.nama,
+      Cabang: d.cabang,
+      Tanggal: d.tanggal,
+      JamMasuk: d.waktu,
+      Status: d.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Absensi");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const dataFile = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(dataFile, "rekap-absensi.xlsx");
   };
 
   return (
@@ -54,11 +86,18 @@ export default function RekapAbsensi() {
 
       {/* FILTER */}
       <div className="bg-white p-6 rounded-xl shadow-sm border">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <input
             type="date"
-            value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
+            value={tanggalMulai}
+            onChange={(e) => setTanggalMulai(e.target.value)}
+            className="border rounded-lg px-3 py-2 text-sm w-full"
+          />
+
+          <input
+            type="date"
+            value={tanggalSelesai}
+            onChange={(e) => setTanggalSelesai(e.target.value)}
             className="border rounded-lg px-3 py-2 text-sm w-full"
           />
 
@@ -77,7 +116,12 @@ export default function RekapAbsensi() {
           </button>
         </div>
       </div>
-
+      <button
+        onClick={exportExcel}
+        className="bg-green-600 text-white rounded-lg px-4 py-2 text-sm"
+      >
+        Export Excel
+      </button>
       {/* TABLE */}
       {/* ================= DATA ABSENSI ================= */}
 
@@ -101,7 +145,7 @@ export default function RekapAbsensi() {
                   <td className="p-4">{d.nama}</td>
                   <td className="p-4">{d.cabang}</td>
                   <td className="p-4">{d.tanggal}</td>
-                  <td className="p-4">{d.jamMasuk}</td>
+                  <td className="p-4">{d.waktu}</td>
 
                   <td className="p-4">
                     {d.status === "Hadir" && (
@@ -161,7 +205,7 @@ export default function RekapAbsensi() {
 
               <p className="text-sm text-gray-500">Tanggal: {d.tanggal}</p>
 
-              <p className="text-sm text-gray-500">Jam Masuk: {d.jamMasuk}</p>
+              <p className="text-sm text-gray-500">Jam Masuk: {d.waktu}</p>
             </div>
           ))}
         </div>

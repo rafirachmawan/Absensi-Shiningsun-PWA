@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
 
 import { auth, db } from "../firebase";
+
 import {
   doc,
   getDoc,
   collection,
   query,
   where,
-  getDocs,
   onSnapshot,
   orderBy,
   limit,
@@ -20,6 +21,8 @@ export default function Dashboard() {
   const [time, setTime] = useState("");
   const [user, setUser] = useState(null);
   const [riwayat, setRiwayat] = useState([]);
+
+  /* CLOCK */
 
   useEffect(() => {
     const updateClock = () => {
@@ -46,6 +49,8 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  /* LOAD USER */
+
   useEffect(() => {
     loadUser();
 
@@ -69,6 +74,8 @@ export default function Dashboard() {
     }
   };
 
+  /* RIWAYAT */
+
   const listenRiwayat = () => {
     const currentUser = auth.currentUser;
 
@@ -89,50 +96,89 @@ export default function Dashboard() {
     return unsubscribe;
   };
 
+  /* LOGOUT */
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* HEADER */}
-      <div className="bg-blue-600 text-white shadow-md">
-        <div className="flex justify-between items-center px-4 md:px-8 py-4 w-full max-w-5xl mx-auto">
-          {/* LEFT */}
-          <div className="flex flex-col">
+
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4">
+          {/* ROW 1 */}
+          <div className="flex items-center justify-between">
+            {/* BRAND */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center font-bold text-lg">
                 S
               </div>
 
               <div>
-                <h1 className="text-lg md:text-xl font-semibold tracking-wide">
+                <h1 className="text-lg font-semibold tracking-wide">
                   SHININGSUN
                 </h1>
 
-                <p className="text-blue-100 text-xs md:text-sm">
-                  Sistem Absensi Guru
-                </p>
+                <p className="text-blue-100 text-xs">Sistem Absensi Guru</p>
+
+                <p className="text-blue-100 text-xs">{time}</p>
               </div>
             </div>
 
-            <p className="text-blue-100 text-xs mt-1">{time}</p>
+            {/* USER (WEB ONLY) */}
+            <div className="hidden md:flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-sm font-semibold">{user?.nama || "Guru"}</p>
+
+                <p className="text-xs text-blue-200">{user?.cabang || ""}</p>
+              </div>
+
+              <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-semibold">
+                {user?.nama?.charAt(0) || "G"}
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-1 rounded-lg transition"
+              >
+                Logout
+              </button>
+            </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium">{user?.nama || "Guru"}</p>
-              <p className="text-xs text-blue-200">{user?.cabang || ""}</p>
+          {/* MOBILE USER */}
+          <div className="flex md:hidden items-center justify-between mt-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-white text-blue-600 flex items-center justify-center font-semibold">
+                {user?.nama?.charAt(0) || "G"}
+              </div>
+
+              <div className="text-sm">{user?.nama || "Guru"}</div>
             </div>
 
-            <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-semibold shadow border border-white">
-              {user?.nama?.charAt(0) || "G"}
-            </div>
+            <button
+              onClick={handleLogout}
+              className="bg-white/20 text-white text-xs px-3 py-1 rounded-lg"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 p-4 md:p-6 max-w-md md:max-w-lg mx-auto w-full">
-        {/* CARD ABSEN */}
-        <div className="bg-white rounded-2xl shadow p-5 mt-4">
+
+      <div className="flex-1 w-full max-w-md md:max-w-lg mx-auto p-4 md:p-6">
+        {/* MENU ABSENSI */}
+
+        <div className="bg-white rounded-2xl shadow-sm p-5 mt-4">
           <h2 className="font-semibold text-gray-700 mb-4">Menu Absensi</h2>
 
           <div className="flex flex-col gap-3">
@@ -152,8 +198,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* RIWAYAT ABSENSI */}
-        <div className="bg-white rounded-2xl shadow p-5 mt-5">
+        {/* RIWAYAT */}
+
+        <div className="bg-white rounded-2xl shadow-sm p-5 mt-5">
           <h2 className="font-semibold text-gray-700 mb-4">Riwayat Absensi</h2>
 
           {riwayat.length === 0 ? (
@@ -163,7 +210,7 @@ export default function Dashboard() {
               {riwayat.map((item, index) => (
                 <div
                   key={index}
-                  className="flex justify-between border-b pb-2 text-sm"
+                  className="flex justify-between items-center border-b pb-2 text-sm"
                 >
                   <span>
                     {new Date(item.tanggal).toLocaleDateString("id-ID")}
@@ -171,7 +218,7 @@ export default function Dashboard() {
 
                   <span
                     className={`font-medium ${
-                      item.status === "hadir"
+                      item.status === "Hadir"
                         ? "text-green-600"
                         : "text-red-500"
                     }`}
