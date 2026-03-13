@@ -18,6 +18,8 @@ export default function Absen() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showResult, setShowResult] = useState(false);
+
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
 
@@ -180,10 +182,8 @@ export default function Absen() {
 
           setMessage(attention);
 
-          // tunggu 1 detik lalu kembali ke dashboard
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1000);
+          setShowResult(true);
+          setLoading(false);
         } catch (err) {
           alert(err.message);
         }
@@ -241,17 +241,25 @@ export default function Absen() {
           </div>
 
           {/* BUTTON */}
-          <button
-            onClick={handleAbsen}
-            disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-700 active:scale-95 transition text-white py-3 rounded-xl font-semibold shadow-md"
-          >
-            {loading ? "Mengambil lokasi..." : "Absen Sekarang"}
-          </button>
+          {!showResult && (
+            <button
+              onClick={handleAbsen}
+              disabled={loading}
+              className="w-full bg-green-600 hover:bg-green-700 active:scale-95 transition text-white py-3 rounded-xl font-semibold shadow-md"
+            >
+              {loading ? "Mengambil lokasi..." : "Absen Sekarang"}
+            </button>
+          )}
+          {/* RESULT CARD */}
 
-          {/* STATUS MESSAGE */}
-          {message && (
-            <div className="text-center">
+          {showResult && (
+            <div className="bg-white rounded-2xl shadow-lg p-6 text-center space-y-4 animate-fade-in">
+              <div className="text-4xl">✅</div>
+
+              <h2 className="text-lg font-semibold text-gray-800">
+                Absensi Berhasil
+              </h2>
+
               <div
                 className={`px-4 py-3 rounded-xl text-sm font-medium ${
                   message.includes("Terlambat Berat")
@@ -263,6 +271,13 @@ export default function Absen() {
               >
                 {message}
               </div>
+
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
+              >
+                Kembali ke Dashboard
+              </button>
             </div>
           )}
         </div>
