@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
+
 import { collection, getDocs } from "firebase/firestore";
 
 import * as XLSX from "xlsx";
@@ -9,15 +10,16 @@ export default function RekapAbsensi() {
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
+  const [cabangList, setCabangList] = useState([]);
+
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [cabang, setCabang] = useState("");
-
-  const attendanceRef = collection(db, "attendance");
+  const [search, setSearch] = useState("");
 
   /* LOAD DATA ABSENSI */
   const loadData = async () => {
-    const snapshot = await getDocs(attendanceRef);
+    const snapshot = await getDocs(collection(db, "attendance"));
 
     const result = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -25,11 +27,21 @@ export default function RekapAbsensi() {
     }));
 
     setData(result);
-    setFiltered(result);
+    setFiltered([]); // kosong sebelum filter
+  };
+
+  /* LOAD CABANG */
+  const loadCabang = async () => {
+    const snapshot = await getDocs(collection(db, "branches"));
+
+    const result = snapshot.docs.map((doc) => doc.data().nama);
+
+    setCabangList(result);
   };
 
   useEffect(() => {
     loadData();
+    loadCabang();
   }, []);
 
   /* FILTER */
@@ -46,16 +58,28 @@ export default function RekapAbsensi() {
       result = result.filter((d) => d.cabang === cabang);
     }
 
+    if (search) {
+      result = result.filter((d) =>
+        d.nama.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    /* URUTKAN DATANG PALING CEPAT */
+    result.sort((a, b) => a.waktu.localeCompare(b.waktu));
+
     setFiltered(result);
   };
 
+  /* EXPORT EXCEL */
   const exportExcel = () => {
     const exportData = filtered.map((d) => ({
       Nama: d.nama,
       Cabang: d.cabang,
       Tanggal: d.tanggal,
       JamMasuk: d.waktu,
+      JamPulang: d.jamPulang || "-",
       Status: d.status,
+      Foto: d.photoURL,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
@@ -86,7 +110,7 @@ export default function RekapAbsensi() {
 
       {/* FILTER */}
       <div className="bg-white p-6 rounded-xl shadow-sm border">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <input
             type="date"
             value={tanggalMulai}
@@ -101,10 +125,24 @@ export default function RekapAbsensi() {
             className="border rounded-lg px-3 py-2 text-sm w-full"
           />
 
-          <input
-            placeholder="Cabang"
+          <select
             value={cabang}
             onChange={(e) => setCabang(e.target.value)}
+            className="border rounded-lg px-3 py-2 text-sm w-full"
+          >
+            <option value="">Semua Cabang</option>
+
+            {cabangList.map((c, i) => (
+              <option key={i} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+
+          <input
+            placeholder="Cari nama guru..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="border rounded-lg px-3 py-2 text-sm w-full"
           />
 
@@ -116,25 +154,33 @@ export default function RekapAbsensi() {
           </button>
         </div>
       </div>
-      <button
-        onClick={exportExcel}
-        className="bg-green-600 text-white rounded-lg px-4 py-2 text-sm"
-      >
-        Export Excel
-      </button>
-      {/* TABLE */}
-      {/* ================= DATA ABSENSI ================= */}
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        {/* DESKTOP TABLE */}
-        <div className="hidden md:block">
-          <table className="w-full">
+      {/* EXPORT */}
+      {filtered.length > 0 && (
+        <button
+          onClick={exportExcel}
+          className="bg-green-600 text-white rounded-lg px-4 py-2 text-sm"
+        >
+          Export Excel
+        </button>
+      )}
+
+      {/* TABLE */}
+      {filtered.length === 0 ? (
+        <div className="bg-white p-10 rounded-xl shadow text-center text-gray-400">
+          Silakan pilih filter tanggal terlebih dahulu
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+          <table className="min-w-[750px] w-full">
             <thead className="bg-gray-50">
               <tr className="text-sm text-gray-600">
                 <th className="p-4 text-left">Nama</th>
                 <th className="p-4 text-left">Cabang</th>
                 <th className="p-4 text-left">Tanggal</th>
-                <th className="p-4 text-left">Jam Masuk</th>
+                <th className="p-4 text-left">Masuk</th>
+                <th className="p-4 text-left">Pulang</th>
+                <th className="p-4 text-left">Foto</th>
                 <th className="p-4 text-left">Status</th>
               </tr>
             </thead>
@@ -143,73 +189,45 @@ export default function RekapAbsensi() {
               {filtered.map((d) => (
                 <tr key={d.id} className="border-t">
                   <td className="p-4">{d.nama}</td>
+
                   <td className="p-4">{d.cabang}</td>
+
                   <td className="p-4">{d.tanggal}</td>
-                  <td className="p-4">{d.waktu}</td>
+
+                  <td className="p-4 font-semibold text-green-700">
+                    {d.waktu}
+                  </td>
+
+                  <td className="p-4 font-semibold text-red-600">
+                    {d.jamPulang || "-"}
+                  </td>
 
                   <td className="p-4">
-                    {d.status === "Hadir" && (
-                      <span className="bg-green-100 text-green-700 px-2 py-1 text-xs rounded">
-                        Hadir
-                      </span>
+                    {d.photoURL ? (
+                      <a
+                        href={d.photoURL}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 underline text-sm"
+                      >
+                        Lihat Foto
+                      </a>
+                    ) : (
+                      "-"
                     )}
+                  </td>
 
-                    {d.status === "Telat" && (
-                      <span className="bg-yellow-100 text-yellow-700 px-2 py-1 text-xs rounded">
-                        Telat
-                      </span>
-                    )}
-
-                    {d.status === "Izin" && (
-                      <span className="bg-blue-100 text-blue-700 px-2 py-1 text-xs rounded">
-                        Izin
-                      </span>
-                    )}
+                  <td className="p-4">
+                    <span className="text-sm font-medium text-gray-700">
+                      {d.status}
+                    </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        {/* MOBILE CARD */}
-        <div className="md:hidden p-4 space-y-4">
-          {filtered.map((d) => (
-            <div
-              key={d.id}
-              className="border rounded-xl p-4 shadow-sm space-y-2"
-            >
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800">{d.nama}</h3>
-
-                {d.status === "Hadir" && (
-                  <span className="bg-green-100 text-green-700 px-2 py-1 text-xs rounded">
-                    Hadir
-                  </span>
-                )}
-
-                {d.status === "Telat" && (
-                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 text-xs rounded">
-                    Telat
-                  </span>
-                )}
-
-                {d.status === "Izin" && (
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 text-xs rounded">
-                    Izin
-                  </span>
-                )}
-              </div>
-
-              <p className="text-sm text-gray-500">Cabang: {d.cabang}</p>
-
-              <p className="text-sm text-gray-500">Tanggal: {d.tanggal}</p>
-
-              <p className="text-sm text-gray-500">Jam Masuk: {d.waktu}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -155,7 +155,11 @@ export default function Dashboard() {
                 {user?.nama?.charAt(0) || "G"}
               </div>
 
-              <div className="text-sm">{user?.nama || "Guru"}</div>
+              <div className="leading-tight">
+                <p className="text-sm font-semibold">{user?.nama || "Guru"}</p>
+
+                <p className="text-xs text-blue-200">{user?.cabang || ""}</p>
+              </div>
             </div>
 
             <button
@@ -204,9 +208,10 @@ export default function Dashboard() {
             <div className="overflow-hidden rounded-xl border">
               {/* HEADER TABLE */}
 
-              <div className="grid grid-cols-3 bg-gray-50 text-xs font-semibold text-gray-600 px-4 py-3">
+              <div className="grid grid-cols-4 bg-gray-50 text-xs font-semibold text-gray-600 px-4 py-3">
                 <div>Tanggal</div>
-                <div className="text-center">Jam Datang</div>
+                <div className="text-center">Datang</div>
+                <div className="text-center">Pulang</div>
                 <div className="text-right">Status</div>
               </div>
 
@@ -215,7 +220,7 @@ export default function Dashboard() {
               {riwayat.map((item) => (
                 <div
                   key={item.id}
-                  className="grid grid-cols-3 items-center px-4 py-3 text-sm border-t hover:bg-gray-50 transition"
+                  className="grid grid-cols-4 items-center px-4 py-3 text-sm border-t hover:bg-gray-50 transition"
                 >
                   {/* TANGGAL */}
 
@@ -228,9 +233,12 @@ export default function Dashboard() {
                   </div>
 
                   {/* JAM */}
-
-                  <div className="text-center text-gray-600 font-medium">
+                  <div className="text-center text-gray-700 font-semibold">
                     {item.waktu}
+                  </div>
+
+                  <div className="text-center text-gray-700 font-semibold">
+                    {item.jamPulang ? item.jamPulang : "-"}
                   </div>
 
                   {/* STATUS */}
