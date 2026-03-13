@@ -5,12 +5,13 @@ import { auth, db } from "../firebase";
 import {
   doc,
   getDoc,
+  setDoc,
   collection,
-  addDoc,
   query,
   where,
   getDocs,
 } from "firebase/firestore";
+
 import { serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
@@ -204,21 +205,6 @@ export default function Absen() {
 
           const today = new Date().toISOString().split("T")[0];
 
-          const cekAbsen = query(
-            collection(db, "attendance"),
-            where("uid", "==", user.uid),
-            where("tanggal", "==", today),
-          );
-
-          const cekSnapshot = await getDocs(cekAbsen);
-
-          if (!cekSnapshot.empty) {
-            setMessage("Anda sudah melakukan absensi hari ini.");
-            setShowResult(true);
-            setLoading(false);
-            return;
-          }
-
           let photoURL = null;
 
           if (photoFile) {
@@ -344,7 +330,20 @@ export default function Absen() {
             attention = `⚠ Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
           }
 
-          await addDoc(collection(db, "attendance"), {
+          const attendanceId = `${user.uid}_${today}`;
+
+          const attendanceRef = doc(db, "attendance", attendanceId);
+
+          const existing = await getDoc(attendanceRef);
+
+          if (existing.exists()) {
+            setMessage("Anda sudah melakukan absensi hari ini.");
+            setShowResult(true);
+            setLoading(false);
+            return;
+          }
+
+          await setDoc(attendanceRef, {
             uid: user.uid,
             nama: userData.nama,
             cabang: userData.cabang,
