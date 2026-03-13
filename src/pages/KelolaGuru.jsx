@@ -175,7 +175,7 @@ export default function KelolaGuru() {
           />
 
           <select
-            className="border rounded-lg px-4 py-2"
+            className="border rounded-lg px-4 py-2 text-sm"
             value={cabang}
             onChange={(e) => setCabang(e.target.value)}
           >
@@ -200,149 +200,188 @@ export default function KelolaGuru() {
 
       {/* TABLE */}
 
+      {/* ================= DATA GURU ================= */}
+
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr className="text-sm text-gray-600">
-              <th className="p-4 text-left">Nama</th>
-              <th className="p-4 text-left">Email</th>
-              <th className="p-4 text-left">Cabang</th>
-              <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-left">Aksi</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {guru.map((g) => (
-              <tr key={g.id} className="border-t">
-                <td className="p-4">{g.nama}</td>
-                <td className="p-4">{g.email}</td>
-                <td className="p-4">{g.cabang}</td>
-
-                <td className="p-4">
-                  {g.aktif ? (
-                    <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-                      Aktif
-                    </span>
-                  ) : (
-                    <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
-                      Nonaktif
-                    </span>
-                  )}
-                </td>
-
-                <td className="p-4 flex gap-2">
-                  {g.role !== "superadmin" && (
-                    <button
-                      onClick={() => setEditData(g)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded"
-                    >
-                      Edit
-                    </button>
-                  )}
-
-                  {g.role !== "superadmin" && (
-                    <button
-                      onClick={() => toggleStatus(g)}
-                      className="bg-gray-700 text-white px-3 py-1 rounded"
-                    >
-                      {g.aktif ? "Nonaktifkan" : "Aktifkan"}
-                    </button>
-                  )}
-                </td>
+        {/* DESKTOP TABLE */}
+        <div className="hidden md:block">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr className="text-sm text-gray-600">
+                <th className="p-4 text-left">Nama</th>
+                <th className="p-4 text-left">Email</th>
+                <th className="p-4 text-left">Cabang</th>
+                <th className="p-4 text-left">Status</th>
+                <th className="p-4 text-left">Aksi</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
 
-        {/* ================= MODAL EDIT (UI DIPERBAIKI) ================= */}
+            <tbody>
+              {guru.map((g) => (
+                <tr key={g.id} className="border-t">
+                  <td className="p-4">{g.nama}</td>
+                  <td className="p-4">{g.email}</td>
+                  <td className="p-4">{g.cabang}</td>
 
-        {editData && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white w-[480px] rounded-xl shadow-xl border p-7">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Edit Data Guru
-              </h2>
+                  <td className="p-4">
+                    {g.aktif ? (
+                      <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                        Aktif
+                      </span>
+                    ) : (
+                      <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
+                        Nonaktif
+                      </span>
+                    )}
+                  </td>
 
-              <p className="text-sm text-gray-500 mt-1 mb-6">
-                Ubah nama atau cabang guru jika diperlukan.
+                  <td className="p-4 flex gap-2">
+                    {g.role !== "superadmin" && (
+                      <button
+                        onClick={() => setEditData(g)}
+                        className="bg-yellow-500 text-white px-3 py-1 rounded"
+                      >
+                        Edit
+                      </button>
+                    )}
+
+                    {g.role !== "superadmin" && (
+                      <button
+                        onClick={() => toggleStatus(g)}
+                        className="bg-gray-700 text-white px-3 py-1 rounded"
+                      >
+                        {g.aktif ? "Nonaktifkan" : "Aktifkan"}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* MOBILE CARD LIST */}
+        <div className="md:hidden p-4 space-y-4">
+          {guru.map((g) => (
+            <div
+              key={g.id}
+              className="border rounded-xl p-4 space-y-2 shadow-sm"
+            >
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-gray-800">{g.nama}</h3>
+
+                {g.aktif ? (
+                  <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                    Aktif
+                  </span>
+                ) : (
+                  <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
+                    Nonaktif
+                  </span>
+                )}
+              </div>
+
+              <p className="text-sm text-gray-500">{g.email}</p>
+
+              <p className="text-sm">
+                <span className="text-gray-400">Cabang:</span> {g.cabang}
               </p>
 
-              <div className="space-y-5">
-                {/* NAMA GURU */}
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Nama Guru
-                  </label>
-
-                  <input
-                    className="border rounded-lg px-4 py-2 w-full mt-1"
-                    value={editData.nama}
-                    onChange={(e) =>
-                      setEditData({
-                        ...editData,
-                        nama: e.target.value,
-                      })
-                    }
-                  />
-
-                  <p className="text-xs text-gray-500 mt-1">
-                    Nama yang digunakan guru saat login ke sistem.
-                  </p>
-                </div>
-
-                {/* CABANG */}
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Cabang Guru
-                  </label>
-
-                  <select
-                    className="border rounded-lg px-4 py-2 w-full mt-1"
-                    value={editData.cabang}
-                    onChange={(e) =>
-                      setEditData({
-                        ...editData,
-                        cabang: e.target.value,
-                      })
-                    }
+              <div className="flex gap-2 pt-2">
+                {g.role !== "superadmin" && (
+                  <button
+                    onClick={() => setEditData(g)}
+                    className="flex-1 bg-yellow-500 text-white py-2 rounded-lg text-sm"
                   >
-                    {branches.map((b) => (
-                      <option key={b.id} value={b.nama}>
-                        {b.nama}
-                      </option>
-                    ))}
-                  </select>
+                    Edit
+                  </button>
+                )}
 
-                  <p className="text-xs text-gray-500 mt-1">
-                    Cabang menentukan lokasi absensi guru.
-                  </p>
-                </div>
-              </div>
-
-              {/* BUTTON */}
-
-              <div className="flex justify-end gap-3 mt-8">
-                <button
-                  onClick={() => setEditData(null)}
-                  className="px-5 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Batal
-                </button>
-
-                <button
-                  onClick={updateGuru}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg"
-                >
-                  Simpan Perubahan
-                </button>
+                {g.role !== "superadmin" && (
+                  <button
+                    onClick={() => toggleStatus(g)}
+                    className="flex-1 bg-gray-700 text-white py-2 rounded-lg text-sm"
+                  >
+                    {g.aktif ? "Nonaktifkan" : "Aktifkan"}
+                  </button>
+                )}
               </div>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
+      {/* ================= MODAL EDIT ================= */}
+
+      {editData && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md rounded-xl shadow-xl border p-6">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Edit Data Guru
+            </h2>
+
+            <p className="text-sm text-gray-500 mt-1 mb-4">
+              Ubah nama atau cabang guru.
+            </p>
+
+            <div className="space-y-4">
+              {/* NAMA */}
+              <div>
+                <label className="text-sm text-gray-600">Nama Guru</label>
+
+                <input
+                  className="border rounded-lg px-4 py-2 w-full mt-1 text-sm"
+                  value={editData.nama}
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      nama: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              {/* CABANG */}
+              <div>
+                <label className="text-sm text-gray-600">Cabang</label>
+
+                <select
+                  className="border rounded-lg px-4 py-2 w-full mt-1 text-sm"
+                  value={editData.cabang}
+                  onChange={(e) =>
+                    setEditData({
+                      ...editData,
+                      cabang: e.target.value,
+                    })
+                  }
+                >
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.nama}>
+                      {b.nama}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* BUTTON */}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setEditData(null)}
+                className="px-4 py-2 border rounded-lg text-sm"
+              >
+                Batal
+              </button>
+
+              <button
+                onClick={updateGuru}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

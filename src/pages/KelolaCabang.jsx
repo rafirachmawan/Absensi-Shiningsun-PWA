@@ -108,7 +108,7 @@ export default function KelolaCabang() {
       <div className="bg-white p-6 rounded-xl shadow-sm border">
         <h2 className="font-semibold mb-4">Tambah Cabang</h2>
 
-        <div className="grid md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <input
             className="border rounded-lg px-4 py-2"
             placeholder="Nama Cabang"
@@ -149,41 +149,72 @@ export default function KelolaCabang() {
       </div>
 
       {/* TABLE */}
+      {/* ================= DATA CABANG ================= */}
+
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr className="text-sm text-gray-600">
-              <th className="p-4 text-left">Nama Cabang</th>
-              <th className="p-4 text-left">Latitude</th>
-              <th className="p-4 text-left">Longitude</th>
-              <th className="p-4 text-left">Radius</th>
-              <th className="p-4 text-left">Aksi</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {branches.map((b) => (
-              <tr key={b.id} className="border-t">
-                <td className="p-4">{b.nama}</td>
-
-                <td className="p-4">{b.latitude}</td>
-
-                <td className="p-4">{b.longitude}</td>
-
-                <td className="p-4">{b.radius} m</td>
-
-                <td className="p-4">
-                  <button
-                    onClick={() => setEditData(b)}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded"
-                  >
-                    Edit
-                  </button>
-                </td>
+        {/* DESKTOP TABLE */}
+        <div className="hidden md:block">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr className="text-sm text-gray-600">
+                <th className="p-4 text-left">Nama Cabang</th>
+                <th className="p-4 text-left">Latitude</th>
+                <th className="p-4 text-left">Longitude</th>
+                <th className="p-4 text-left">Radius</th>
+                <th className="p-4 text-left">Aksi</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {branches.map((b) => (
+                <tr key={b.id} className="border-t">
+                  <td className="p-4">{b.nama}</td>
+                  <td className="p-4">{b.latitude}</td>
+                  <td className="p-4">{b.longitude}</td>
+                  <td className="p-4">{b.radius} m</td>
+
+                  <td className="p-4">
+                    <button
+                      onClick={() => setEditData(b)}
+                      className="bg-yellow-500 text-white px-3 py-1 rounded"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* MOBILE CARD */}
+        <div className="md:hidden p-4 space-y-4">
+          {branches.map((b) => (
+            <div
+              key={b.id}
+              className="border rounded-xl p-4 shadow-sm space-y-2"
+            >
+              <h3 className="font-semibold text-gray-800">{b.nama}</h3>
+
+              <p className="text-sm text-gray-500 break-all">
+                Latitude: {b.latitude}
+              </p>
+
+              <p className="text-sm text-gray-500 break-all">
+                Longitude: {b.longitude}
+              </p>
+
+              <p className="text-sm">Radius: {b.radius} meter</p>
+
+              <button
+                onClick={() => setEditData(b)}
+                className="w-full bg-yellow-500 text-white py-2 rounded-lg text-sm mt-2"
+              >
+                Edit Cabang
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* MODAL EDIT */}
