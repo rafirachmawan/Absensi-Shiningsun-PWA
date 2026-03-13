@@ -98,9 +98,14 @@ export default function Absen() {
 
           let distance = null;
 
-          // Jika cabang memiliki lokasi
-          if (branch.latitude && branch.longitude && branch.radius) {
+          if (
+            typeof branch.latitude === "number" &&
+            typeof branch.longitude === "number" &&
+            typeof branch.radius === "number"
+          ) {
             distance = getDistance(lat, lon, branch.latitude, branch.longitude);
+
+            console.log("Distance:", distance);
 
             if (distance > branch.radius) {
               setMessage("Anda berada di luar radius cabang");
