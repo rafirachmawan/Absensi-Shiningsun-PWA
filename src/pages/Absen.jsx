@@ -20,6 +20,9 @@ export default function Absen() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showResult, setShowResult] = useState(false);
+  const [statusType, setStatusType] = useState("success");
+
+  const [progress, setProgress] = useState("");
 
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
@@ -79,6 +82,7 @@ export default function Absen() {
 
     setLoading(true);
     setMessage("");
+    setProgress("Mengambil lokasi GPS...");
 
     try {
       const permission = await navigator.permissions.query({
@@ -96,6 +100,8 @@ export default function Absen() {
       /* ================= AMBIL LOKASI ================= */
 
       const position = await getLocation();
+
+      setProgress("Memeriksa lokasi cabang...");
 
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
@@ -156,16 +162,21 @@ export default function Absen() {
         typeof branch.radius === "number"
       ) {
         distance = getDistance(lat, lon, branch.latitude, branch.longitude);
+        setProgress("Memverifikasi radius lokasi...");
 
         console.log("Distance:", distance);
 
         if (distance > branch.radius) {
-          setMessage("Anda berada di luar radius cabang");
+          setStatusType("error");
+          setMessage("❌ Anda berada di luar radius cabang sekolah.");
+          setShowResult(true);
           setLoading(false);
           return;
         }
       }
       /* ================= CEK JAM ABSENSI ================= */
+
+      setProgress("Memeriksa waktu absensi...");
 
       /* ===== KONVERSI JAM ===== */
 
@@ -185,14 +196,16 @@ export default function Absen() {
       /* ===== CEK JAM ===== */
 
       if (nowMinutes < startAbsensi) {
-        setMessage("Absensi belum dibuka.");
+        setStatusType("warning");
+        setMessage("⏰ Absensi belum dibuka. Silakan kembali nanti.");
         setShowResult(true);
         setLoading(false);
         return;
       }
 
       if (nowMinutes > endAbsensi) {
-        setMessage("Waktu absensi sudah ditutup.");
+        setStatusType("error");
+        setMessage("❌ Waktu absensi sudah ditutup.");
         setShowResult(true);
         setLoading(false);
         return;
@@ -235,11 +248,14 @@ export default function Absen() {
       const existing = await getDoc(attendanceRef);
 
       if (existing.exists()) {
-        setMessage("Anda sudah melakukan absensi hari ini.");
+        setStatusType("warning");
+        setMessage("⚠ Anda sudah melakukan absensi hari ini.");
         setShowResult(true);
         setLoading(false);
         return;
       }
+
+      setProgress("Menyimpan data absensi...");
 
       await setDoc(attendanceRef, {
         uid: user.uid,
@@ -262,23 +278,25 @@ export default function Absen() {
         createdAt: serverTimestamp(),
       });
 
+      setStatusType("success");
       setMessage(attention);
-
       setShowResult(true);
     } catch (err) {
       console.log(err);
 
+      setShowResult(true);
+      setStatusType("error");
+
       if (err.code === 1) {
-        alert("Izin lokasi ditolak");
+        setMessage("❌ Izin lokasi ditolak. Aktifkan GPS di browser.");
       } else if (err.code === 2) {
-        alert("Lokasi tidak tersedia");
+        setMessage("❌ Lokasi tidak tersedia.");
       } else if (err.code === 3) {
-        alert("GPS terlalu lama mendapatkan lokasi");
+        setMessage("❌ GPS terlalu lama mendapatkan lokasi.");
       } else {
-        alert("Gagal mendapatkan lokasi");
+        setMessage("❌ Gagal mendapatkan lokasi.");
       }
     }
-
     setLoading(false);
   };
 
@@ -287,7 +305,7 @@ export default function Absen() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-3xl shadow-2xl p-6 space-y-6">
           <div className="text-center">
-            <div className="text-4xl mb-2">📍</div>
+            <div className="text-4xl mb-2 animate-bounce">📍</div>
             <h1 className="text-xl font-bold text-gray-800">Absensi Guru</h1>
             <p className="text-sm text-gray-500 mt-1">
               Tekan tombol untuk melakukan absensi hari ini
@@ -297,14 +315,38 @@ export default function Absen() {
           <button
             onClick={handleAbsen}
             disabled={loading}
-            className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
+            className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
           >
+            {loading && (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
+
             {loading ? "Memproses..." : "Absen Sekarang"}
           </button>
 
+          {loading && (
+            <div className="text-center text-sm text-gray-500">{progress}</div>
+          )}
+
           {showResult && (
-            <div className="text-center">
-              <p className="text-green-600 font-semibold">{message}</p>
+            <div className="text-center p-4 rounded-xl bg-gray-50 border">
+              <div className="text-3xl mb-2">
+                {statusType === "success" && "✅"}
+                {statusType === "warning" && "⚠️"}
+                {statusType === "error" && "❌"}
+              </div>
+
+              <p
+                className={`font-semibold text-center ${
+                  statusType === "success"
+                    ? "text-green-600"
+                    : statusType === "warning"
+                      ? "text-yellow-600"
+                      : "text-red-600"
+                }`}
+              >
+                {message}
+              </p>
 
               <button
                 onClick={() => navigate("/dashboard")}
