@@ -39,13 +39,13 @@ export default function Login() {
       if (!identifier.includes("@")) {
         const q = query(
           collection(db, "users"),
-          where("nama", "==", identifier),
+          where("username", "==", identifier),
         );
 
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-          alert("Nama tidak ditemukan");
+          alert("Username tidak ditemukan");
           return;
         }
 
@@ -152,10 +152,10 @@ export default function Login() {
             {/* USERNAME */}
 
             <div className="mb-4">
-              <label className="text-sm text-gray-600">Email / Nama</label>
+              <label className="text-sm text-gray-600">Email / Username</label>
 
               <input
-                placeholder="Masukkan email atau nama"
+                placeholder="Masukkan email atau username"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 className="mt-1 w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"

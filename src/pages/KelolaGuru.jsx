@@ -28,6 +28,9 @@ export default function KelolaGuru() {
   const [tglMasuk, setTglMasuk] = useState("");
   const [jamMasuk, setJamMasuk] = useState("");
   const [jamPulang, setJamPulang] = useState("");
+  const [jamMulaiAbsen, setJamMulaiAbsen] = useState("");
+
+  const [batasTelat, setBatasTelat] = useState("");
 
   const [gajiPokok, setGajiPokok] = useState("");
   const [insentif, setInsentif] = useState("");
@@ -118,6 +121,8 @@ export default function KelolaGuru() {
         tglMasuk,
         jamMasuk,
         jamPulang,
+        jamMulaiAbsen,
+        batasTelat,
         gajiPokok: getNumber(gajiPokok),
         insentif: getNumber(insentif),
         bonusKehadiran: getNumber(bonusKehadiran),
@@ -139,7 +144,9 @@ export default function KelolaGuru() {
       setTglMasuk("");
       setJamMasuk("");
       setJamPulang("");
+      setJamMulaiAbsen("");
       setGajiPokok("");
+      setBatasTelat("");
       setInsentif("");
       setBonusKehadiran("");
       setUsername("");
@@ -170,10 +177,14 @@ export default function KelolaGuru() {
     setTglMasuk(g.tglMasuk || "");
     setJamMasuk(g.jamMasuk || "");
     setJamPulang(g.jamPulang || "");
+    setBatasTelat(g.batasTelat || "");
+    setJamMulaiAbsen(g.jamMulaiAbsen || "");
 
-    setGajiPokok(g.gajiPokok || "");
-    setInsentif(g.insentif || "");
-    setBonusKehadiran(g.bonusKehadiran || "");
+    setGajiPokok(g.gajiPokok ? formatRupiah(g.gajiPokok.toString()) : "");
+    setInsentif(g.insentif ? formatRupiah(g.insentif.toString()) : "");
+    setBonusKehadiran(
+      g.bonusKehadiran ? formatRupiah(g.bonusKehadiran.toString()) : "",
+    );
 
     setUsername(g.username || "");
   };
@@ -209,6 +220,8 @@ export default function KelolaGuru() {
         tglMasuk,
         jamMasuk,
         jamPulang,
+        jamMulaiAbsen,
+        batasTelat,
         gajiPokok: getNumber(gajiPokok),
         insentif: getNumber(insentif),
         bonusKehadiran: getNumber(bonusKehadiran),
@@ -250,7 +263,28 @@ export default function KelolaGuru() {
         </div>
 
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setShowForm(true);
+            setEditMode(false);
+            setEditId(null);
+
+            setNamaLengkap("");
+            setTempatLahir("");
+            setTanggalLahir("");
+            setAlamat("");
+            setNoHp("");
+            setCabang("");
+            setTglMasuk("");
+            setJamMasuk("");
+            setJamPulang("");
+            setJamMulaiAbsen("");
+            setBatasTelat("");
+            setGajiPokok("");
+            setInsentif("");
+            setBonusKehadiran("");
+            setUsername("");
+            setPassword("");
+          }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
         >
           + Tambah Guru
@@ -356,6 +390,15 @@ export default function KelolaGuru() {
                 value={jamMasuk}
                 onChange={(e) => setJamMasuk(e.target.value)}
               />
+              <div>
+                <label className="text-sm text-gray-600">Jam Mulai Absen</label>
+                <input
+                  type="time"
+                  className="border rounded-lg px-3 py-2 w-full"
+                  value={jamMulaiAbsen}
+                  onChange={(e) => setJamMulaiAbsen(e.target.value)}
+                />
+              </div>
             </div>
 
             <div>
@@ -366,6 +409,18 @@ export default function KelolaGuru() {
                 value={jamPulang}
                 onChange={(e) => setJamPulang(e.target.value)}
               />
+              <div>
+                <label className="text-sm text-gray-600">
+                  Batas Keterlambatan (menit)
+                </label>
+                <input
+                  type="number"
+                  placeholder="Contoh: 15"
+                  className="border rounded-lg px-3 py-2 w-full"
+                  value={batasTelat}
+                  onChange={(e) => setBatasTelat(e.target.value)}
+                />
+              </div>
             </div>
 
             <div>
@@ -443,18 +498,7 @@ export default function KelolaGuru() {
             <thead className="bg-gray-50 text-gray-600">
               <tr>
                 <th className="p-4 text-left">Nama Lengkap</th>
-                <th className="p-4 text-left">Tempat Lahir</th>
-                <th className="p-4 text-left">Tanggal Lahir</th>
-                <th className="p-4 text-left">Alamat</th>
-                <th className="p-4 text-left">No HP</th>
                 <th className="p-4 text-left">Cabang</th>
-                <th className="p-4 text-left">Tgl Masuk</th>
-                <th className="p-4 text-left">Jam Masuk</th>
-                <th className="p-4 text-left">Jam Pulang</th>
-                <th className="p-4 text-left">Gaji Pokok</th>
-                <th className="p-4 text-left">Insentif</th>
-                <th className="p-4 text-left">Bonus</th>
-                <th className="p-4 text-left">Username</th>
                 <th className="p-4 text-left">Status</th>
                 <th className="p-4 text-left">Aksi</th>
               </tr>
@@ -463,19 +507,8 @@ export default function KelolaGuru() {
             <tbody>
               {filteredGuru.map((g) => (
                 <tr key={g.id} className="border-t">
-                  <td className="p-4">{g.namaLengkap}</td>
-                  <td className="p-4">{g.tempatLahir}</td>
-                  <td className="p-4">{g.tanggalLahir}</td>
-                  <td className="p-4">{g.alamat}</td>
-                  <td className="p-4">{g.noHp}</td>
+                  <td className="p-4 font-medium">{g.namaLengkap}</td>
                   <td className="p-4">{g.cabang}</td>
-                  <td className="p-4">{g.tglMasuk}</td>
-                  <td className="p-4">{g.jamMasuk}</td>
-                  <td className="p-4">{g.jamPulang}</td>
-                  <td className="p-4">{g.gajiPokok}</td>
-                  <td className="p-4">{g.insentif}</td>
-                  <td className="p-4">{g.bonusKehadiran}</td>
-                  <td className="p-4">{g.username}</td>
 
                   <td className="p-4">
                     {g.aktif ? (

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { auth, db } from "../firebase";
 
 import {
@@ -20,111 +20,6 @@ export default function Absen() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showResult, setShowResult] = useState(false);
-
-  const [cameraOpen, setCameraOpen] = useState(false);
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-
-  const [stream, setStream] = useState(null);
-
-  useEffect(() => {
-    if (cameraOpen && videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-    }
-  }, [cameraOpen, stream]);
-
-  const startCamera = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-        audio: false,
-      });
-
-      setStream(mediaStream);
-      setCameraOpen(true);
-    } catch (err) {
-      alert("Kamera tidak bisa diakses");
-    }
-  };
-
-  const takePhoto = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
-
-    canvas.toBlob(
-      async (blob) => {
-        setLoading(true);
-
-        await handleAbsen(blob);
-
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
-        }
-
-        setCameraOpen(false);
-      },
-      "image/jpeg",
-      0.8,
-    );
-  };
-
-  const uploadToCloudinary = async (file) => {
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("upload_preset", "absensi_upload");
-
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dbefoaekm/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-
-    const data = await res.json();
-
-    if (!data.secure_url) {
-      throw new Error("Upload foto gagal");
-    }
-
-    return data.secure_url;
-  };
-
-  const compressImage = (file) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      img.onload = () => {
-        const MAX_WIDTH = 480;
-
-        const scale = Math.min(MAX_WIDTH / img.width, 1);
-
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob(
-          (blob) => {
-            resolve(blob);
-          },
-          "image/jpeg",
-          0.5,
-        );
-      };
-
-      img.src = URL.createObjectURL(file);
-    });
-  };
 
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3;
@@ -176,12 +71,7 @@ export default function Absen() {
 
   /* ================= ABSEN ================= */
 
-  const handleAbsen = async (photoFile) => {
-    if (!photoFile) {
-      alert("Foto wajib diambil untuk absensi.");
-      return;
-    }
-
+  const handleAbsen = async () => {
     if (!navigator.geolocation) {
       alert("GPS tidak tersedia");
       return;
@@ -233,6 +123,13 @@ export default function Absen() {
 
       const userData = userSnap.data();
 
+      /* ================= JAM DARI DATA GURU ================= */
+
+      const jamMasuk = userData.jamMasuk || "07:00";
+      const batasTelat = parseInt(userData.batasTelat || 15);
+      const jamMulaiAbsen = userData.jamMulaiAbsen || "06:00";
+      const jamPulang = userData.jamPulang || "16:00";
+
       const now = new Date();
       const today = now.toLocaleDateString("en-CA");
 
@@ -270,23 +167,6 @@ export default function Absen() {
       }
       /* ================= CEK JAM ABSENSI ================= */
 
-      const settingsRef = doc(db, "settings", "attendance");
-      const settingsSnap = await getDoc(settingsRef);
-
-      let jamMasuk = "07:00";
-      let batasTelat = 15;
-      let jamBuka = "06:00";
-      let jamTutup = "12:00";
-
-      if (settingsSnap.exists()) {
-        const settings = settingsSnap.data();
-
-        jamMasuk = settings.jamMasuk || "07:00";
-        batasTelat = settings.batasTelat || 15;
-        jamBuka = settings.jamBuka || "06:00";
-        jamTutup = settings.jamTutup || "12:00";
-      }
-
       /* ===== KONVERSI JAM ===== */
 
       const [jam, menit] = jamMasuk.split(":");
@@ -296,11 +176,11 @@ export default function Absen() {
 
       const selisihMenit = nowMinutes - jamMasukMinutes;
 
-      const [bukaJam, bukaMenit] = jamBuka.split(":");
+      const [bukaJam, bukaMenit] = jamMulaiAbsen.split(":");
       const startAbsensi = parseInt(bukaJam) * 60 + parseInt(bukaMenit);
 
-      const [tutupJam, tutupMenit] = jamTutup.split(":");
-      const endAbsensi = parseInt(tutupJam) * 60 + parseInt(tutupMenit);
+      const [pulangJam, pulangMenit] = jamPulang.split(":");
+      const endAbsensi = parseInt(pulangJam) * 60 + parseInt(pulangMenit);
 
       /* ===== CEK JAM ===== */
 
@@ -361,14 +241,9 @@ export default function Absen() {
         return;
       }
 
-      let photoURL = null;
-
-      const compressedPhoto = await compressImage(photoFile);
-      photoURL = await uploadToCloudinary(compressedPhoto);
-
       await setDoc(attendanceRef, {
         uid: user.uid,
-        nama: userData.nama,
+        nama: userData.namaLengkap,
         cabang: userData.cabang,
 
         tanggal: today,
@@ -383,8 +258,6 @@ export default function Absen() {
 
         latitude: lat,
         longitude: lon,
-
-        photoURL,
 
         createdAt: serverTimestamp(),
       });
@@ -422,33 +295,12 @@ export default function Absen() {
           </div>
 
           <button
-            onClick={startCamera}
+            onClick={handleAbsen}
             disabled={loading}
             className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold"
           >
             {loading ? "Memproses..." : "Absen Sekarang"}
           </button>
-
-          {cameraOpen && (
-            <div className="space-y-4">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="rounded-xl w-full"
-              />
-
-              <button
-                onClick={takePhoto}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl"
-              >
-                Ambil Foto
-              </button>
-
-              <canvas ref={canvasRef} className="hidden"></canvas>
-            </div>
-          )}
 
           {showResult && (
             <div className="text-center">
