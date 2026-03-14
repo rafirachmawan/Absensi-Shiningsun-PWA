@@ -268,6 +268,86 @@ export default function Absen() {
           return;
         }
       }
+      /* ================= CEK JAM ABSENSI ================= */
+
+      const settingsRef = doc(db, "settings", "attendance");
+      const settingsSnap = await getDoc(settingsRef);
+
+      let jamMasuk = "07:00";
+      let batasTelat = 15;
+      let jamBuka = "06:00";
+      let jamTutup = "12:00";
+
+      if (settingsSnap.exists()) {
+        const settings = settingsSnap.data();
+
+        jamMasuk = settings.jamMasuk || "07:00";
+        batasTelat = settings.batasTelat || 15;
+        jamBuka = settings.jamBuka || "06:00";
+        jamTutup = settings.jamTutup || "12:00";
+      }
+
+      /* ===== KONVERSI JAM ===== */
+
+      const [jam, menit] = jamMasuk.split(":");
+      const jamMasukMinutes = parseInt(jam) * 60 + parseInt(menit);
+
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+      const selisihMenit = nowMinutes - jamMasukMinutes;
+
+      const [bukaJam, bukaMenit] = jamBuka.split(":");
+      const startAbsensi = parseInt(bukaJam) * 60 + parseInt(bukaMenit);
+
+      const [tutupJam, tutupMenit] = jamTutup.split(":");
+      const endAbsensi = parseInt(tutupJam) * 60 + parseInt(tutupMenit);
+
+      /* ===== CEK JAM ===== */
+
+      if (nowMinutes < startAbsensi) {
+        setMessage("Absensi belum dibuka.");
+        setShowResult(true);
+        setLoading(false);
+        return;
+      }
+
+      if (nowMinutes > endAbsensi) {
+        setMessage("Waktu absensi sudah ditutup.");
+        setShowResult(true);
+        setLoading(false);
+        return;
+      }
+
+      /* ===== HITUNG STATUS ===== */
+
+      let status = "Hadir";
+      let attention = "";
+      let terlambatMenit = 0;
+
+      if (selisihMenit < 0) {
+        const lebihAwal = Math.abs(selisihMenit);
+
+        status = "Lebih Awal";
+
+        attention = `🌅 Anda datang ${lebihAwal} menit lebih awal.`;
+      } else if (selisihMenit === 0) {
+        status = "Tepat Waktu";
+
+        attention =
+          "🎉 Hadir tepat waktu. Terima kasih atas kedisiplinan Anda.";
+      } else if (selisihMenit <= batasTelat) {
+        status = "Terlambat";
+
+        terlambatMenit = selisihMenit;
+
+        attention = `⏱ Anda terlambat ${selisihMenit} menit.`;
+      } else {
+        status = "Terlambat Berat";
+
+        terlambatMenit = selisihMenit;
+
+        attention = `⚠ Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
+      }
 
       const attendanceId = `${user.uid}_${today}`;
       const attendanceRef = doc(db, "attendance", attendanceId);
@@ -290,6 +370,7 @@ export default function Absen() {
         uid: user.uid,
         nama: userData.nama,
         cabang: userData.cabang,
+
         tanggal: today,
 
         waktu: now.toLocaleTimeString("id-ID", {
@@ -297,13 +378,19 @@ export default function Absen() {
           minute: "2-digit",
         }),
 
+        status,
+        terlambatMenit,
+
         latitude: lat,
         longitude: lon,
+
         photoURL,
+
         createdAt: serverTimestamp(),
       });
 
-      setMessage("Absensi berhasil");
+      setMessage(attention);
+
       setShowResult(true);
     } catch (err) {
       console.log(err);
