@@ -184,7 +184,7 @@ export default function Dashboard() {
 
       {/* CONTENT */}
 
-      <div className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 pb-24 pt-6">
+      <div className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 pt-6 pb-32">
         {/* DASHBOARD */}
 
         {tab === "dashboard" && (
@@ -362,15 +362,15 @@ export default function Dashboard() {
 
       {/* BOTTOM NAV */}
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow">
-        <div className="flex justify-around py-2 text-xs">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow pb-[env(safe-area-inset-bottom)]">
+        <div className="flex justify-around items-center py-3 text-xs">
           <button
             onClick={() => setTab("dashboard")}
             className={`flex flex-col items-center ${
               tab === "dashboard" ? "text-blue-600" : "text-gray-500"
             }`}
           >
-            <span className="text-lg">🏠</span>
+            <span className="text-xl leading-none">🏠</span>
             Dashboard{" "}
           </button>
 
