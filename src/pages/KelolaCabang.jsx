@@ -32,7 +32,14 @@ export default function KelolaCabang() {
       ...doc.data(),
     }));
 
-    setBranches(data);
+    // URUTKAN BERDASARKAN NAMA CABANG A-Z
+    const sortedBranches = data.sort((a, b) =>
+      (a.nama || "").localeCompare(b.nama || "", "id", {
+        sensitivity: "base",
+      }),
+    );
+
+    setBranches(sortedBranches);
   };
 
   useEffect(() => {
@@ -113,7 +120,7 @@ export default function KelolaCabang() {
       <div className="bg-white border rounded-2xl shadow-sm p-6">
         <h2 className="font-semibold text-gray-700 mb-4">Tambah Cabang</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
           <input
             className="border rounded-lg px-4 py-2 text-sm"
             placeholder="Nama Cabang"
@@ -142,11 +149,10 @@ export default function KelolaCabang() {
             value={radius}
             onChange={(e) => setRadius(e.target.value)}
           />
-
           <button
             onClick={tambahCabang}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium px-4 py-2 w-full md:w-auto"
           >
             {loading ? "Menyimpan..." : "Tambah Cabang"}
           </button>

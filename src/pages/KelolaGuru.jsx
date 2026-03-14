@@ -72,7 +72,14 @@ export default function KelolaGuru() {
     // HANYA AMBIL USER ROLE GURU
     const onlyGuru = data.filter((u) => u.role === "guru");
 
-    setGuru(onlyGuru);
+    // SORT BERDASARKAN NAMA A-Z
+    const sortedGuru = onlyGuru.sort((a, b) =>
+      (a.namaLengkap || "").localeCompare(b.namaLengkap || "", "id", {
+        sensitivity: "base",
+      }),
+    );
+
+    setGuru(sortedGuru);
   };
 
   const loadBranches = async () => {
@@ -293,7 +300,9 @@ export default function KelolaGuru() {
 
       {/* SEARCH */}
 
-      <div className="bg-white border rounded-xl p-4">
+      <div className="bg-white border rounded-xl p-4 space-y-2">
+        <h3 className="text-sm font-semibold text-gray-700">Pencarian Guru</h3>
+
         <input
           type="text"
           placeholder="Cari nama, username, cabang atau no hp..."

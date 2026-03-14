@@ -102,16 +102,6 @@ export default function AdminLayout() {
 
           <button
             onClick={() => {
-              navigate("/admin/settings");
-              setSidebarOpen(false);
-            }}
-            className="flex items-center gap-3 w-full px-3 py-3 rounded hover:bg-blue-50"
-          >
-            ⏰ Pengaturan Jam
-          </button>
-
-          <button
-            onClick={() => {
               navigate("/admin/attendance");
               setSidebarOpen(false);
             }}
