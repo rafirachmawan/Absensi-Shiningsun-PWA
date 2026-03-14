@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 
-import { auth, db } from "../firebase";
+import { auth, db, secondaryAuth } from "../firebase";
 
 import {
   collection,
@@ -15,18 +15,48 @@ export default function KelolaGuru() {
   const [guru, setGuru] = useState([]);
   const [branches, setBranches] = useState([]);
 
-  const [nama, setNama] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const [namaLengkap, setNamaLengkap] = useState("");
+  const [tempatLahir, setTempatLahir] = useState("");
+  const [tanggalLahir, setTanggalLahir] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [noHp, setNoHp] = useState("");
   const [cabang, setCabang] = useState("");
 
+  const [tglMasuk, setTglMasuk] = useState("");
+  const [jamMasuk, setJamMasuk] = useState("");
+  const [jamPulang, setJamPulang] = useState("");
+
+  const [gajiPokok, setGajiPokok] = useState("");
+  const [insentif, setInsentif] = useState("");
+  const [bonusKehadiran, setBonusKehadiran] = useState("");
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
-  const [editData, setEditData] = useState(null);
+
+  const [editMode, setEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   const usersRef = collection(db, "users");
   const branchesRef = collection(db, "branches");
 
-  /* LOAD GURU */
+  /* FORMAT RUPIAH */
+
+  const formatRupiah = (value) => {
+    const number = value.replace(/[^\d]/g, "");
+
+    if (!number) return "";
+
+    return "Rp" + new Intl.NumberFormat("id-ID").format(number);
+  };
+
+  const getNumber = (value) => {
+    return value.replace(/[^\d]/g, "");
+  };
 
   const loadGuru = async () => {
     const snapshot = await getDocs(usersRef);
@@ -36,10 +66,11 @@ export default function KelolaGuru() {
       ...doc.data(),
     }));
 
-    setGuru(data);
-  };
+    // HANYA AMBIL USER ROLE GURU
+    const onlyGuru = data.filter((u) => u.role === "guru");
 
-  /* LOAD CABANG */
+    setGuru(onlyGuru);
+  };
 
   const loadBranches = async () => {
     const snapshot = await getDocs(branchesRef);
@@ -57,10 +88,8 @@ export default function KelolaGuru() {
     loadBranches();
   }, []);
 
-  /* TAMBAH GURU */
-
   const tambahGuru = async () => {
-    if (!nama || !email || !password || !cabang) {
+    if (!namaLengkap || !username || !password || !cabang) {
       alert("Lengkapi data");
       return;
     }
@@ -68,8 +97,10 @@ export default function KelolaGuru() {
     try {
       setLoading(true);
 
+      const email = username + "@shiningsun.com";
+
       const userCredential = await createUserWithEmailAndPassword(
-        auth,
+        secondaryAuth,
         email,
         password,
       );
@@ -78,20 +109,41 @@ export default function KelolaGuru() {
 
       await setDoc(doc(db, "users", uid), {
         uid,
-        nama,
-        email,
+        namaLengkap,
+        tempatLahir,
+        tanggalLahir,
+        alamat,
+        noHp,
         cabang,
+        tglMasuk,
+        jamMasuk,
+        jamPulang,
+        gajiPokok: getNumber(gajiPokok),
+        insentif: getNumber(insentif),
+        bonusKehadiran: getNumber(bonusKehadiran),
+        username,
+        email,
         role: "guru",
         aktif: true,
         createdAt: new Date(),
       });
 
-      await signOut(auth);
+      setShowForm(false);
 
-      setNama("");
-      setEmail("");
-      setPassword("");
+      setNamaLengkap("");
+      setTempatLahir("");
+      setTanggalLahir("");
+      setAlamat("");
+      setNoHp("");
       setCabang("");
+      setTglMasuk("");
+      setJamMasuk("");
+      setJamPulang("");
+      setGajiPokok("");
+      setInsentif("");
+      setBonusKehadiran("");
+      setUsername("");
+      setPassword("");
 
       loadGuru();
 
@@ -103,129 +155,330 @@ export default function KelolaGuru() {
     setLoading(false);
   };
 
-  /* UPDATE GURU */
+  const handleEdit = (g) => {
+    setShowForm(true);
+    setEditMode(true);
+    setEditId(g.id);
+
+    setNamaLengkap(g.namaLengkap || "");
+    setTempatLahir(g.tempatLahir || "");
+    setTanggalLahir(g.tanggalLahir || "");
+    setAlamat(g.alamat || "");
+    setNoHp(g.noHp || "");
+    setCabang(g.cabang || "");
+
+    setTglMasuk(g.tglMasuk || "");
+    setJamMasuk(g.jamMasuk || "");
+    setJamPulang(g.jamPulang || "");
+
+    setGajiPokok(g.gajiPokok || "");
+    setInsentif(g.insentif || "");
+    setBonusKehadiran(g.bonusKehadiran || "");
+
+    setUsername(g.username || "");
+  };
+
+  const toggleStatus = async (user) => {
+    try {
+      const ref = doc(db, "users", user.id);
+
+      const newStatus = user.aktif === true ? false : true;
+
+      await updateDoc(ref, {
+        aktif: newStatus,
+      });
+
+      await loadGuru();
+    } catch (error) {
+      console.error(error);
+      alert("Gagal mengubah status");
+    }
+  };
 
   const updateGuru = async () => {
     try {
-      const ref = doc(db, "users", editData.id);
+      const ref = doc(db, "users", editId);
 
       await updateDoc(ref, {
-        nama: editData.nama,
-        cabang: editData.cabang,
+        namaLengkap,
+        tempatLahir,
+        tanggalLahir,
+        alamat,
+        noHp,
+        cabang,
+        tglMasuk,
+        jamMasuk,
+        jamPulang,
+        gajiPokok: getNumber(gajiPokok),
+        insentif: getNumber(insentif),
+        bonusKehadiran: getNumber(bonusKehadiran),
+        username,
       });
 
-      setEditData(null);
+      alert("Data guru berhasil diupdate");
+
+      setEditMode(false);
+      setShowForm(false);
 
       loadGuru();
-
-      alert("Data guru berhasil diupdate");
     } catch (err) {
       alert(err.message);
     }
   };
 
-  /* NONAKTIFKAN */
+  const filteredGuru = guru.filter((g) => {
+    const keyword = search.toLowerCase();
 
-  const toggleStatus = async (user) => {
-    const ref = doc(db, "users", user.id);
-
-    await updateDoc(ref, {
-      aktif: !user.aktif,
-    });
-
-    loadGuru();
-  };
+    return (
+      (g.namaLengkap || "").toLowerCase().includes(keyword) ||
+      (g.username || "").toLowerCase().includes(keyword) ||
+      (g.cabang || "").toLowerCase().includes(keyword) ||
+      (g.noHp || "").toLowerCase().includes(keyword)
+    );
+  });
 
   return (
     <div className="space-y-8">
       {/* HEADER */}
 
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">Kelola Guru</h1>
-
-        <p className="text-gray-500 text-sm">Tambahkan dan kelola akun guru</p>
-      </div>
-
-      {/* FORM TAMBAH */}
-
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
-        <h2 className="font-semibold text-gray-700 mb-4">Tambah Guru</h2>
-
-        <div className="grid md:grid-cols-5 gap-4">
-          <input
-            className="border rounded-lg px-4 py-2 text-sm"
-            placeholder="Nama Guru"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-          />
-
-          <input
-            className="border rounded-lg px-4 py-2 text-sm"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <input
-            type="password"
-            className="border rounded-lg px-4 py-2 text-sm"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <select
-            className="border rounded-lg px-4 py-2 text-sm"
-            value={cabang}
-            onChange={(e) => setCabang(e.target.value)}
-          >
-            <option value="">Pilih Cabang</option>
-
-            {branches.map((b) => (
-              <option key={b.id} value={b.nama}>
-                {b.nama}
-              </option>
-            ))}
-          </select>
-
-          <button
-            onClick={tambahGuru}
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
-          >
-            {loading ? "Menyimpan..." : "Tambah Guru"}
-          </button>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-800">Kelola Guru</h1>
+          <p className="text-gray-500 text-sm">
+            Tambahkan dan kelola akun guru
+          </p>
         </div>
+
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+        >
+          + Tambah Guru
+        </button>
       </div>
 
-      {/* TABLE DATA */}
+      {/* SEARCH */}
 
-      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-        {/* DESKTOP */}
+      <div className="bg-white border rounded-xl p-4">
+        <input
+          type="text"
+          placeholder="Cari nama, username, cabang atau no hp..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border rounded-lg px-4 py-2 w-full text-sm"
+        />
+      </div>
 
-        <div className="hidden md:block">
-          <table className="w-full text-sm">
+      {/* FORM */}
+
+      {showForm && (
+        <div className="bg-white border rounded-2xl shadow-sm p-6 space-y-6">
+          <h2 className="text-lg font-semibold">Tambah Guru</h2>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-gray-600">Nama Lengkap</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={namaLengkap}
+                onChange={(e) => setNamaLengkap(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Tempat Lahir</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={tempatLahir}
+                onChange={(e) => setTempatLahir(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Tanggal Lahir</label>
+              <input
+                type="date"
+                className="border rounded-lg px-3 py-2 w-full"
+                value={tanggalLahir}
+                onChange={(e) => setTanggalLahir(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Alamat</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={alamat}
+                onChange={(e) => setAlamat(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">No HP</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={noHp}
+                onChange={(e) => setNoHp(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Cabang</label>
+              <select
+                className="border rounded-lg px-3 py-2 w-full"
+                value={cabang}
+                onChange={(e) => setCabang(e.target.value)}
+              >
+                <option value="">Pilih Cabang</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.nama}>
+                    {b.nama}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Tanggal Masuk</label>
+              <input
+                type="date"
+                className="border rounded-lg px-3 py-2 w-full"
+                value={tglMasuk}
+                onChange={(e) => setTglMasuk(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Jam Masuk</label>
+              <input
+                type="time"
+                className="border rounded-lg px-3 py-2 w-full"
+                value={jamMasuk}
+                onChange={(e) => setJamMasuk(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Jam Pulang</label>
+              <input
+                type="time"
+                className="border rounded-lg px-3 py-2 w-full"
+                value={jamPulang}
+                onChange={(e) => setJamPulang(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Gaji Pokok</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={gajiPokok}
+                onChange={(e) => setGajiPokok(formatRupiah(e.target.value))}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Insentif</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={insentif}
+                onChange={(e) => setInsentif(formatRupiah(e.target.value))}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Bonus Kehadiran</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={bonusKehadiran}
+                onChange={(e) =>
+                  setBonusKehadiran(formatRupiah(e.target.value))
+                }
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Nama Login</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Password</label>
+              <input
+                type="password"
+                className="border rounded-lg px-3 py-2 w-full"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={editMode ? updateGuru : tambahGuru}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+            >
+              Simpan
+            </button>
+
+            <button
+              onClick={() => setShowForm(false)}
+              className="border px-4 py-2 rounded-lg"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* TABLE */}
+
+      <div className="bg-white border rounded-2xl shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="min-w-[1400px] w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
-                <th className="p-4 text-left">Nama</th>
-                <th className="p-4 text-left">Email</th>
+                <th className="p-4 text-left">Nama Lengkap</th>
+                <th className="p-4 text-left">Tempat Lahir</th>
+                <th className="p-4 text-left">Tanggal Lahir</th>
+                <th className="p-4 text-left">Alamat</th>
+                <th className="p-4 text-left">No HP</th>
                 <th className="p-4 text-left">Cabang</th>
+                <th className="p-4 text-left">Tgl Masuk</th>
+                <th className="p-4 text-left">Jam Masuk</th>
+                <th className="p-4 text-left">Jam Pulang</th>
+                <th className="p-4 text-left">Gaji Pokok</th>
+                <th className="p-4 text-left">Insentif</th>
+                <th className="p-4 text-left">Bonus</th>
+                <th className="p-4 text-left">Username</th>
                 <th className="p-4 text-left">Status</th>
                 <th className="p-4 text-left">Aksi</th>
               </tr>
             </thead>
 
             <tbody>
-              {guru.map((g) => (
+              {filteredGuru.map((g) => (
                 <tr key={g.id} className="border-t">
-                  <td className="p-4 font-medium">{g.nama}</td>
-
-                  <td className="p-4 text-gray-500">{g.email}</td>
-
+                  <td className="p-4">{g.namaLengkap}</td>
+                  <td className="p-4">{g.tempatLahir}</td>
+                  <td className="p-4">{g.tanggalLahir}</td>
+                  <td className="p-4">{g.alamat}</td>
+                  <td className="p-4">{g.noHp}</td>
                   <td className="p-4">{g.cabang}</td>
+                  <td className="p-4">{g.tglMasuk}</td>
+                  <td className="p-4">{g.jamMasuk}</td>
+                  <td className="p-4">{g.jamPulang}</td>
+                  <td className="p-4">{g.gajiPokok}</td>
+                  <td className="p-4">{g.insentif}</td>
+                  <td className="p-4">{g.bonusKehadiran}</td>
+                  <td className="p-4">{g.username}</td>
 
                   <td className="p-4">
-                    {g.email === "admin@shiningsun.com" || g.aktif ? (
+                    {g.aktif ? (
                       <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
                         Aktif
                       </span>
@@ -237,136 +490,26 @@ export default function KelolaGuru() {
                   </td>
 
                   <td className="p-4 flex gap-2">
-                    {g.role !== "superadmin" && (
-                      <button
-                        onClick={() => setEditData(g)}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
-                      >
-                        Edit
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleEdit(g)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Edit
+                    </button>
 
-                    {g.role !== "superadmin" && (
-                      <button
-                        onClick={() => toggleStatus(g)}
-                        className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded text-xs"
-                      >
-                        {g.aktif ? "Nonaktifkan" : "Aktifkan"}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => toggleStatus(g)}
+                      className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded text-xs"
+                    >
+                      {g.aktif ? "Nonaktifkan" : "Aktifkan"}
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        {/* MOBILE */}
-
-        <div className="md:hidden p-4 space-y-4">
-          {guru.map((g) => (
-            <div key={g.id} className="border rounded-xl p-4 shadow-sm">
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800">{g.nama}</h3>
-
-                {g.email === "admin@shiningsun.com" || g.aktif ? (
-                  <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-                    Aktif
-                  </span>
-                ) : (
-                  <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
-                    Nonaktif
-                  </span>
-                )}
-              </div>
-
-              <p className="text-sm text-gray-500 mt-1">{g.email}</p>
-
-              <p className="text-sm mt-1">
-                <span className="text-gray-400">Cabang:</span> {g.cabang}
-              </p>
-
-              <div className="flex gap-2 mt-3">
-                {g.role !== "superadmin" && (
-                  <button
-                    onClick={() => setEditData(g)}
-                    className="flex-1 bg-yellow-500 text-white py-2 rounded-lg text-sm"
-                  >
-                    Edit
-                  </button>
-                )}
-
-                {g.role !== "superadmin" && (
-                  <button
-                    onClick={() => toggleStatus(g)}
-                    className="flex-1 bg-gray-700 text-white py-2 rounded-lg text-sm"
-                  >
-                    {g.aktif ? "Nonaktifkan" : "Aktifkan"}
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
-
-      {/* MODAL EDIT */}
-
-      {editData && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md rounded-xl shadow-xl border p-6">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Edit Data Guru
-            </h2>
-
-            <div className="space-y-4 mt-4">
-              <input
-                className="border rounded-lg px-4 py-2 w-full text-sm"
-                value={editData.nama}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    nama: e.target.value,
-                  })
-                }
-              />
-
-              <select
-                className="border rounded-lg px-4 py-2 w-full text-sm"
-                value={editData.cabang}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    cabang: e.target.value,
-                  })
-                }
-              >
-                {branches.map((b) => (
-                  <option key={b.id} value={b.nama}>
-                    {b.nama}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setEditData(null)}
-                className="px-4 py-2 border rounded-lg text-sm"
-              >
-                Batal
-              </button>
-
-              <button
-                onClick={updateGuru}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
-              >
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
