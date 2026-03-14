@@ -184,7 +184,7 @@ export default function Dashboard() {
 
       {/* CONTENT */}
 
-      <div className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 pt-6 pb-32">
+      <div className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 pt-6 pb-[160px]">
         {/* DASHBOARD */}
 
         {tab === "dashboard" && (
@@ -362,36 +362,41 @@ export default function Dashboard() {
 
       {/* BOTTOM NAV */}
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow pb-[env(safe-area-inset-bottom)]">
-        <div className="flex justify-around items-center py-3 text-xs">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow z-50">
+        <div
+          className="grid grid-cols-3 text-xs text-center"
+          style={{
+            paddingBottom: "calc(env(safe-area-inset-bottom) + 10px)",
+          }}
+        >
           <button
             onClick={() => setTab("dashboard")}
-            className={`flex flex-col items-center ${
+            className={`flex flex-col items-center justify-center py-2 ${
               tab === "dashboard" ? "text-blue-600" : "text-gray-500"
             }`}
           >
             <span className="text-xl leading-none">🏠</span>
-            Dashboard{" "}
+            Dashboard
           </button>
 
           <button
             onClick={() => setTab("rekap")}
-            className={`flex flex-col items-center ${
+            className={`flex flex-col items-center justify-center py-2 ${
               tab === "rekap" ? "text-blue-600" : "text-gray-500"
             }`}
           >
             <span className="text-lg">📊</span>
-            Rekapan{" "}
+            Rekapan
           </button>
 
           <button
             onClick={() => setTab("profile")}
-            className={`flex flex-col items-center ${
+            className={`flex flex-col items-center justify-center py-2 ${
               tab === "profile" ? "text-blue-600" : "text-gray-500"
             }`}
           >
             <span className="text-lg">👤</span>
-            Profile{" "}
+            Profile
           </button>
         </div>
       </div>
