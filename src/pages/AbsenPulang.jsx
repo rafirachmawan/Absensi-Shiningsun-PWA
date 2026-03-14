@@ -1,17 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { auth, db } from "../firebase";
 
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 export default function AbsenPulang() {
   const navigate = useNavigate();
@@ -20,92 +12,17 @@ export default function AbsenPulang() {
   const [message, setMessage] = useState("");
   const [showResult, setShowResult] = useState(false);
 
-  const [cameraOpen, setCameraOpen] = useState(false);
-  const [stream, setStream] = useState(null);
-
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    if (cameraOpen && videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-    }
-  }, [cameraOpen, stream]);
-
-  /* START CAMERA */
-
-  const startCamera = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-        audio: false,
-      });
-
-      setStream(mediaStream);
-      setCameraOpen(true);
-    } catch {
-      alert("Kamera tidak bisa diakses");
-    }
-  };
-
-  /* TAKE PHOTO */
-
-  const takePhoto = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
-
-    canvas.toBlob(
-      async (blob) => {
-        setLoading(true);
-
-        await handleAbsenPulang(blob);
-
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
-        }
-
-        setCameraOpen(false);
-      },
-      "image/jpeg",
-      0.8,
-    );
-  };
-
-  /* UPLOAD CLOUDINARY */
-
-  const uploadToCloudinary = async (file) => {
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("upload_preset", "absensi_upload");
-
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dbefoaekm/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-
-    const data = await res.json();
-    return data.secure_url;
-  };
-
   /* ABSEN PULANG */
 
-  const handleAbsenPulang = async (photoFile) => {
+  const handleAbsenPulang = async () => {
     const user = auth.currentUser;
 
     if (!user) {
       alert("User tidak ditemukan");
       return;
     }
+
+    setLoading(true);
 
     const now = new Date();
     const today = now.toLocaleDateString("en-CA");
@@ -134,48 +51,45 @@ export default function AbsenPulang() {
 
     /* AMBIL GPS */
 
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      ((error) => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          const now = new Date();
+
+          const jamPulang = now.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          /* UPDATE FIRESTORE */
+
+          await updateDoc(attendanceRef, {
+            jamPulang,
+            latitudePulang: lat,
+            longitudePulang: lon,
+          });
+
+          setMessage("Absensi pulang berhasil");
+          setShowResult(true);
+          setLoading(false);
+        } catch (err) {
+          alert(err.message);
+          setLoading(false);
+        }
+      },
+      (error) => {
         alert("Gagal mendapatkan lokasi");
         setLoading(false);
       },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        });
-
-      try {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        /* UPLOAD FOTO */
-
-        const photoURL = await uploadToCloudinary(photoFile);
-
-        const now = new Date();
-
-        const jamPulang = now.toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-
-        /* UPDATE FIRESTORE */
-
-        await updateDoc(attendanceRef, {
-          jamPulang,
-          fotoPulang: photoURL,
-          latitudePulang: lat,
-          longitudePulang: lon,
-        });
-
-        setMessage("Absensi pulang berhasil");
-        setShowResult(true);
-        setLoading(false);
-      } catch (err) {
-        alert(err.message);
-      }
-    });
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      },
+    );
   };
 
   return (
@@ -193,33 +107,12 @@ export default function AbsenPulang() {
           </div>
 
           <button
-            onClick={startCamera}
+            onClick={handleAbsenPulang}
             disabled={loading}
             className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold"
           >
             {loading ? "Memproses..." : "Absen Pulang"}
           </button>
-
-          {cameraOpen && (
-            <div className="space-y-4">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="rounded-xl w-full"
-              />
-
-              <button
-                onClick={takePhoto}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold"
-              >
-                Ambil Foto
-              </button>
-
-              <canvas ref={canvasRef} className="hidden"></canvas>
-            </div>
-          )}
 
           {showResult && (
             <div className="bg-white rounded-2xl shadow-lg p-6 text-center space-y-4 animate-fade-in">
