@@ -270,6 +270,7 @@ export default function Absen() {
         }),
 
         status,
+        keterangan: attention, // TAMBAHKAN INI
         terlambatMenit,
 
         latitude: lat,

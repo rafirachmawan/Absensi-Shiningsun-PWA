@@ -26,6 +26,44 @@ export default function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(false);
 
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Lebih Awal":
+        return "text-green-600 font-semibold";
+
+      case "Tepat Waktu":
+        return "text-blue-600 font-semibold";
+
+      case "Terlambat":
+        return "text-yellow-600 font-semibold";
+
+      case "Terlambat Berat":
+        return "text-red-600 font-semibold";
+
+      default:
+        return "text-gray-600";
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case "Lebih Awal":
+        return "🟢";
+
+      case "Tepat Waktu":
+        return "🔵";
+
+      case "Terlambat":
+        return "🟡";
+
+      case "Terlambat Berat":
+        return "🔴";
+
+      default:
+        return "⚪";
+    }
+  };
+
   useEffect(() => {
     const updateClock = () => {
       const now = new Date();
@@ -230,6 +268,7 @@ export default function Dashboard() {
                       <th className="text-center">Datang</th>
                       <th className="text-center">Pulang</th>
                       <th className="text-right">Status</th>
+                      <th className="text-left">Keterangan</th>
                     </tr>
                   </thead>
 
@@ -244,7 +283,15 @@ export default function Dashboard() {
 
                         <td className="text-center">{item.jamPulang || "-"}</td>
 
-                        <td className="text-right">{item.status}</td>
+                        <td
+                          className={`text-right ${getStatusStyle(item.status)}`}
+                        >
+                          {getStatusIcon(item.status)} {item.status}
+                        </td>
+
+                        <td className="text-left text-xs text-gray-500">
+                          {item.keterangan || "-"}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
