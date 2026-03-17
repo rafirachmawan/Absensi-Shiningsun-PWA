@@ -29,19 +29,19 @@ export default function Dashboard() {
   const getStatusStyle = (status) => {
     switch (status) {
       case "Lebih Awal":
-        return "text-green-600 font-semibold";
+        return "bg-green-100 text-green-700";
 
       case "Tepat Waktu":
-        return "text-blue-600 font-semibold";
+        return "bg-blue-100 text-blue-700";
 
       case "Terlambat":
-        return "text-yellow-600 font-semibold";
+        return "bg-yellow-100 text-yellow-700";
 
       case "Terlambat Berat":
-        return "text-red-600 font-semibold";
+        return "bg-red-100 text-red-700";
 
       default:
-        return "text-gray-600";
+        return "bg-gray-100 text-gray-600";
     }
   };
 
@@ -261,35 +261,68 @@ export default function Dashboard() {
               <p className="text-gray-500 text-sm">Belum ada riwayat absensi</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="text-gray-500 border-b">
-                    <tr>
-                      <th className="text-left py-2">Tanggal</th>
-                      <th className="text-center">Datang</th>
-                      <th className="text-center">Pulang</th>
-                      <th className="text-right">Status</th>
-                      <th className="text-left">Keterangan</th>
+                <table className="w-full text-sm border-separate border-spacing-y-2">
+                  <thead>
+                    <tr className="text-gray-500 text-xs">
+                      <th className="text-left px-3">Tanggal</th>
+                      <th className="text-center px-3">Datang</th>
+                      <th className="text-center px-3">Pulang</th>
+                      <th className="text-center px-3">Status</th>
+                      <th className="text-left px-3">Keterangan</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {riwayat.map((item) => (
-                      <tr key={item.id} className="border-b">
-                        <td className="py-2">
-                          {new Date(item.tanggal).toLocaleDateString("id-ID")}
+                      <tr
+                        key={item.id}
+                        className="bg-gray-50 hover:bg-gray-100 transition rounded-xl shadow-sm"
+                      >
+                        {/* TANGGAL */}
+                        <td className="px-3 py-3 whitespace-nowrap">
+                          <div className="font-medium text-gray-800">
+                            {new Date(item.tanggal).toLocaleDateString(
+                              "id-ID",
+                              {
+                                day: "numeric",
+                                month: "short",
+                              },
+                            )}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(item.tanggal).toLocaleDateString(
+                              "id-ID",
+                              {
+                                weekday: "long",
+                              },
+                            )}
+                          </div>
                         </td>
 
-                        <td className="text-center">{item.waktu}</td>
-
-                        <td className="text-center">{item.jamPulang || "-"}</td>
-
-                        <td
-                          className={`text-right ${getStatusStyle(item.status)}`}
-                        >
-                          {getStatusIcon(item.status)} {item.status}
+                        {/* DATANG */}
+                        <td className="text-center px-3 py-3 font-medium">
+                          {item.waktu || "-"}
                         </td>
 
-                        <td className="text-left text-xs text-gray-500">
+                        {/* PULANG */}
+                        <td className="text-center px-3 py-3 font-medium">
+                          {item.jamPulang || "-"}
+                        </td>
+
+                        {/* STATUS */}
+                        <td className="text-center px-3 py-3">
+                          <span
+                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(
+                              item.status,
+                            )}`}
+                          >
+                            <span>{getStatusIcon(item.status)}</span>
+                            <span>{item.status}</span>
+                          </span>
+                        </td>
+
+                        {/* KETERANGAN */}
+                        <td className="px-3 py-3 text-xs text-gray-600 max-w-[200px] whitespace-normal break-words">
                           {item.keterangan || "-"}
                         </td>
                       </tr>

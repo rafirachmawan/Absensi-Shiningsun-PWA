@@ -120,42 +120,68 @@ export default function KelolaCabang() {
       <div className="bg-white border rounded-2xl shadow-sm p-6">
         <h2 className="font-semibold text-gray-700 mb-4">Tambah Cabang</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-          <input
-            className="border rounded-lg px-4 py-2 text-sm"
-            placeholder="Nama Cabang"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {/* NAMA CABANG */}
+          <div>
+            <label className="text-xs text-gray-600">Nama Cabang</label>
+            <input
+              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
+              placeholder="Contoh: Cabang Jakarta"
+              value={nama}
+              onChange={(e) => setNama(e.target.value)}
+            />
+          </div>
 
-          <input
-            className="border rounded-lg px-4 py-2 text-sm"
-            placeholder="Latitude"
-            value={latitude}
-            onChange={(e) => setLatitude(e.target.value)}
-          />
+          {/* LATITUDE */}
+          <div>
+            <label className="text-xs text-gray-600">Latitude</label>
+            <input
+              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
+              placeholder="-6.200000"
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+            />
+            <p className="text-[10px] text-gray-400 mt-1">
+              Ambil dari Google Maps
+            </p>
+          </div>
 
-          <input
-            className="border rounded-lg px-4 py-2 text-sm"
-            placeholder="Longitude"
-            value={longitude}
-            onChange={(e) => setLongitude(e.target.value)}
-          />
+          {/* LONGITUDE */}
+          <div>
+            <label className="text-xs text-gray-600">Longitude</label>
+            <input
+              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
+              placeholder="106.816666"
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
+            />
+          </div>
 
-          <input
-            type="number"
-            className="border rounded-lg px-4 py-2 text-sm"
-            placeholder="Radius (meter)"
-            value={radius}
-            onChange={(e) => setRadius(e.target.value)}
-          />
-          <button
-            onClick={tambahCabang}
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium px-4 py-2 w-full md:w-auto"
-          >
-            {loading ? "Menyimpan..." : "Tambah Cabang"}
-          </button>
+          {/* RADIUS */}
+          <div>
+            <label className="text-xs text-gray-600">Radius (meter)</label>
+            <input
+              type="number"
+              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
+              placeholder="100"
+              value={radius}
+              onChange={(e) => setRadius(e.target.value)}
+            />
+            <p className="text-[10px] text-gray-400 mt-1">
+              Kosongkan jika bebas lokasi
+            </p>
+          </div>
+
+          {/* BUTTON */}
+          <div className="flex items-start pt-[29px]">
+            <button
+              onClick={tambahCabang}
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium px-4 py-2 w-full"
+            >
+              {loading ? "Menyimpan..." : "Tambah Cabang"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -240,38 +266,54 @@ export default function KelolaCabang() {
           <div className="bg-white w-full max-w-md rounded-xl shadow-xl border p-6">
             <h2 className="text-lg font-semibold text-gray-800">Edit Cabang</h2>
 
-            <div className="space-y-3 mt-4">
-              <input
-                className="border rounded-lg px-4 py-2 w-full text-sm"
-                value={editData.nama}
-                onChange={(e) =>
-                  setEditData({ ...editData, nama: e.target.value })
-                }
-              />
+            <div className="space-y-4 mt-4">
+              {/* NAMA CABANG */}
+              <div>
+                <label className="text-xs text-gray-600">Nama Cabang</label>
+                <input
+                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
+                  value={editData.nama}
+                  onChange={(e) =>
+                    setEditData({ ...editData, nama: e.target.value })
+                  }
+                />
+              </div>
 
-              <input
-                className="border rounded-lg px-4 py-2 w-full text-sm"
-                value={editData.latitude}
-                onChange={(e) =>
-                  setEditData({ ...editData, latitude: e.target.value })
-                }
-              />
+              {/* LATITUDE */}
+              <div>
+                <label className="text-xs text-gray-600">Latitude</label>
+                <input
+                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
+                  value={editData.latitude}
+                  onChange={(e) =>
+                    setEditData({ ...editData, latitude: e.target.value })
+                  }
+                />
+              </div>
 
-              <input
-                className="border rounded-lg px-4 py-2 w-full text-sm"
-                value={editData.longitude}
-                onChange={(e) =>
-                  setEditData({ ...editData, longitude: e.target.value })
-                }
-              />
+              {/* LONGITUDE */}
+              <div>
+                <label className="text-xs text-gray-600">Longitude</label>
+                <input
+                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
+                  value={editData.longitude}
+                  onChange={(e) =>
+                    setEditData({ ...editData, longitude: e.target.value })
+                  }
+                />
+              </div>
 
-              <input
-                className="border rounded-lg px-4 py-2 w-full text-sm"
-                value={editData.radius}
-                onChange={(e) =>
-                  setEditData({ ...editData, radius: e.target.value })
-                }
-              />
+              {/* RADIUS */}
+              <div>
+                <label className="text-xs text-gray-600">Radius (meter)</label>
+                <input
+                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
+                  value={editData.radius}
+                  onChange={(e) =>
+                    setEditData({ ...editData, radius: e.target.value })
+                  }
+                />
+              </div>
             </div>
 
             <div className="flex justify-end gap-3 mt-6">
