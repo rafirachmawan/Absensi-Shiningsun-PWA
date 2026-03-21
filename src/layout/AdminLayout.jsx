@@ -125,23 +125,40 @@ export default function AdminLayout() {
       {/* MAIN AREA */}
       <div className="flex-1 flex flex-col w-full">
         {/* HEADER */}
-        <header className="bg-blue-600 text-white h-[64px] flex items-center justify-between px-6">
+        <header className="sticky top-0 z-40 bg-white border-b border-gray-200 h-[64px] flex items-center justify-between px-6">
+          {/* LEFT */}
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-2xl"
+              className="text-xl text-gray-600 hover:text-gray-900"
             >
               ☰
             </button>
 
             <div>
-              <h1 className="font-semibold">Dashboard Super Admin</h1>
-              <p className="text-xs text-blue-100">{time}</p>
+              <h1 className="text-sm md:text-base font-semibold text-gray-800">
+                Dashboard
+              </h1>
+              <p className="text-xs text-gray-500 hidden md:block">{time}</p>
             </div>
           </div>
 
-          <div className="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center font-semibold">
-            A
+          {/* RIGHT */}
+          <div className="flex items-center gap-4">
+            {/* NOTIF */}
+            <div className="relative cursor-pointer">
+              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200">
+                🔔
+              </div>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </div>
+
+            {/* USER */}
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-medium">
+                A
+              </div>
+            </div>
           </div>
         </header>
 
