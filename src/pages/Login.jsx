@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import logo from "../assets/logo.png";
 
 import InstallPWA from "../components/InstallPWA";
 
@@ -102,22 +103,26 @@ export default function Login() {
       {/* LEFT SIDE */}
 
       <div className="hidden md:flex md:w-1/2 flex-col justify-center items-center text-white p-10">
-        <div className="max-w-md text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-4 mb-6">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl font-bold">
-              S
+        <div className="max-w-xl text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-startgap-5 mb-8">
+            <div className="flex items-center justify-center">
+              <img
+                src={logo}
+                alt="logo"
+                className="w-28 h-28 object-contain drop-shadow-xl"
+              />
             </div>
 
             <div>
-              <h1 className="text-4xl font-bold">SHININGSUN</h1>
+              <h1 className="text-5xl font-bold leading-tight">SHININGSUN</h1>
 
-              <p className="text-white/80 text-lg">
+              <p className="text-white/80 text-xl mt-2">
                 Sistem Absensi Guru Modern
               </p>
             </div>
           </div>
 
-          <p className="text-white/60 text-sm">
+          <p className="text-white/60 text-base mt-4 leading-relaxed ml-[108px]">
             Aplikasi absensi digital untuk mempermudah pengelolaan kehadiran
             guru secara realtime.
           </p>
@@ -130,30 +135,32 @@ export default function Login() {
         <div className="w-full max-w-md">
           {/* MOBILE HEADER */}
 
-          <div className="text-center mb-8 md:hidden">
-            <div className="flex justify-center mb-4">
-              <div className="w-14 h-14 bg-white text-blue-600 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
-                S
-              </div>
-            </div>
+          <div className="text-center mb-4 md:hidden">
+            <img
+              src={logo}
+              alt="logo"
+              className="w-32 h-32 object-contain mx-auto drop-shadow-lg mt-3"
+            />
 
-            <h1 className="text-2xl font-bold text-white">SHININGSUN</h1>
+            <h1 className="text-2xl font-bold text-white -mt-2">SHININGSUN</h1>
 
-            <p className="text-white/80 text-sm mt-1">Sistem Absensi Guru</p>
+            <p className="text-white/80 text-sm -mt-1">Sistem Absensi Guru</p>
           </div>
 
           {/* LOGIN CARD */}
 
-          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-7 mt-2">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
               Login Guru
             </h2>
 
-            <InstallPWA />
+            <div className="mb-4">
+              <InstallPWA />
+            </div>
 
             {/* USERNAME */}
 
-            <div className="mb-4">
+            <div className="mb-5">
               <label className="text-sm text-gray-600">Email / Username</label>
 
               <input
@@ -166,10 +173,10 @@ export default function Login() {
 
             {/* PASSWORD */}
 
-            <div className="mb-3">
+            <div className="mb-5">
               <label className="text-sm text-gray-600">Password</label>
 
-              <div className="relative mt-1">
+              <div className="relative ">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Masukkan password"
@@ -191,7 +198,7 @@ export default function Login() {
 
             {/* REMEMBER */}
 
-            <div className="flex items-center mb-6">
+            <div className="flex items-center mb-5">
               <input
                 type="checkbox"
                 checked={remember}
@@ -206,7 +213,7 @@ export default function Login() {
 
             <button
               onClick={handleLogin}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold py-3 rounded-lg shadow-lg transition"
+              className="w-full mt-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold py-3 rounded-lg shadow-lg transition"
             >
               Login
             </button>

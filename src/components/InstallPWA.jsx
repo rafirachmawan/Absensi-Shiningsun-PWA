@@ -39,7 +39,7 @@ export default function InstallPWA() {
         onClick={handleInstall}
         className="w-full border border-blue-600 text-blue-600 font-semibold py-3 rounded-lg hover:bg-blue-50"
       >
-        Install APP Mode PWA
+        Install APP
       </button>
     </div>
   );
