@@ -25,10 +25,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
-  /* LOAD USERNAME JIKA PERNAH DISIMPAN */
   useEffect(() => {
     const saved = localStorage.getItem("rememberUser");
-
     if (saved) {
       setIdentifier(saved);
       setRemember(true);
@@ -79,8 +77,6 @@ export default function Login() {
         return;
       }
 
-      /* SIMPAN USERNAME JIKA DICENTANG */
-
       if (remember) {
         localStorage.setItem("rememberUser", identifier);
       } else {
@@ -99,30 +95,23 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
       {/* LEFT SIDE */}
-
-      <div className="hidden md:flex md:w-1/2 flex-col justify-center items-center text-white p-10">
+      <div className="hidden md:flex md:w-1/2 flex-col justify-center items-center p-10">
         <div className="max-w-xl text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-startgap-5 mb-8">
-            <div className="flex items-center justify-center">
-              <img
-                src={logo}
-                alt="logo"
-                className="w-28 h-28 object-contain drop-shadow-xl"
-              />
-            </div>
+          <div className="flex items-center gap-5 mb-8">
+            <img src={logo} alt="logo" className="w-24 h-24 object-contain" />
 
             <div>
-              <h1 className="text-5xl font-bold leading-tight">SHININGSUN</h1>
+              <h1 className="text-5xl font-bold text-gray-800">SHININGSUN</h1>
 
-              <p className="text-white/80 text-xl mt-2">
+              <p className="text-gray-500 text-lg mt-2">
                 Sistem Absensi Guru Modern
               </p>
             </div>
           </div>
 
-          <p className="text-white/60 text-base mt-4 leading-relaxed ml-[108px]">
+          <p className="text-gray-500 text-base leading-relaxed ml-[96px]">
             Aplikasi absensi digital untuk mempermudah pengelolaan kehadiran
             guru secara realtime.
           </p>
@@ -130,27 +119,26 @@ export default function Login() {
       </div>
 
       {/* RIGHT SIDE */}
-
       <div className="flex flex-1 items-center justify-center p-6">
         <div className="w-full max-w-md">
           {/* MOBILE HEADER */}
-
-          <div className="text-center mb-4 md:hidden">
+          <div className="text-center mb-6 md:hidden">
             <img
               src={logo}
               alt="logo"
-              className="w-32 h-32 object-contain mx-auto drop-shadow-lg mt-3"
+              className="w-28 h-28 object-contain mx-auto"
             />
 
-            <h1 className="text-2xl font-bold text-white -mt-2">SHININGSUN</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mt-2">
+              SHININGSUN
+            </h1>
 
-            <p className="text-white/80 text-sm -mt-1">Sistem Absensi Guru</p>
+            <p className="text-gray-500 text-sm">Sistem Absensi Guru</p>
           </div>
 
           {/* LOGIN CARD */}
-
-          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-7 mt-2">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+          <div className="bg-white rounded-2xl shadow-lg p-7 border border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800 mb-5 text-center">
               Login Guru
             </h2>
 
@@ -159,69 +147,63 @@ export default function Login() {
             </div>
 
             {/* USERNAME */}
-
-            <div className="mb-5">
+            <div className="mb-4">
               <label className="text-sm text-gray-600">Email / Username</label>
 
               <input
                 placeholder="Masukkan email atau username"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="mt-1 w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="mt-1 w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
               />
             </div>
 
             {/* PASSWORD */}
-
-            <div className="mb-5">
+            <div className="mb-4">
               <label className="text-sm text-gray-600">Password</label>
 
-              <div className="relative ">
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Masukkan password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
 
-                {/* ICON MATA */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                 >
-                  {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                 </button>
               </div>
             </div>
 
             {/* REMEMBER */}
-
             <div className="flex items-center mb-5">
               <input
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
-                className="mr-2"
+                className="mr-2 accent-indigo-600"
               />
 
               <span className="text-sm text-gray-600">Simpan username</span>
             </div>
 
             {/* LOGIN BUTTON */}
-
             <button
               onClick={handleLogin}
-              className="w-full mt-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-90 text-white font-semibold py-3 rounded-lg shadow-lg transition"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-md transition"
             >
               Login
             </button>
           </div>
 
           {/* FOOTER */}
-
-          <p className="text-center text-white/70 text-sm mt-6">
+          <p className="text-center text-gray-400 text-sm mt-6">
             © 2026 Shiningsun
           </p>
         </div>

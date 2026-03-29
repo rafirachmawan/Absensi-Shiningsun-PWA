@@ -51,8 +51,8 @@ export default function AdminLayout() {
 
       {/* SIDEBAR */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen w-64 bg-white border-r transform transition-transform duration-300
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed left-0 top-0 z-40 h-screen w-64 bg-white border-r transform transition-transform duration-300 flex flex-col
+  ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* LOGO */}
         <div className="h-[64px] flex items-center border-b px-4">
@@ -69,7 +69,7 @@ export default function AdminLayout() {
         </div>
 
         {/* MENU */}
-        <nav className="p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           <button
             onClick={() => {
               navigate("/admin/dashboard");
@@ -112,10 +112,10 @@ export default function AdminLayout() {
         </nav>
 
         {/* LOGOUT */}
-        <div className="absolute bottom-0 w-full p-3 border-t">
+        <div className="p-3 border-t mb-2">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 text-red-500"
+            className="flex items-center gap-3 text-red-500 w-full px-3 py-2 rounded hover:bg-red-50"
           >
             🚪 Logout
           </button>
