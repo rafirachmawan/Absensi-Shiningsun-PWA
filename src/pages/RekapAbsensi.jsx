@@ -67,7 +67,7 @@ export default function RekapAbsensi() {
       );
     }
 
-    result.sort((a, b) => a.waktu.localeCompare(b.waktu));
+    result.sort((a, b) => (a.waktu || "").localeCompare(b.waktu || ""));
 
     setFiltered(result);
   };
@@ -105,40 +105,53 @@ export default function RekapAbsensi() {
   return (
     <div className="space-y-8">
       {/* HEADER */}
-
       <div>
         <h1 className="text-2xl font-semibold text-gray-800">Rekap Absensi</h1>
-
         <p className="text-gray-500 text-sm">
           Laporan kehadiran guru berdasarkan tanggal dan cabang
         </p>
       </div>
 
       {/* FILTER */}
+      <div className="bg-white border rounded-2xl shadow-sm p-5 md:p-6 space-y-3">
+        <h3 className="text-sm font-semibold text-gray-700">Filter Absensi</h3>
 
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <input
-            type="date"
-            value={tanggalMulai}
-            onChange={(e) => setTanggalMulai(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+          {/* TANGGAL MULAI */}
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-1">Tanggal Mulai</label>
+            <input
+              type="date"
+              value={tanggalMulai}
+              onChange={(e) => setTanggalMulai(e.target.value)}
+              className={`border rounded-lg px-3 py-2 text-sm appearance-none bg-white ${
+                !tanggalMulai ? "text-gray-400" : "text-gray-800"
+              }`}
+            />
+          </div>
 
-          <input
-            type="date"
-            value={tanggalSelesai}
-            onChange={(e) => setTanggalSelesai(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
-          />
+          {/* TANGGAL SELESAI */}
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-1">
+              Tanggal Selesai
+            </label>
+            <input
+              type="date"
+              value={tanggalSelesai}
+              onChange={(e) => setTanggalSelesai(e.target.value)}
+              className={`border rounded-lg px-3 py-2 text-sm appearance-none bg-white ${
+                !tanggalSelesai ? "text-gray-400" : "text-gray-800"
+              }`}
+            />
+          </div>
 
+          {/* CABANG */}
           <select
             value={cabang}
             onChange={(e) => setCabang(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
+            className="border rounded-lg px-3 py-2 text-sm bg-white text-gray-800"
           >
             <option value="">Semua Cabang</option>
-
             {cabangList.map((c, i) => (
               <option key={i} value={c}>
                 {c}
@@ -146,16 +159,18 @@ export default function RekapAbsensi() {
             ))}
           </select>
 
+          {/* SEARCH */}
           <input
             placeholder="Cari nama guru..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
+            className="border rounded-lg px-3 py-2 text-sm w-full focus:ring-2 focus:ring-blue-500 outline-none"
           />
 
+          {/* BUTTON */}
           <button
             onClick={applyFilter}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 text-sm font-medium"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 text-sm font-medium w-full md:w-auto mt-1"
           >
             Filter
           </button>
@@ -163,7 +178,6 @@ export default function RekapAbsensi() {
       </div>
 
       {/* EXPORT */}
-
       {filtered.length > 0 && (
         <button
           onClick={exportExcel}
@@ -173,13 +187,22 @@ export default function RekapAbsensi() {
         </button>
       )}
 
-      {/* TABLE */}
-
-      {filtered.length === 0 ? (
-        <div className="bg-white border rounded-2xl shadow-sm p-12 text-center text-gray-400">
+      {/* EMPTY STATE AWAL */}
+      {filtered.length === 0 && !tanggalMulai && !tanggalSelesai && (
+        <div className="bg-white border rounded-2xl shadow-sm p-10 text-center text-gray-400 text-sm">
           Silakan pilih filter tanggal terlebih dahulu
         </div>
-      ) : (
+      )}
+
+      {/* EMPTY STATE HASIL */}
+      {filtered.length === 0 && (tanggalMulai || tanggalSelesai) && (
+        <div className="bg-white border rounded-2xl shadow-sm p-10 text-center text-gray-400 text-sm">
+          Tidak ada data ditemukan
+        </div>
+      )}
+
+      {/* TABLE */}
+      {filtered.length > 0 && (
         <div className="bg-white border rounded-2xl shadow-sm overflow-x-auto">
           <table className="min-w-[750px] w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
@@ -198,9 +221,7 @@ export default function RekapAbsensi() {
               {filtered.map((d) => (
                 <tr key={d.id} className="border-t">
                   <td className="p-4 font-medium">{d.nama}</td>
-
                   <td className="p-4">{d.cabang}</td>
-
                   <td className="p-4">{d.tanggal}</td>
 
                   <td className="p-4 font-semibold text-green-700">

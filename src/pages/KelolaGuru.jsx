@@ -419,10 +419,10 @@ export default function KelolaGuru() {
                 <input
                   type="time"
                   className={`border rounded-lg px-3 py-2 w-full appearance-none ${
-                    !jamMasuk ? "text-gray-400" : "text-gray-800"
+                    !jamMulaiAbsen ? "text-gray-400" : "text-gray-800"
                   }`}
-                  value={jamMasuk}
-                  onChange={(e) => setJamMasuk(e.target.value)}
+                  value={jamMulaiAbsen}
+                  onChange={(e) => setJamMulaiAbsen(e.target.value)}
                 />
               </div>
             </div>
@@ -433,10 +433,10 @@ export default function KelolaGuru() {
                 <input
                   type="time"
                   className={`border rounded-lg px-3 py-2 w-full appearance-none ${
-                    !jamMasuk ? "text-gray-400" : "text-gray-800"
+                    !jamPulang ? "text-gray-400" : "text-gray-800"
                   }`}
-                  value={jamMasuk}
-                  onChange={(e) => setJamMasuk(e.target.value)}
+                  value={jamPulang}
+                  onChange={(e) => setJamPulang(e.target.value)}
                 />
               </div>
 
