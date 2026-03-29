@@ -324,11 +324,11 @@ export default function KelolaGuru() {
         <div className="bg-white border rounded-2xl shadow-sm p-6 space-y-6">
           <h2 className="text-lg font-semibold">Tambah Guru</h2>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
             <div>
               <label className="text-sm text-gray-600">Nama Lengkap</label>
               <input
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={namaLengkap}
                 onChange={(e) => setNamaLengkap(e.target.value)}
               />
@@ -337,7 +337,7 @@ export default function KelolaGuru() {
             <div>
               <label className="text-sm text-gray-600">Tempat Lahir</label>
               <input
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={tempatLahir}
                 onChange={(e) => setTempatLahir(e.target.value)}
               />
@@ -347,7 +347,9 @@ export default function KelolaGuru() {
               <label className="text-sm text-gray-600">Tanggal Lahir</label>
               <input
                 type="date"
-                className="border rounded-lg px-3 py-2 w-full"
+                className={`border rounded-lg px-3 py-2 w-full appearance-none ${
+                  !tanggalLahir ? "text-gray-400" : "text-gray-800"
+                }`}
                 value={tanggalLahir}
                 onChange={(e) => setTanggalLahir(e.target.value)}
               />
@@ -356,7 +358,7 @@ export default function KelolaGuru() {
             <div>
               <label className="text-sm text-gray-600">Alamat</label>
               <input
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={alamat}
                 onChange={(e) => setAlamat(e.target.value)}
               />
@@ -365,7 +367,7 @@ export default function KelolaGuru() {
             <div>
               <label className="text-sm text-gray-600">No HP</label>
               <input
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={noHp}
                 onChange={(e) => setNoHp(e.target.value)}
               />
@@ -374,7 +376,7 @@ export default function KelolaGuru() {
             <div>
               <label className="text-sm text-gray-600">Cabang</label>
               <select
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={cabang}
                 onChange={(e) => setCabang(e.target.value)}
               >
@@ -391,18 +393,22 @@ export default function KelolaGuru() {
               <label className="text-sm text-gray-600">Tanggal Masuk</label>
               <input
                 type="date"
-                className="border rounded-lg px-3 py-2 w-full"
+                className={`border rounded-lg px-3 py-2 w-full appearance-none ${
+                  !tglMasuk ? "text-gray-400" : "text-gray-800"
+                }`}
                 value={tglMasuk}
                 onChange={(e) => setTglMasuk(e.target.value)}
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
               <div>
                 <label className="text-sm text-gray-600">Jam Masuk</label>
                 <input
                   type="time"
-                  className="border rounded-lg px-3 py-2 w-full"
+                  className={`border rounded-lg px-3 py-2 w-full appearance-none ${
+                    !jamMasuk ? "text-gray-400" : "text-gray-800"
+                  }`}
                   value={jamMasuk}
                   onChange={(e) => setJamMasuk(e.target.value)}
                 />
@@ -412,21 +418,25 @@ export default function KelolaGuru() {
                 <label className="text-sm text-gray-600">Jam Mulai Absen</label>
                 <input
                   type="time"
-                  className="border rounded-lg px-3 py-2 w-full"
-                  value={jamMulaiAbsen}
-                  onChange={(e) => setJamMulaiAbsen(e.target.value)}
+                  className={`border rounded-lg px-3 py-2 w-full appearance-none ${
+                    !jamMasuk ? "text-gray-400" : "text-gray-800"
+                  }`}
+                  value={jamMasuk}
+                  onChange={(e) => setJamMasuk(e.target.value)}
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
               <div>
                 <label className="text-sm text-gray-600">Jam Pulang</label>
                 <input
                   type="time"
-                  className="border rounded-lg px-3 py-2 w-full"
-                  value={jamPulang}
-                  onChange={(e) => setJamPulang(e.target.value)}
+                  className={`border rounded-lg px-3 py-2 w-full appearance-none ${
+                    !jamMasuk ? "text-gray-400" : "text-gray-800"
+                  }`}
+                  value={jamMasuk}
+                  onChange={(e) => setJamMasuk(e.target.value)}
                 />
               </div>
 
@@ -437,7 +447,7 @@ export default function KelolaGuru() {
                 <input
                   type="number"
                   placeholder="Contoh: 15"
-                  className="border rounded-lg px-3 py-2 w-full"
+                  className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                   value={batasTelat}
                   onChange={(e) => setBatasTelat(e.target.value)}
                 />
@@ -449,7 +459,7 @@ export default function KelolaGuru() {
               <input
                 inputMode="numeric"
                 placeholder="Contoh: 2.000.000"
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={gajiPokok}
                 onChange={(e) =>
                   handleCurrencyInput(e.target.value, setGajiPokok)
@@ -462,10 +472,10 @@ export default function KelolaGuru() {
               <input
                 inputMode="numeric"
                 placeholder="Contoh: 2.000.000"
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={insentif}
                 onChange={(e) =>
-                  handleCurrencyInput(e.target.value, setGajiPokok)
+                  handleCurrencyInput(e.target.value, setInsentif)
                 }
               />
             </div>
@@ -475,10 +485,10 @@ export default function KelolaGuru() {
               <input
                 inputMode="numeric"
                 placeholder="Contoh: 2.000.000"
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={bonusKehadiran}
                 onChange={(e) =>
-                  handleCurrencyInput(e.target.value, setGajiPokok)
+                  handleCurrencyInput(e.target.value, setBonusKehadiran)
                 }
               />
             </div>
@@ -486,7 +496,7 @@ export default function KelolaGuru() {
             <div>
               <label className="text-sm text-gray-600">Nama Login</label>
               <input
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -496,7 +506,7 @@ export default function KelolaGuru() {
               <label className="text-sm text-gray-600">Password</label>
               <input
                 type="password"
-                className="border rounded-lg px-3 py-2 w-full"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
