@@ -47,6 +47,12 @@ export default function KelolaGuru() {
   const usersRef = collection(db, "users");
   const branchesRef = collection(db, "branches");
 
+  const handleCurrencyInput = (value, setter) => {
+    const onlyNumber = value.replace(/[^\d]/g, "");
+    const formatted = formatRupiah(onlyNumber);
+    setter(formatted);
+  };
+
   /* FORMAT RUPIAH */
 
   const formatRupiah = (value) => {
@@ -391,14 +397,17 @@ export default function KelolaGuru() {
               />
             </div>
 
-            <div>
-              <label className="text-sm text-gray-600">Jam Masuk</label>
-              <input
-                type="time"
-                className="border rounded-lg px-3 py-2 w-full"
-                value={jamMasuk}
-                onChange={(e) => setJamMasuk(e.target.value)}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-gray-600">Jam Masuk</label>
+                <input
+                  type="time"
+                  className="border rounded-lg px-3 py-2 w-full"
+                  value={jamMasuk}
+                  onChange={(e) => setJamMasuk(e.target.value)}
+                />
+              </div>
+
               <div>
                 <label className="text-sm text-gray-600">Jam Mulai Absen</label>
                 <input
@@ -410,14 +419,17 @@ export default function KelolaGuru() {
               </div>
             </div>
 
-            <div>
-              <label className="text-sm text-gray-600">Jam Pulang</label>
-              <input
-                type="time"
-                className="border rounded-lg px-3 py-2 w-full"
-                value={jamPulang}
-                onChange={(e) => setJamPulang(e.target.value)}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-gray-600">Jam Pulang</label>
+                <input
+                  type="time"
+                  className="border rounded-lg px-3 py-2 w-full"
+                  value={jamPulang}
+                  onChange={(e) => setJamPulang(e.target.value)}
+                />
+              </div>
+
               <div>
                 <label className="text-sm text-gray-600">
                   Batas Keterlambatan (menit)
@@ -435,28 +447,38 @@ export default function KelolaGuru() {
             <div>
               <label className="text-sm text-gray-600">Gaji Pokok</label>
               <input
+                inputMode="numeric"
+                placeholder="Contoh: 2.000.000"
                 className="border rounded-lg px-3 py-2 w-full"
                 value={gajiPokok}
-                onChange={(e) => setGajiPokok(formatRupiah(e.target.value))}
+                onChange={(e) =>
+                  handleCurrencyInput(e.target.value, setGajiPokok)
+                }
               />
             </div>
 
             <div>
               <label className="text-sm text-gray-600">Insentif</label>
               <input
+                inputMode="numeric"
+                placeholder="Contoh: 2.000.000"
                 className="border rounded-lg px-3 py-2 w-full"
                 value={insentif}
-                onChange={(e) => setInsentif(formatRupiah(e.target.value))}
+                onChange={(e) =>
+                  handleCurrencyInput(e.target.value, setGajiPokok)
+                }
               />
             </div>
 
             <div>
               <label className="text-sm text-gray-600">Bonus Kehadiran</label>
               <input
+                inputMode="numeric"
+                placeholder="Contoh: 2.000.000"
                 className="border rounded-lg px-3 py-2 w-full"
                 value={bonusKehadiran}
                 onChange={(e) =>
-                  setBonusKehadiran(formatRupiah(e.target.value))
+                  handleCurrencyInput(e.target.value, setGajiPokok)
                 }
               />
             </div>
