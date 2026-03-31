@@ -129,29 +129,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "users"), (snapshot) => {
-      const data = snapshot.docs.map((doc) => {
-        const d = doc.data();
+      const data = snapshot.docs.map((doc) => doc.data());
 
-        console.log("USER:", d.namaLengkap, "| ROLE:", d.role);
-
-        return d;
-      });
       // 🔥 FILTER ROLE
-      const guru = data.filter((u) => {
-        const role = (u.role || "").toLowerCase().trim();
-
-        if (role === "guru") {
-          console.log("INI GURU:", u.namaLengkap, u.role);
-          return true;
-        }
-
-        return false;
-      });
-
-      const admin = data.filter((u) => {
-        const role = (u.role || "").toLowerCase().trim();
-        return role === "admin" || role === "superadmin";
-      });
+      const guru = data.filter((u) => u.role === "guru");
+      const admin = data.filter(
+        (u) => u.role === "admin" || u.role === "superadmin",
+      );
 
       setTotalGuru(guru.length);
       setTotalAdmin(admin.length);
@@ -261,24 +245,31 @@ export default function Dashboard() {
         {/* DASHBOARD */}
 
         {tab === "dashboard" && (
-          <div className="space-y-4">
-            {/* 🔥 CARD TOTAL */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-2xl shadow">
-                <p className="text-sm text-gray-500">Total Guru</p>
-                <h2 className="text-2xl font-bold">{totalGuru}</h2>
-              </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <button
+              onClick={() => navigate("/absen")}
+              className="bg-green-500 hover:bg-green-600 text-white p-6 rounded-2xl shadow text-left"
+            >
+              <h2 className="text-lg font-semibold mb-1">Absen Masuk</h2>
 
-              <div className="bg-white p-4 rounded-2xl shadow">
-                <p className="text-sm text-gray-500">Total Admin</p>
-                <h2 className="text-2xl font-bold">{totalAdmin}</h2>
-              </div>
-            </div>
+              <p className="text-sm opacity-90">
+                Catat kehadiran saat datang ke sekolah
+              </p>
+            </button>
 
-            {/* 🔥 MENU */}
-            <div className="grid md:grid-cols-2 gap-4"></div>
+            <button
+              onClick={() => navigate("/absen-pulang")}
+              className="bg-red-500 hover:bg-red-600 text-white p-6 rounded-2xl shadow text-left"
+            >
+              <h2 className="text-lg font-semibold mb-1">Absen Pulang</h2>
+
+              <p className="text-sm opacity-90">
+                Catat waktu pulang setelah selesai mengajar
+              </p>
+            </button>
           </div>
         )}
+
         {/* REKAP */}
 
         {tab === "rekap" && (
