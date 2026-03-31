@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail, // ✅ TAMBAH INI
+} from "firebase/auth";
 
 import { auth, db, secondaryAuth } from "../firebase";
 
@@ -9,7 +13,9 @@ import {
   updateDoc,
   doc,
   setDoc,
+  deleteDoc, // ✅ TAMBAHKAN INI
 } from "firebase/firestore";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function KelolaGuru() {
   const [guru, setGuru] = useState([]);
@@ -38,6 +44,7 @@ export default function KelolaGuru() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +53,8 @@ export default function KelolaGuru() {
 
   const usersRef = collection(db, "users");
   const branchesRef = collection(db, "branches");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleCurrencyInput = (value, setter) => {
     const onlyNumber = value.replace(/[^\d]/g, "");
@@ -105,7 +114,7 @@ export default function KelolaGuru() {
   }, []);
 
   const tambahGuru = async () => {
-    if (!namaLengkap || !username || !password || !cabang) {
+    if (!namaLengkap || !username || !password || !cabang || !email) {
       alert("Lengkapi data");
       return;
     }
@@ -113,7 +122,7 @@ export default function KelolaGuru() {
     try {
       setLoading(true);
 
-      const email = username + "@shiningsun.com";
+      // pakai email langsung dari input
 
       const userCredential = await createUserWithEmailAndPassword(
         secondaryAuth,
@@ -164,6 +173,7 @@ export default function KelolaGuru() {
       setBonusKehadiran("");
       setUsername("");
       setPassword("");
+      setEmail("");
 
       loadGuru();
 
@@ -252,6 +262,47 @@ export default function KelolaGuru() {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = confirm("Yakin ingin menghapus guru ini?");
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, "users", id));
+
+      alert("Guru berhasil dihapus");
+
+      loadGuru(); // refresh data
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menghapus guru");
+    }
+  };
+
+  const handleResetPassword = async (g) => {
+    const confirmReset = confirm(
+      `Kirim reset password untuk ${g.namaLengkap}?`,
+    );
+
+    if (!confirmReset) return;
+
+    try {
+      await sendPasswordResetEmail(auth, g.email);
+
+      alert(
+        `Reset password dikirim ke ${g.email}\n\nSuruh guru cek inbox / spam`,
+      );
+    } catch (error) {
+      console.error(error);
+
+      if (error.code === "auth/user-not-found") {
+        alert("Email tidak ditemukan di Firebase Auth");
+      } else {
+        alert("Gagal reset password: " + error.message);
+      }
+    }
+  };
+
   const filteredGuru = guru.filter((g) => {
     const keyword = search.toLowerCase();
 
@@ -297,6 +348,7 @@ export default function KelolaGuru() {
             setBonusKehadiran("");
             setUsername("");
             setPassword("");
+            setEmail("");
           }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
         >
@@ -493,6 +545,19 @@ export default function KelolaGuru() {
               />
             </div>
 
+            {/* EMAIL */}
+            <div>
+              <label className="text-sm text-gray-600">Email</label>
+              <input
+                type="email"
+                placeholder="contoh: guru@gmail.com"
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            {/* USERNAME */}
             <div>
               <label className="text-sm text-gray-600">Nama Login</label>
               <input
@@ -502,14 +567,23 @@ export default function KelolaGuru() {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <label className="text-sm text-gray-600">Password</label>
+
               <input
-                type="password"
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
+                type={showPassword ? "text" : "password"}
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-9 text-gray-500"
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
             </div>
           </div>
 
@@ -576,6 +650,18 @@ export default function KelolaGuru() {
                       className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded text-xs"
                     >
                       {g.aktif ? "Nonaktifkan" : "Aktifkan"}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(g.id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Hapus
+                    </button>
+                    <button
+                      onClick={() => handleResetPassword(g)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Reset Password
                     </button>
                   </td>
                 </tr>
