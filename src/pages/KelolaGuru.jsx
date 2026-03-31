@@ -605,11 +605,12 @@ export default function KelolaGuru() {
         </div>
       )}
 
-      {/* TABLE */}
+      {/* TABLE + MOBILE CARD */}
 
       <div className="bg-white border rounded-2xl shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="min-w-[1400px] w-full text-sm">
+        {/* ================= DESKTOP TABLE ================= */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="min-w-[900px] w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
                 <th className="p-4 text-left">Nama Lengkap</th>
@@ -637,37 +638,95 @@ export default function KelolaGuru() {
                     )}
                   </td>
 
-                  <td className="p-4 flex gap-2">
+                  <td className="p-4 flex gap-2 flex-wrap">
                     <button
                       onClick={() => handleEdit(g)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
+                      className="bg-yellow-500 text-white px-3 py-1 rounded text-xs"
                     >
                       Edit
                     </button>
 
                     <button
                       onClick={() => toggleStatus(g)}
-                      className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1 rounded text-xs"
+                      className="bg-gray-700 text-white px-3 py-1 rounded text-xs"
                     >
                       {g.aktif ? "Nonaktifkan" : "Aktifkan"}
                     </button>
+
                     <button
                       onClick={() => handleDelete(g.id)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs"
+                      className="bg-red-600 text-white px-3 py-1 rounded text-xs"
                     >
                       Hapus
                     </button>
+
                     <button
                       onClick={() => handleResetPassword(g)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
+                      className="bg-blue-500 text-white px-3 py-1 rounded text-xs"
                     >
-                      Reset Password
+                      Reset
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* ================= MOBILE CARD ================= */}
+        <div className="md:hidden divide-y">
+          {filteredGuru.map((g) => (
+            <div key={g.id} className="p-4 space-y-3">
+              {/* HEADER */}
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-gray-800">{g.namaLengkap}</h3>
+
+                <span
+                  className={`text-xs px-2 py-1 rounded ${
+                    g.aktif
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {g.aktif ? "Aktif" : "Nonaktif"}
+                </span>
+              </div>
+
+              {/* CABANG */}
+              <p className="text-sm text-gray-500">Cabang: {g.cabang}</p>
+
+              {/* ACTION */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleEdit(g)}
+                  className="bg-yellow-500 text-white py-2 rounded text-xs"
+                >
+                  Edit
+                </button>
+
+                <button
+                  onClick={() => toggleStatus(g)}
+                  className="bg-gray-700 text-white py-2 rounded text-xs"
+                >
+                  {g.aktif ? "Nonaktifkan" : "Aktifkan"}
+                </button>
+
+                <button
+                  onClick={() => handleDelete(g.id)}
+                  className="bg-red-600 text-white py-2 rounded text-xs"
+                >
+                  Hapus
+                </button>
+
+                <button
+                  onClick={() => handleResetPassword(g)}
+                  className="bg-blue-500 text-white py-2 rounded text-xs"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
