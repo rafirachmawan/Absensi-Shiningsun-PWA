@@ -111,8 +111,19 @@ export default function AbsenPulang() {
       }
 
       const userData = userSnap.data();
+      // 🔥 TAMBAHAN JAM PULANG DARI DATABASE
+      const jamPulangSetting = userData.jamPulang || "16:00";
 
       const now = new Date();
+      // 🔥 KONVERSI JAM PULANG KE MENIT
+      const [jamP, menitP] = jamPulangSetting.split(":");
+      const jamPulangMinutes = parseInt(jamP) * 60 + parseInt(menitP);
+
+      // 🔥 WAKTU SEKARANG DALAM MENIT
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+      // 🔥 SELISIH MENIT
+      const selisihPulang = nowMinutes - jamPulangMinutes;
       const today = now.toLocaleDateString("en-CA");
 
       const q = query(
@@ -173,6 +184,21 @@ export default function AbsenPulang() {
         return;
       }
 
+      // 🔥 STATUS PULANG
+      let statusPulang = "";
+      let keteranganPulang = "";
+
+      if (selisihPulang < 0) {
+        statusPulang = "Pulang Cepat";
+        keteranganPulang = `⚠ Anda pulang ${Math.abs(selisihPulang)} menit lebih awal.`;
+      } else if (selisihPulang === 0) {
+        statusPulang = "Tepat Waktu";
+        keteranganPulang = "✅ Anda pulang tepat waktu.";
+      } else {
+        statusPulang = "Lembur";
+        keteranganPulang = `🔥 Anda lembur ${selisihPulang} menit.`;
+      }
+
       setProgress("Menyimpan data absensi pulang...");
 
       const jamPulang = now.toLocaleTimeString("id-ID", {
@@ -184,10 +210,15 @@ export default function AbsenPulang() {
         jamPulang,
         latitudePulang: lat,
         longitudePulang: lon,
+
+        // 🔥 TAMBAHAN BARU
+        statusPulang,
+        keteranganPulang,
+        selisihPulang,
       });
 
       setStatusType("success");
-      setMessage("✅ Absensi pulang berhasil.");
+      setMessage(keteranganPulang);
       setShowResult(true);
     } catch (err) {
       console.log(err);

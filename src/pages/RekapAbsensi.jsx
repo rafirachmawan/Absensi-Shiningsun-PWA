@@ -79,9 +79,16 @@ export default function RekapAbsensi() {
       Nama: d.nama,
       Cabang: d.cabang,
       Tanggal: d.tanggal,
+
       JamMasuk: d.waktu,
       JamPulang: d.jamPulang || "-",
-      Status: d.status,
+
+      StatusMasuk: d.status || "-",
+      KeteranganMasuk: d.keterangan || "-",
+
+      StatusPulang: d.statusPulang || "-",
+      KeteranganPulang: d.keteranganPulang || "-",
+
       Foto: d.photoURL,
     }));
 
@@ -117,20 +124,18 @@ export default function RekapAbsensi() {
         <h3 className="text-sm font-semibold text-gray-700">Filter Absensi</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-          {/* TANGGAL MULAI */}
           <div className="flex flex-col">
             <label className="text-xs text-gray-500 mb-1">Tanggal Mulai</label>
             <input
               type="date"
               value={tanggalMulai}
               onChange={(e) => setTanggalMulai(e.target.value)}
-              className={`border rounded-lg px-3 py-2 text-sm appearance-none bg-white ${
+              className={`border rounded-lg px-3 py-2 text-sm ${
                 !tanggalMulai ? "text-gray-400" : "text-gray-800"
               }`}
             />
           </div>
 
-          {/* TANGGAL SELESAI */}
           <div className="flex flex-col">
             <label className="text-xs text-gray-500 mb-1">
               Tanggal Selesai
@@ -139,17 +144,16 @@ export default function RekapAbsensi() {
               type="date"
               value={tanggalSelesai}
               onChange={(e) => setTanggalSelesai(e.target.value)}
-              className={`border rounded-lg px-3 py-2 text-sm appearance-none bg-white ${
+              className={`border rounded-lg px-3 py-2 text-sm ${
                 !tanggalSelesai ? "text-gray-400" : "text-gray-800"
               }`}
             />
           </div>
 
-          {/* CABANG */}
           <select
             value={cabang}
             onChange={(e) => setCabang(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm bg-white text-gray-800"
+            className="border rounded-lg px-3 py-2 text-sm"
           >
             <option value="">Semua Cabang</option>
             {cabangList.map((c, i) => (
@@ -159,18 +163,16 @@ export default function RekapAbsensi() {
             ))}
           </select>
 
-          {/* SEARCH */}
           <input
             placeholder="Cari nama guru..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm w-full focus:ring-2 focus:ring-blue-500 outline-none"
+            className="border rounded-lg px-3 py-2 text-sm"
           />
 
-          {/* BUTTON */}
           <button
             onClick={applyFilter}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 text-sm font-medium w-full md:w-auto mt-1"
+            className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm"
           >
             Filter
           </button>
@@ -181,30 +183,16 @@ export default function RekapAbsensi() {
       {filtered.length > 0 && (
         <button
           onClick={exportExcel}
-          className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2 text-sm font-medium"
+          className="bg-green-600 text-white rounded-lg px-4 py-2 text-sm"
         >
           Export Excel
         </button>
       )}
 
-      {/* EMPTY STATE AWAL */}
-      {filtered.length === 0 && !tanggalMulai && !tanggalSelesai && (
-        <div className="bg-white border rounded-2xl shadow-sm p-10 text-center text-gray-400 text-sm">
-          Silakan pilih filter tanggal terlebih dahulu
-        </div>
-      )}
-
-      {/* EMPTY STATE HASIL */}
-      {filtered.length === 0 && (tanggalMulai || tanggalSelesai) && (
-        <div className="bg-white border rounded-2xl shadow-sm p-10 text-center text-gray-400 text-sm">
-          Tidak ada data ditemukan
-        </div>
-      )}
-
       {/* TABLE */}
       {filtered.length > 0 && (
         <div className="bg-white border rounded-2xl shadow-sm overflow-x-auto">
-          <table className="min-w-[750px] w-full text-sm">
+          <table className="min-w-[900px] w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
                 <th className="p-4 text-left">Nama</th>
@@ -213,7 +201,12 @@ export default function RekapAbsensi() {
                 <th className="p-4 text-left">Masuk</th>
                 <th className="p-4 text-left">Pulang</th>
                 <th className="p-4 text-left">Foto</th>
-                <th className="p-4 text-left">Status</th>
+
+                <th className="p-4 text-left">Status Masuk</th>
+                <th className="p-4 text-left">Keterangan Masuk</th>
+
+                <th className="p-4 text-left">Status Pulang</th>
+                <th className="p-4 text-left">Keterangan Pulang</th>
               </tr>
             </thead>
 
@@ -224,11 +217,11 @@ export default function RekapAbsensi() {
                   <td className="p-4">{d.cabang}</td>
                   <td className="p-4">{d.tanggal}</td>
 
-                  <td className="p-4 font-semibold text-green-700">
+                  <td className="p-4 text-green-700 font-semibold">
                     {d.waktu}
                   </td>
 
-                  <td className="p-4 font-semibold text-red-600">
+                  <td className="p-4 text-red-600 font-semibold">
                     {d.jamPulang || "-"}
                   </td>
 
@@ -238,7 +231,7 @@ export default function RekapAbsensi() {
                         href={d.photoURL}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-blue-600 underline text-sm"
+                        className="text-blue-600 underline"
                       >
                         Lihat Foto
                       </a>
@@ -247,10 +240,20 @@ export default function RekapAbsensi() {
                     )}
                   </td>
 
-                  <td className="p-4">
-                    <span className="text-sm font-medium text-gray-700">
-                      {d.status}
-                    </span>
+                  <td className="p-4 text-green-700 font-medium">
+                    {d.status || "-"}
+                  </td>
+
+                  <td className="p-4 text-xs text-gray-600">
+                    {d.keterangan || "-"}
+                  </td>
+
+                  <td className="p-4 text-red-600 font-medium">
+                    {d.statusPulang || "-"}
+                  </td>
+
+                  <td className="p-4 text-xs text-gray-600">
+                    {d.keteranganPulang || "-"}
                   </td>
                 </tr>
               ))}
