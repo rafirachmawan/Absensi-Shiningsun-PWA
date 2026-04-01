@@ -280,14 +280,16 @@ export default function Dashboard() {
               <p className="text-gray-500 text-sm">Belum ada riwayat absensi</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm border-separate border-spacing-y-2">
+                <table className="min-w-[800px] w-full text-sm border-separate border-spacing-y-2">
                   <thead>
                     <tr className="text-gray-500 text-xs">
                       <th className="text-left px-3">Tanggal</th>
                       <th className="text-center px-3">Datang</th>
                       <th className="text-center px-3">Pulang</th>
-                      <th className="text-center px-3">Status</th>
-                      <th className="text-left px-3">Keterangan</th>
+                      <th className="text-center px-3">Status Masuk</th>
+                      <th className="text-center px-3">Status Pulang</th>
+                      <th className="text-left px-3">Ket. Masuk</th>
+                      <th className="text-left px-3">Ket. Pulang</th>
                     </tr>
                   </thead>
 
@@ -336,13 +338,23 @@ export default function Dashboard() {
                             )}`}
                           >
                             <span>{getStatusIcon(item.status)}</span>
-                            <span>{item.status}</span>
+                            <span>{item.status || "-"}</span>
+                          </span>
+                        </td>
+
+                        <td className="text-center px-3 py-3">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                            {item.statusPulang || "-"}
                           </span>
                         </td>
 
                         {/* KETERANGAN */}
-                        <td className="px-3 py-3 text-xs text-gray-600 max-w-[200px] whitespace-normal break-words">
+                        <td className="px-3 py-3 text-xs text-gray-600 max-w-[160px] whitespace-normal break-words">
                           {item.keterangan || "-"}
+                        </td>
+
+                        <td className="px-3 py-3 text-xs text-gray-600 max-w-[160px] whitespace-normal break-words">
+                          {item.keteranganPulang || "-"}
                         </td>
                       </tr>
                     ))}
