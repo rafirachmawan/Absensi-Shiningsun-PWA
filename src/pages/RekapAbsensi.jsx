@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
 
+import { Fragment } from "react";
+
 import { collection, getDocs } from "firebase/firestore";
 
 import * as XLSX from "xlsx";
@@ -16,6 +18,21 @@ export default function RekapAbsensi() {
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [cabang, setCabang] = useState("");
   const [search, setSearch] = useState("");
+
+  //
+  const parseDateTime = (tanggal, jam) => {
+    if (!tanggal) return new Date(0);
+
+    const safeJam = (jam || "00.00").replace(".", ":"); // 🔥 FIX DISINI
+    return new Date(`${tanggal}T${safeJam}`);
+  };
+
+  const formatTanggal = (tanggal) => {
+    if (!tanggal) return "-";
+
+    const [year, month, day] = tanggal.split("-");
+    return `${day}/${month}/${year}`;
+  };
 
   /* LOAD DATA ABSENSI */
 
@@ -67,7 +84,11 @@ export default function RekapAbsensi() {
       );
     }
 
-    result.sort((a, b) => (a.waktu || "").localeCompare(b.waktu || ""));
+    result.sort((a, b) => {
+      return (
+        parseDateTime(a.tanggal, a.waktu) - parseDateTime(b.tanggal, b.waktu)
+      );
+    });
 
     setFiltered(result);
   };
@@ -75,26 +96,100 @@ export default function RekapAbsensi() {
   /* EXPORT EXCEL */
 
   const exportExcel = () => {
-    const exportData = filtered.map((d) => ({
-      Nama: d.nama,
-      Cabang: d.cabang,
-      Tanggal: d.tanggal,
+    // 🔥 ambil nama unik
+    const namaList = [...new Set(filtered.map((d) => d.nama))];
 
-      JamMasuk: d.waktu,
-      JamPulang: d.jamPulang || "-",
+    // 🔥 group per tanggal
+    const grouped = {};
+    filtered.forEach((d) => {
+      if (!grouped[d.tanggal]) grouped[d.tanggal] = [];
+      grouped[d.tanggal].push(d);
+    });
 
-      StatusMasuk: d.status || "-",
-      KeteranganMasuk: d.keterangan || "-",
+    const tanggalList = Object.keys(grouped).sort();
 
-      StatusPulang: d.statusPulang || "-",
-      KeteranganPulang: d.keteranganPulang || "-",
+    // =========================
+    // 🔥 HEADER 1 (NAMA)
+    // =========================
+    const header1 = ["Tanggal"];
 
-      Foto: d.photoURL,
-    }));
+    namaList.forEach((nama) => {
+      header1.push(nama, "", "", "", "", ""); // 6 kolom
+    });
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    // =========================
+    // 🔥 HEADER 2 (SUB KOLOM)
+    // =========================
+    const header2 = [""];
+
+    namaList.forEach(() => {
+      header2.push(
+        "Masuk",
+        "Status",
+        "Keterangan",
+        "Pulang",
+        "Status",
+        "Keterangan",
+      );
+    });
+
+    // =========================
+    // 🔥 DATA
+    // =========================
+    const rows = tanggalList.map((tgl) => {
+      const row = [formatTanggal(tgl)];
+
+      namaList.forEach((nama) => {
+        const dataHari = grouped[tgl].find((d) => d.nama === nama);
+
+        row.push(
+          dataHari?.waktu || "-",
+          dataHari?.status || "-",
+          dataHari?.keterangan || "-",
+          dataHari?.jamPulang || "-",
+          dataHari?.statusPulang || "-",
+          dataHari?.keteranganPulang || "-",
+        );
+      });
+
+      return row;
+    });
+
+    const sheetData = [header1, header2, ...rows];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+    // =========================
+    // 🔥 MERGE HEADER (BIAR KAYAK WEB)
+    // =========================
+    const merges = [];
+
+    let col = 1;
+    namaList.forEach(() => {
+      merges.push({
+        s: { r: 0, c: col },
+        e: { r: 0, c: col + 5 },
+      });
+      col += 6;
+    });
+
+    // merge tanggal
+    merges.push({
+      s: { r: 0, c: 0 },
+      e: { r: 1, c: 0 },
+    });
+
+    worksheet["!merges"] = merges;
+
+    // =========================
+    // 🔥 AUTO WIDTH
+    // =========================
+    worksheet["!cols"] = [
+      { wch: 12 },
+      ...Array(namaList.length * 6).fill({ wch: 18 }),
+    ];
+
     const workbook = XLSX.utils.book_new();
-
     XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Absensi");
 
     const excelBuffer = XLSX.write(workbook, {
@@ -123,56 +218,64 @@ export default function RekapAbsensi() {
       <div className="bg-white border rounded-2xl shadow-sm p-5 md:p-6 space-y-3">
         <h3 className="text-sm font-semibold text-gray-700">Filter Absensi</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
           <div className="flex flex-col">
-            <label className="text-xs text-gray-500 mb-1">Tanggal Mulai</label>
+            <label className="text-xs text-gray-500 mb-0.5">
+              Tanggal Mulai
+            </label>
             <input
               type="date"
               value={tanggalMulai}
               onChange={(e) => setTanggalMulai(e.target.value)}
-              className={`border rounded-lg px-3 py-2 text-sm ${
-                !tanggalMulai ? "text-gray-400" : "text-gray-800"
-              }`}
+              className="border rounded-lg px-3 py-2 text-sm w-full"
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs text-gray-500 mb-1">
+            <label className="text-xs text-gray-500 mb-0.5">
               Tanggal Selesai
             </label>
             <input
               type="date"
               value={tanggalSelesai}
               onChange={(e) => setTanggalSelesai(e.target.value)}
-              className={`border rounded-lg px-3 py-2 text-sm ${
-                !tanggalSelesai ? "text-gray-400" : "text-gray-800"
-              }`}
+              className="border rounded-lg px-3 py-2 text-sm w-full"
             />
           </div>
 
-          <select
-            value={cabang}
-            onChange={(e) => setCabang(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
-          >
-            <option value="">Semua Cabang</option>
-            {cabangList.map((c, i) => (
-              <option key={i} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-0.5 invisible">
+              Cabang
+            </label>
+            <select
+              value={cabang}
+              onChange={(e) => setCabang(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm w-full"
+            >
+              <option value="">Semua Cabang</option>
+              {cabangList.map((c, i) => (
+                <option key={i} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <input
-            placeholder="Cari nama guru..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm"
-          />
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-0.5 invisible">
+              Search
+            </label>
+            <input
+              placeholder="Cari nama guru..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm w-full"
+            />
+          </div>
 
           <button
             onClick={applyFilter}
-            className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm"
+            className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm w-full"
           >
             Filter
           </button>
@@ -192,73 +295,109 @@ export default function RekapAbsensi() {
       {/* TABLE */}
       {filtered.length > 0 && (
         <div className="bg-white border rounded-2xl shadow-sm overflow-x-auto">
-          <table className="min-w-[900px] w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                <th className="p-4 text-left">Nama</th>
-                <th className="p-4 text-left">Cabang</th>
-                <th className="p-4 text-left">Tanggal</th>
-                <th className="p-4 text-left">Masuk</th>
-                <th className="p-4 text-left">Pulang</th>
-                <th className="p-4 text-left">Foto</th>
+          {(() => {
+            // 🔥 ambil nama unik
+            const namaList = [...new Set(filtered.map((d) => d.nama))];
 
-                <th className="p-4 text-left">Status Masuk</th>
-                <th className="p-4 text-left">Keterangan Masuk</th>
+            // 🔥 group berdasarkan tanggal
+            const grouped = {};
+            filtered.forEach((d) => {
+              if (!grouped[d.tanggal]) grouped[d.tanggal] = [];
+              grouped[d.tanggal].push(d);
+            });
 
-                <th className="p-4 text-left">Status Pulang</th>
-                <th className="p-4 text-left">Keterangan Pulang</th>
-              </tr>
-            </thead>
+            const tanggalList = Object.keys(grouped).sort();
 
-            <tbody>
-              {filtered.map((d) => (
-                <tr key={d.id} className="border-t">
-                  <td className="p-4 font-medium">{d.nama}</td>
-                  <td className="p-4">{d.cabang}</td>
-                  <td className="p-4">{d.tanggal}</td>
+            return (
+              <table className="min-w-[800px] w-full text-sm border">
+                <thead className="bg-gray-50 text-gray-700">
+                  {/* HEADER 1 */}
+                  <tr>
+                    <th className="border p-2 text-left" rowSpan={2}>
+                      Tanggal
+                    </th>
 
-                  <td className="p-4 text-green-700 font-semibold">
-                    {d.waktu}
-                  </td>
-
-                  <td className="p-4 text-red-600 font-semibold">
-                    {d.jamPulang || "-"}
-                  </td>
-
-                  <td className="p-4">
-                    {d.photoURL ? (
-                      <a
-                        href={d.photoURL}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-blue-600 underline"
+                    {namaList.map((nama, i) => (
+                      <th
+                        key={i}
+                        colSpan={6}
+                        className="border p-2 text-center"
                       >
-                        Lihat Foto
-                      </a>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
+                        {nama}
+                      </th>
+                    ))}
+                  </tr>
 
-                  <td className="p-4 text-green-700 font-medium">
-                    {d.status || "-"}
-                  </td>
+                  {/* HEADER 2 */}
+                  <tr>
+                    {namaList.map((_, i) => (
+                      <Fragment key={i}>
+                        <th className="border p-2 text-center text-green-700">
+                          Masuk
+                        </th>
+                        <th className="border p-2 text-center">Status</th>
+                        <th className="border p-2 text-center">Keterangan</th>
 
-                  <td className="p-4 text-xs text-gray-600">
-                    {d.keterangan || "-"}
-                  </td>
+                        <th className="border p-2 text-center text-red-600">
+                          Pulang
+                        </th>
+                        <th className="border p-2 text-center">Status</th>
+                        <th className="border p-2 text-center">Keterangan</th>
+                      </Fragment>
+                    ))}
+                  </tr>
+                </thead>
 
-                  <td className="p-4 text-red-600 font-medium">
-                    {d.statusPulang || "-"}
-                  </td>
+                <tbody>
+                  {tanggalList.map((tgl, i) => (
+                    <tr key={i} className="border-t">
+                      {/* TANGGAL */}
+                      <td className="border p-2 font-medium">
+                        {formatTanggal(tgl)}
+                      </td>
 
-                  <td className="p-4 text-xs text-gray-600">
-                    {d.keteranganPulang || "-"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      {/* DATA PER NAMA */}
+                      {namaList.map((nama, j) => {
+                        const dataHari = grouped[tgl].find(
+                          (d) => d.nama === nama,
+                        );
+
+                        return (
+                          <Fragment key={j}>
+                            {/* MASUK */}
+                            <td className="border p-2 text-center text-green-700 font-semibold">
+                              {dataHari?.waktu || "-"}
+                            </td>
+
+                            <td className="border p-2 text-center text-blue-600 text-xs">
+                              {dataHari?.status || "-"}
+                            </td>
+
+                            <td className="border p-2 text-xs text-gray-500">
+                              {dataHari?.keterangan || "-"}
+                            </td>
+
+                            {/* PULANG */}
+                            <td className="border p-2 text-center text-red-600 font-semibold">
+                              {dataHari?.jamPulang || "-"}
+                            </td>
+
+                            <td className="border p-2 text-center text-blue-600 text-xs">
+                              {dataHari?.statusPulang || "-"}
+                            </td>
+
+                            <td className="border p-2 text-xs text-gray-500">
+                              {dataHari?.keteranganPulang || "-"}
+                            </td>
+                          </Fragment>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          })()}
         </div>
       )}
     </div>
