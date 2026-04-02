@@ -313,7 +313,10 @@ export default function RekapAbsensi() {
                 <thead className="bg-gray-50 text-gray-700">
                   {/* HEADER 1 */}
                   <tr>
-                    <th className="border p-2 text-left" rowSpan={2}>
+                    <th
+                      className="border border-gray-300 border-r-2 p-2 text-left"
+                      rowSpan={2}
+                    >
                       Tanggal
                     </th>
 
@@ -321,7 +324,7 @@ export default function RekapAbsensi() {
                       <th
                         key={i}
                         colSpan={6}
-                        className="border p-2 text-center"
+                        className="border border-gray-300 border-r-2 p-2 text-center bg-gray-100"
                       >
                         {nama}
                       </th>
@@ -332,17 +335,25 @@ export default function RekapAbsensi() {
                   <tr>
                     {namaList.map((_, i) => (
                       <Fragment key={i}>
-                        <th className="border p-2 text-center text-green-700">
+                        <th className="border border-gray-300 p-2 text-center text-green-700">
                           Masuk
                         </th>
-                        <th className="border p-2 text-center">Status</th>
-                        <th className="border p-2 text-center">Keterangan</th>
+                        <th className="border border-gray-300 p-2 text-center">
+                          Status
+                        </th>
+                        <th className="border border-gray-300 p-2 text-center">
+                          Keterangan
+                        </th>
 
-                        <th className="border p-2 text-center text-red-600">
+                        <th className="border border-gray-300 p-2 text-center text-red-600">
                           Pulang
                         </th>
-                        <th className="border p-2 text-center">Status</th>
-                        <th className="border p-2 text-center">Keterangan</th>
+                        <th className="border border-gray-300 p-2 text-center">
+                          Status
+                        </th>
+                        <th className="border border-gray-300 border-r-2 p-2 text-center">
+                          Keterangan
+                        </th>
                       </Fragment>
                     ))}
                   </tr>
@@ -350,13 +361,12 @@ export default function RekapAbsensi() {
 
                 <tbody>
                   {tanggalList.map((tgl, i) => (
-                    <tr key={i} className="border-t">
+                    <tr key={i}>
                       {/* TANGGAL */}
-                      <td className="border p-2 font-medium">
+                      <td className="border border-gray-300 border-r-2 p-2 font-medium">
                         {formatTanggal(tgl)}
                       </td>
 
-                      {/* DATA PER NAMA */}
                       {namaList.map((nama, j) => {
                         const dataHari = grouped[tgl].find(
                           (d) => d.nama === nama,
@@ -364,29 +374,28 @@ export default function RekapAbsensi() {
 
                         return (
                           <Fragment key={j}>
-                            {/* MASUK */}
-                            <td className="border p-2 text-center text-green-700 font-semibold">
+                            <td className="border border-gray-300 p-2 text-center text-green-700 font-semibold">
                               {dataHari?.waktu || "-"}
                             </td>
 
-                            <td className="border p-2 text-center text-blue-600 text-xs">
+                            <td className="border border-gray-300 p-2 text-center text-blue-600 text-xs">
                               {dataHari?.status || "-"}
                             </td>
 
-                            <td className="border p-2 text-xs text-gray-500">
+                            <td className="border border-gray-300 p-2 text-xs text-gray-500">
                               {dataHari?.keterangan || "-"}
                             </td>
 
-                            {/* PULANG */}
-                            <td className="border p-2 text-center text-red-600 font-semibold">
+                            <td className="border border-gray-300 p-2 text-center text-red-600 font-semibold">
                               {dataHari?.jamPulang || "-"}
                             </td>
 
-                            <td className="border p-2 text-center text-blue-600 text-xs">
+                            <td className="border border-gray-300 p-2 text-center text-blue-600 text-xs">
                               {dataHari?.statusPulang || "-"}
                             </td>
 
-                            <td className="border p-2 text-xs text-gray-500">
+                            {/* 🔥 KOLOM TERAKHIR TIAP GURU */}
+                            <td className="border border-gray-300 border-r-2 p-2 text-xs text-gray-500">
                               {dataHari?.keteranganPulang || "-"}
                             </td>
                           </Fragment>
