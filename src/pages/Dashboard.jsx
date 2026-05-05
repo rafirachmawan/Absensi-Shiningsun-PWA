@@ -108,7 +108,6 @@ export default function Dashboard() {
         collection(db, "attendance"),
         where("uid", "==", currentUser.uid),
         orderBy("createdAt", "desc"),
-        limit(10),
       );
 
       unsubRiwayat = onSnapshot(q, (snapshot) => {
@@ -280,86 +279,69 @@ export default function Dashboard() {
               <p className="text-gray-500 text-sm">Belum ada riwayat absensi</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-[800px] w-full text-sm border-separate border-spacing-y-2">
-                  <thead>
-                    <tr className="text-gray-500 text-xs">
-                      <th className="text-left px-3">Tanggal</th>
-                      <th className="text-center px-3">Datang</th>
-                      <th className="text-center px-3">Pulang</th>
-                      <th className="text-center px-3">Status Masuk</th>
-                      <th className="text-center px-3">Status Pulang</th>
-                      <th className="text-left px-3">Ket. Masuk</th>
-                      <th className="text-left px-3">Ket. Pulang</th>
-                    </tr>
-                  </thead>
+                {(() => {
+                  const grouped = {};
+                  riwayat.forEach((d) => {
+                    if (!grouped[d.tanggal]) grouped[d.tanggal] = [];
+                    grouped[d.tanggal].push(d);
+                  });
 
-                  <tbody>
-                    {riwayat.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="bg-gray-50 hover:bg-gray-100 transition rounded-xl shadow-sm"
-                      >
-                        {/* TANGGAL */}
-                        <td className="px-3 py-3 whitespace-nowrap">
-                          <div className="font-medium text-gray-800">
-                            {new Date(item.tanggal).toLocaleDateString(
-                              "id-ID",
-                              {
-                                day: "numeric",
-                                month: "short",
-                              },
-                            )}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {new Date(item.tanggal).toLocaleDateString(
-                              "id-ID",
-                              {
-                                weekday: "long",
-                              },
-                            )}
-                          </div>
-                        </td>
+                  const tanggalList = Object.keys(grouped).sort();
 
-                        {/* DATANG */}
-                        <td className="text-center px-3 py-3 font-medium">
-                          {item.waktu || "-"}
-                        </td>
+                  return (
+                    <table className="min-w-[800px] w-full text-sm border">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="border p-2 text-left">Tanggal</th>
+                          <th className="border p-2 text-center">Masuk</th>
+                          <th className="border p-2 text-center">Status</th>
+                          <th className="border p-2 text-center">Keterangan</th>
+                          <th className="border p-2 text-center">Pulang</th>
+                          <th className="border p-2 text-center">Status</th>
+                          <th className="border p-2 text-center">Keterangan</th>
+                        </tr>
+                      </thead>
 
-                        {/* PULANG */}
-                        <td className="text-center px-3 py-3 font-medium">
-                          {item.jamPulang || "-"}
-                        </td>
+                      <tbody>
+                        {tanggalList.map((tgl, i) => {
+                          const dataHari = grouped[tgl][0];
 
-                        {/* STATUS */}
-                        <td className="text-center px-3 py-3">
-                          <span
-                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(
-                              item.status,
-                            )}`}
-                          >
-                            <span>{getStatusIcon(item.status)}</span>
-                            <span>{item.status || "-"}</span>
-                          </span>
-                        </td>
+                          return (
+                            <tr key={i}>
+                              <td className="border p-2">
+                                {new Date(tgl).toLocaleDateString("id-ID")}
+                              </td>
 
-                        <td className="text-center px-3 py-3">
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
-                            {item.statusPulang || "-"}
-                          </span>
-                        </td>
+                              <td className="border p-2 text-center text-green-700">
+                                {dataHari?.waktu || "-"}
+                              </td>
 
-                        {/* KETERANGAN */}
-                        <td className="px-3 py-3 text-xs text-gray-600 max-w-[160px] whitespace-normal break-words">
-                          {item.keterangan || "-"}
-                        </td>
+                              <td className="border p-2 text-center">
+                                {dataHari?.status || "-"}
+                              </td>
 
-                        <td className="px-3 py-3 text-xs text-gray-600 max-w-[160px] whitespace-normal break-words">
-                          {item.keteranganPulang || "-"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                              <td className="border p-2">
+                                {dataHari?.keterangan || "-"}
+                              </td>
+
+                              <td className="border p-2 text-center text-red-600">
+                                {dataHari?.jamPulang || "-"}
+                              </td>
+
+                              <td className="border p-2 text-center">
+                                {dataHari?.statusPulang || "-"}
+                              </td>
+
+                              <td className="border p-2">
+                                {dataHari?.keteranganPulang || "-"}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  );
+                })()}
               </div>
             )}
           </div>
