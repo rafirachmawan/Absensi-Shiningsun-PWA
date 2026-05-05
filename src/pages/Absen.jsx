@@ -203,12 +203,10 @@ export default function Absen() {
         return;
       }
 
+      let isDiluarWaktu = false;
+
       if (nowMinutes > endAbsensi) {
-        setStatusType("error");
-        setMessage("❌ Waktu absensi sudah ditutup.");
-        setShowResult(true);
-        setLoading(false);
-        return;
+        isDiluarWaktu = true;
       }
 
       /* ===== HITUNG STATUS ===== */
@@ -217,11 +215,13 @@ export default function Absen() {
       let attention = "";
       let terlambatMenit = 0;
 
-      if (selisihMenit < 0) {
+      if (isDiluarWaktu) {
+        status = "Diluar Jam";
+        attention = "⚠ Absensi dilakukan di luar jam yang ditentukan.";
+      } else if (selisihMenit < 0) {
         const lebihAwal = Math.abs(selisihMenit);
 
         status = "Lebih Awal";
-
         attention = `🌅 Anda datang ${lebihAwal} menit lebih awal.`;
       } else if (selisihMenit === 0) {
         status = "Tepat Waktu";
@@ -232,13 +232,11 @@ export default function Absen() {
         status = "Terlambat";
 
         terlambatMenit = selisihMenit;
-
         attention = `⏱ Anda terlambat ${selisihMenit} menit.`;
       } else {
         status = "Terlambat Berat";
 
         terlambatMenit = selisihMenit;
-
         attention = `⚠ Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
       }
 

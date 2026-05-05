@@ -22,6 +22,8 @@ export default function Dashboard() {
   const [time, setTime] = useState("");
   const [user, setUser] = useState(null);
   const [riwayat, setRiwayat] = useState([]);
+  const [tanggalMulai, setTanggalMulai] = useState("");
+  const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [tab, setTab] = useState("dashboard");
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(false);
@@ -275,18 +277,44 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="font-semibold mb-4">Riwayat Absensi</h2>
 
+            <div className="flex flex-wrap gap-2 mb-4">
+              <input
+                type="date"
+                value={tanggalMulai}
+                onChange={(e) => setTanggalMulai(e.target.value)}
+                className="border px-3 py-2 rounded text-sm"
+              />
+
+              <input
+                type="date"
+                value={tanggalSelesai}
+                onChange={(e) => setTanggalSelesai(e.target.value)}
+                className="border px-3 py-2 rounded text-sm"
+              />
+            </div>
+
             {riwayat.length === 0 ? (
               <p className="text-gray-500 text-sm">Belum ada riwayat absensi</p>
             ) : (
               <div className="overflow-x-auto">
                 {(() => {
+                  const filtered = riwayat.filter((d) => {
+                    if (!tanggalMulai || !tanggalSelesai) return true;
+
+                    return (
+                      d.tanggal >= tanggalMulai && d.tanggal <= tanggalSelesai
+                    );
+                  });
+
                   const grouped = {};
-                  riwayat.forEach((d) => {
+                  filtered.forEach((d) => {
                     if (!grouped[d.tanggal]) grouped[d.tanggal] = [];
                     grouped[d.tanggal].push(d);
                   });
 
-                  const tanggalList = Object.keys(grouped).sort();
+                  const tanggalList = Object.keys(grouped).sort(
+                    (a, b) => new Date(b) - new Date(a),
+                  );
 
                   return (
                     <table className="min-w-[800px] w-full text-sm border">
