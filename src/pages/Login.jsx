@@ -35,29 +35,41 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      let email = identifier;
+      const cleanIdentifier = identifier.trim();
+      const cleanPassword = password;
 
-      if (!identifier.includes("@")) {
+      if (!cleanIdentifier || !cleanPassword) {
+        alert("Silakan isi email/username dan password");
+        return;
+      }
+
+      let email = cleanIdentifier;
+
+      if (!cleanIdentifier.includes("@")) {
         const q = query(
           collection(db, "users"),
-          where("username", "==", identifier),
+          where("username", "==", cleanIdentifier),
         );
 
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-          alert("Username tidak ditemukan");
+          alert(`Username '${cleanIdentifier}' tidak ditemukan di database`);
           return;
         }
 
         const userData = snapshot.docs[0].data();
-        email = userData.email;
+        if (!userData.email) {
+          alert("Data email untuk username ini tidak ditemukan");
+          return;
+        }
+        email = userData.email.trim();
       }
 
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
-        password,
+        cleanPassword,
       );
 
       const user = userCredential.user;
@@ -66,7 +78,7 @@ export default function Login() {
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
-        alert("Data user tidak ditemukan");
+        alert("Data user tidak ditemukan di database Firestore");
         return;
       }
 
@@ -78,7 +90,7 @@ export default function Login() {
       }
 
       if (remember) {
-        localStorage.setItem("rememberUser", identifier);
+        localStorage.setItem("rememberUser", cleanIdentifier);
       } else {
         localStorage.removeItem("rememberUser");
       }
@@ -90,7 +102,15 @@ export default function Login() {
       }
     } catch (error) {
       console.log(error);
-      alert(error.message);
+      if (
+        error.code === "auth/invalid-credential" ||
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/user-not-found"
+      ) {
+        alert("Password salah atau akun tidak cocok dengan Firebase Auth.");
+      } else {
+        alert(error.message);
+      }
     }
   };
 

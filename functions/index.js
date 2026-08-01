@@ -30,3 +30,30 @@ exports.updatePassword = functions.https.onRequest(async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
+exports.updateUserEmail = functions.https.onRequest(async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "POST");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.status(204).send("");
+  }
+
+  try {
+    const { uid, newEmail } = req.body;
+
+    if (!uid || !newEmail) {
+      return res.status(400).json({ error: "Data tidak lengkap" });
+    }
+
+    await admin.auth().updateUser(uid, {
+      email: newEmail,
+    });
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+});

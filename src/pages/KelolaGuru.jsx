@@ -210,6 +210,7 @@ export default function KelolaGuru() {
     );
 
     setUsername(g.username || "");
+    setEmail(g.email || "");
   };
 
   const toggleStatus = async (user) => {
@@ -230,7 +231,16 @@ export default function KelolaGuru() {
   };
 
   const updateGuru = async () => {
+    if (!namaLengkap || !username || !cabang || !email) {
+      alert("Lengkapi data");
+      return;
+    }
+
     try {
+      setLoading(true);
+      const cleanEmail = email.trim();
+      const cleanUsername = username.trim();
+
       const ref = doc(db, "users", editId);
 
       await updateDoc(ref, {
@@ -248,18 +258,34 @@ export default function KelolaGuru() {
         gajiPokok: getNumber(gajiPokok),
         insentif: getNumber(insentif),
         bonusKehadiran: getNumber(bonusKehadiran),
-        username,
+        username: cleanUsername,
+        email: cleanEmail,
       });
+
+      // 🔥 Sinkronkan ke Firebase Auth menggunakan secondaryAuth jika password diisi
+      if (password) {
+        try {
+          await createUserWithEmailAndPassword(
+            secondaryAuth,
+            cleanEmail,
+            password,
+          );
+        } catch (authErr) {
+          console.log("Status sync Firebase Auth:", authErr.code);
+        }
+      }
 
       alert("Data guru berhasil diupdate");
 
       setEditMode(false);
       setShowForm(false);
+      setPassword("");
 
       loadGuru();
     } catch (err) {
       alert(err.message);
     }
+    setLoading(false);
   };
 
   const handleDelete = async (id) => {
@@ -568,7 +594,9 @@ export default function KelolaGuru() {
             </div>
 
             <div className="relative">
-              <label className="text-sm text-gray-600">Password</label>
+              <label className="text-sm text-gray-600">
+                Password {editMode && "(Isi jika ubah email / password)"}
+              </label>
 
               <input
                 type={showPassword ? "text" : "password"}
