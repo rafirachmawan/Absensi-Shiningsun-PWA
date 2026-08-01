@@ -20,8 +20,8 @@ export default defineConfig({
         start_url: "/",
         display: "standalone",
 
-        background_color: "#ffffff",
-        theme_color: "#2563eb",
+        background_color: "#eef2ff",
+        theme_color: "#eef2ff",
 
         icons: [
           {
@@ -39,3 +39,5 @@ export default defineConfig({
     }),
   ],
 });
+
+
