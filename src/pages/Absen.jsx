@@ -195,12 +195,24 @@ export default function Absen() {
 
       /* ===== CEK JAM ===== */
 
+      let isKelasTambahan = false;
+      let alasanKelasTambahan = "";
+
       if (nowMinutes < startAbsensi) {
-        setStatusType("warning");
-        setMessage("⏰ Absensi belum dibuka. Silakan kembali nanti.");
-        setShowResult(true);
-        setLoading(false);
-        return;
+        const alasan = prompt(
+          "⏰ Anda absen di luar jadwal.\nSilakan tulis alasan (contoh: Kelas Tambahan Pagi):"
+        );
+
+        if (!alasan || alasan.trim() === "") {
+          setStatusType("warning");
+          setMessage("Absensi dibatalkan. Alasan wajib diisi untuk absen di luar jadwal.");
+          setShowResult(true);
+          setLoading(false);
+          return;
+        }
+
+        isKelasTambahan = true;
+        alasanKelasTambahan = alasan.trim();
       }
 
       let isDiluarWaktu = false;
@@ -215,29 +227,32 @@ export default function Absen() {
       let attention = "";
       let terlambatMenit = 0;
 
-      if (isDiluarWaktu) {
+      if (isKelasTambahan) {
+        status = "Kelas Tambahan";
+        attention = `📝 ${alasanKelasTambahan}`;
+      } else if (isDiluarWaktu) {
         status = "Diluar Jam";
-        attention = "⚠ Absensi dilakukan di luar jam yang ditentukan.";
+        attention = "Absensi dilakukan di luar jam yang ditentukan.";
       } else if (selisihMenit < 0) {
         const lebihAwal = Math.abs(selisihMenit);
 
         status = "Lebih Awal";
-        attention = `🌅 Anda datang ${lebihAwal} menit lebih awal.`;
+        attention = `Anda datang ${lebihAwal} menit lebih awal.`;
       } else if (selisihMenit === 0) {
         status = "Tepat Waktu";
 
         attention =
-          "🎉 Hadir tepat waktu. Terima kasih atas kedisiplinan Anda.";
+          "Hadir tepat waktu. Terima kasih atas kedisiplinan Anda.";
       } else if (selisihMenit <= batasTelat) {
         status = "Terlambat";
 
         terlambatMenit = selisihMenit;
-        attention = `⏱ Anda terlambat ${selisihMenit} menit.`;
+        attention = `Anda terlambat ${selisihMenit} menit.`;
       } else {
         status = "Terlambat Berat";
 
         terlambatMenit = selisihMenit;
-        attention = `⚠ Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
+        attention = `Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
       }
 
       const attendanceId = `${user.uid}_${today}`;
