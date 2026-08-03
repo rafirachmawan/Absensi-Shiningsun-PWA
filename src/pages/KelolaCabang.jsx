@@ -104,29 +104,37 @@ export default function KelolaCabang() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* HEADER */}
-
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">Kelola Cabang</h1>
-
-        <p className="text-gray-500 text-sm">
-          Atur lokasi cabang untuk verifikasi absensi guru
-        </p>
+    <div className="space-y-6">
+      {/* HEADER CARD */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/70 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-purple-50 border border-purple-100 text-purple-600 text-xs font-bold uppercase tracking-wider">
+              Lokasi Presensi
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+            Kelola Cabang
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Atur lokasi & koordinat cabang untuk verifikasi absensi guru
+          </p>
+        </div>
       </div>
 
       {/* FORM TAMBAH */}
-
-      <div className="bg-white border rounded-2xl shadow-sm p-6">
-        <h2 className="font-semibold text-gray-700 mb-4">Tambah Cabang</h2>
+      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm p-6 space-y-4">
+        <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+          Tambah Cabang Baru
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* NAMA CABANG */}
           <div>
-            <label className="text-xs text-gray-600">Nama Cabang</label>
+            <label className="text-xs font-semibold text-slate-700">Nama Cabang</label>
             <input
-              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
-              placeholder="Contoh: Cabang Jakarta"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+              placeholder="Contoh: Cabang Gragalan"
               value={nama}
               onChange={(e) => setNama(e.target.value)}
             />
@@ -134,23 +142,23 @@ export default function KelolaCabang() {
 
           {/* LATITUDE */}
           <div>
-            <label className="text-xs text-gray-600">Latitude</label>
+            <label className="text-xs font-semibold text-slate-700">Latitude</label>
             <input
-              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
               placeholder="-6.200000"
               value={latitude}
               onChange={(e) => setLatitude(e.target.value)}
             />
-            <p className="text-[10px] text-gray-400 mt-1">
-              Ambil dari Google Maps
+            <p className="text-[10px] text-slate-400 mt-1 font-normal">
+              Dari Google Maps
             </p>
           </div>
 
           {/* LONGITUDE */}
           <div>
-            <label className="text-xs text-gray-600">Longitude</label>
+            <label className="text-xs font-semibold text-slate-700">Longitude</label>
             <input
-              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
               placeholder="106.816666"
               value={longitude}
               onChange={(e) => setLongitude(e.target.value)}
@@ -159,25 +167,25 @@ export default function KelolaCabang() {
 
           {/* RADIUS */}
           <div>
-            <label className="text-xs text-gray-600">Radius (meter)</label>
+            <label className="text-xs font-semibold text-slate-700">Radius (meter)</label>
             <input
               type="number"
-              className="border rounded-lg px-4 py-2 text-sm w-full mt-1"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
               placeholder="100"
               value={radius}
               onChange={(e) => setRadius(e.target.value)}
             />
-            <p className="text-[10px] text-gray-400 mt-1">
-              Kosongkan jika bebas lokasi
+            <p className="text-[10px] text-slate-400 mt-1 font-normal">
+              Kosongkan = Bebas Lokasi
             </p>
           </div>
 
           {/* BUTTON */}
-          <div className="flex items-start pt-[29px]">
+          <div className="flex items-start pt-[25px]">
             <button
               onClick={tambahCabang}
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium px-4 py-2 w-full"
+              className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl text-sm px-4 py-2.5 w-full shadow-md shadow-indigo-500/20 transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? "Menyimpan..." : "Tambah Cabang"}
             </button>
@@ -186,8 +194,7 @@ export default function KelolaCabang() {
       </div>
 
       {/* DATA CABANG */}
-
-      <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
         {/* DESKTOP TABLE */}
 
         <div className="hidden md:block">

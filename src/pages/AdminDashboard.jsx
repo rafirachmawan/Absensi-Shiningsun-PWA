@@ -16,6 +16,7 @@ import {
   FiSearch,
   FiExternalLink,
   FiChevronRight,
+  FiDownload,
 } from "react-icons/fi";
 
 export default function AdminDashboard() {
@@ -30,6 +31,7 @@ export default function AdminDashboard() {
 
   const [activeModal, setActiveModal] = useState(null); // 'guru' | 'cabang' | 'nonaktif' | null
   const [modalSearch, setModalSearch] = useState("");
+  const [previewPhoto, setPreviewPhoto] = useState(null); // { url, name }
 
   const navigate = useNavigate();
 
@@ -106,174 +108,194 @@ export default function AdminDashboard() {
     setModalSearch("");
   };
 
+  const handleDownloadPhoto = async (url, name) => {
+    try {
+      const response = await fetch(url, { mode: "cors" });
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `${(name || "profile").replace(/\s+/g, "_")}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      // Fallback: open in new tab if CORS blocks download
+      window.open(url, "_blank");
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white/70 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl">🚀</span>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">
+      {/* 🚀 CONCEPT 2 HERO BANNER & EMBEDDED METRICS */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-6 sm:p-8 text-white shadow-xl border border-indigo-900/50">
+        {/* Glow ambient background effects */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Hero Top Bar */}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-white/10">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold uppercase tracking-widest">
+                Admin Center
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               Dashboard Super Admin
             </h1>
-          </div>
-          <p className="text-sm text-slate-500">
-            Monitoring sistem absensi & kelola data guru secara real-time
-          </p>
-        </div>
-
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50/80 border border-indigo-100 rounded-xl text-xs font-semibold text-indigo-700 w-fit shadow-sm">
-          <FiCalendar className="w-4 h-4 text-indigo-600" />
-          <span>{formattedDate}</span>
-        </div>
-      </div>
-
-      {/* QUICK ACTIONS */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button
-          type="button"
-          onClick={() => navigate("/admin/users")}
-          className="group relative bg-white hover:bg-indigo-50/50 border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 text-left flex items-center justify-between cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-200">
-              <FiUserPlus className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                Tambah Guru
-              </p>
-              <p className="text-xs text-slate-500">Registrasi akun baru</p>
-            </div>
-          </div>
-          <FiArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate("/admin/branches")}
-          className="group relative bg-white hover:bg-purple-50/50 border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 text-left flex items-center justify-between cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold group-hover:bg-purple-600 group-hover:text-white transition-colors duration-200">
-              <FiMapPin className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-800 group-hover:text-purple-600 transition-colors">
-                Tambah Cabang
-              </p>
-              <p className="text-xs text-slate-500">Lokasi unit presensi</p>
-            </div>
-          </div>
-          <FiArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-purple-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate("/admin/attendance")}
-          className="group relative bg-white hover:bg-emerald-50/50 border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 text-left flex items-center justify-between cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-200">
-              <FiFileText className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
-                Lihat Laporan
-              </p>
-              <p className="text-xs text-slate-500">Rekapitulasi absensi</p>
-            </div>
-          </div>
-          <FiArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-        </button>
-      </div>
-
-      {/* METRIC CARDS - CLICKABLE WITH DETAILS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* TOTAL GURU */}
-        <div
-          onClick={() => openModal("guru")}
-          className="bg-white border border-slate-200/80 hover:border-indigo-300 rounded-3xl p-6 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-between relative overflow-hidden group select-none"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-indigo-500/10 transition-colors" />
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <span>Total Guru</span>
-              <FiChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-indigo-500" />
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+              Monitoring sistem absensi & kelola data guru secara real-time
             </p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-1 tracking-tight">
-              {totalGuru}
-            </h2>
-            <span className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full group-hover:bg-indigo-100 transition-colors">
-              <span>Guru Terdaftar</span>
-              <span className="text-[10px] font-normal text-indigo-400">
-                (Klik detail)
-              </span>
-            </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 group-hover:bg-indigo-600 text-indigo-600 group-hover:text-white flex items-center justify-center border border-indigo-100/60 shadow-inner transition-colors duration-200">
-            <FiUsers className="w-6 h-6" />
+
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl text-xs font-semibold text-indigo-200 w-fit shadow-inner">
+            <FiCalendar className="w-4 h-4 text-indigo-400" />
+            <span>{formattedDate}</span>
           </div>
         </div>
 
-        {/* TOTAL CABANG */}
-        <div
-          onClick={() => openModal("cabang")}
-          className="bg-white border border-slate-200/80 hover:border-purple-300 rounded-3xl p-6 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-between relative overflow-hidden group select-none"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-purple-500/10 transition-colors" />
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <span>Total Cabang</span>
-              <FiChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-purple-500" />
-            </p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-1 tracking-tight">
-              {totalCabang}
-            </h2>
-            <span className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full group-hover:bg-purple-100 transition-colors">
-              <span>Lokasi Presensi</span>
-              <span className="text-[10px] font-normal text-purple-400">
-                (Klik detail)
-              </span>
-            </span>
+        {/* EMBEDDED METRIC STATS GRID */}
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
+          {/* TOTAL GURU */}
+          <div
+            onClick={() => openModal("guru")}
+            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-400/50 rounded-2xl p-4 sm:p-5 transition-all duration-200 cursor-pointer flex items-center justify-between shadow-lg"
+          >
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-200/80 flex items-center gap-1">
+                <span>Total Guru</span>
+                <FiChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-indigo-300" />
+              </p>
+              <h2 className="text-3xl font-black text-white mt-1 tracking-tight">
+                {totalGuru}
+              </h2>
+              <p className="text-[11px] text-indigo-300/80 mt-1 font-medium group-hover:text-indigo-200 transition-colors">
+                Guru Terdaftar <span className="opacity-70">(Klik detail)</span>
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 group-hover:bg-indigo-600 text-indigo-300 group-hover:text-white flex items-center justify-center border border-indigo-400/30 transition-all duration-200 shrink-0">
+              <FiUsers className="w-6 h-6" />
+            </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-purple-50 group-hover:bg-purple-600 text-purple-600 group-hover:text-white flex items-center justify-center border border-purple-100/60 shadow-inner transition-colors duration-200">
-            <FiMapPin className="w-6 h-6" />
-          </div>
-        </div>
 
-        {/* GURU NONAKTIF */}
-        <div
-          onClick={() => openModal("nonaktif")}
-          className="bg-white border border-slate-200/80 hover:border-rose-300 rounded-3xl p-6 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-between relative overflow-hidden group select-none"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-500/10 transition-colors" />
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <span>Guru Nonaktif</span>
-              <FiChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-rose-500" />
-            </p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-1 tracking-tight">
-              {nonaktif}
-            </h2>
-            <span className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full group-hover:bg-rose-100 transition-colors">
-              <span>Akun Nonaktif</span>
-              <span className="text-[10px] font-normal text-rose-400">
-                (Klik detail)
-              </span>
-            </span>
+          {/* TOTAL CABANG */}
+          <div
+            onClick={() => openModal("cabang")}
+            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/50 rounded-2xl p-4 sm:p-5 transition-all duration-200 cursor-pointer flex items-center justify-between shadow-lg"
+          >
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-purple-200/80 flex items-center gap-1">
+                <span>Total Cabang</span>
+                <FiChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-purple-300" />
+              </p>
+              <h2 className="text-3xl font-black text-white mt-1 tracking-tight">
+                {totalCabang}
+              </h2>
+              <p className="text-[11px] text-purple-300/80 mt-1 font-medium group-hover:text-purple-200 transition-colors">
+                Lokasi Presensi <span className="opacity-70">(Klik detail)</span>
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-purple-500/20 group-hover:bg-purple-600 text-purple-300 group-hover:text-white flex items-center justify-center border border-purple-400/30 transition-all duration-200 shrink-0">
+              <FiMapPin className="w-6 h-6" />
+            </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 group-hover:bg-rose-600 text-rose-600 group-hover:text-white flex items-center justify-center border border-rose-100/60 shadow-inner transition-colors duration-200">
-            <FiUserX className="w-6 h-6" />
+
+          {/* GURU NONAKTIF */}
+          <div
+            onClick={() => openModal("nonaktif")}
+            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-rose-400/50 rounded-2xl p-4 sm:p-5 transition-all duration-200 cursor-pointer flex items-center justify-between shadow-lg"
+          >
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-rose-200/80 flex items-center gap-1">
+                <span>Guru Nonaktif</span>
+                <FiChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-rose-300" />
+              </p>
+              <h2 className="text-3xl font-black text-white mt-1 tracking-tight">
+                {nonaktif}
+              </h2>
+              <p className="text-[11px] text-rose-300/80 mt-1 font-medium group-hover:text-rose-200 transition-colors">
+                Akun Nonaktif <span className="opacity-70">(Klik detail)</span>
+              </p>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 group-hover:bg-rose-600 text-rose-300 group-hover:text-white flex items-center justify-center border border-rose-400/30 transition-all duration-200 shrink-0">
+              <FiUserX className="w-6 h-6" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* AKTIVITAS TABLE / CARD */}
+      {/* QUICK ACTIONS TOOLBAR */}
+      <div>
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">
+          Akses Cepat
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <button
+            type="button"
+            onClick={() => navigate("/admin/users")}
+            className="group bg-white hover:bg-indigo-50/50 border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 text-left flex items-center justify-between cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-200">
+                <FiUserPlus className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                  Tambah Guru
+                </p>
+                <p className="text-xs text-slate-400">Registrasi akun baru</p>
+              </div>
+            </div>
+            <FiArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/admin/branches")}
+            className="group bg-white hover:bg-purple-50/50 border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 text-left flex items-center justify-between cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold group-hover:bg-purple-600 group-hover:text-white transition-colors duration-200">
+                <FiMapPin className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 group-hover:text-purple-600 transition-colors">
+                  Tambah Cabang
+                </p>
+                <p className="text-xs text-slate-400">Lokasi unit presensi</p>
+              </div>
+            </div>
+            <FiArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-purple-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/admin/attendance")}
+            className="group bg-white hover:bg-emerald-50/50 border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 text-left flex items-center justify-between cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-200">
+                <FiFileText className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                  Lihat Laporan
+                </p>
+                <p className="text-xs text-slate-400">Rekapitulasi absensi</p>
+              </div>
+            </div>
+            <FiArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+          </button>
+        </div>
+      </div>
+
+      {/* AKTIVITAS TABLE / CARD TIMELINE */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
               <FiClock className="w-4 h-4" />
             </div>
             <div>
@@ -283,13 +305,13 @@ export default function AdminDashboard() {
               <p className="text-xs text-slate-400">Log kehadiran paling akhir</p>
             </div>
           </div>
-          <span className="text-xs font-medium text-slate-500 bg-white border border-slate-200 px-2.5 py-1 rounded-full shadow-2xs">
+          <span className="text-xs font-semibold text-slate-600 bg-white border border-slate-200 px-3 py-1 rounded-full shadow-2xs">
             5 Terakhir
           </span>
         </div>
 
         {aktivitas.length === 0 ? (
-          <div className="p-10 text-center text-slate-400 text-sm">
+          <div className="p-10 text-center text-slate-400 text-sm font-medium">
             Belum ada aktivitas absensi tercatat
           </div>
         ) : (
@@ -300,7 +322,7 @@ export default function AdminDashboard() {
                 className="flex items-center justify-between p-4 sm:p-5 hover:bg-indigo-50/30 transition-colors duration-150"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 text-indigo-600 font-bold border border-indigo-100/80 flex items-center justify-center text-base shadow-sm">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white font-bold border border-indigo-200 flex items-center justify-center text-base shadow-sm">
                     {item.nama?.charAt(0) || "G"}
                   </div>
 
@@ -320,7 +342,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="text-right flex flex-col sm:flex-row items-end sm:items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100/80 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                  <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
                     {item.waktu}
                   </span>
 
@@ -522,7 +544,16 @@ export default function AdminDashboard() {
                               `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true&size=80`
                             }
                             alt={g.namaLengkap || "Guru"}
-                            className="w-11 h-11 rounded-2xl object-cover border border-indigo-100/60 shadow-sm shrink-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewPhoto({
+                                url:
+                                  g.photoURL ||
+                                  `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true&size=400`,
+                                name: g.namaLengkap || "Guru",
+                              });
+                            }}
+                            className="w-11 h-11 rounded-2xl object-cover border border-indigo-100/60 shadow-sm shrink-0 cursor-pointer hover:ring-2 hover:ring-indigo-400/50 hover:scale-105 transition-all duration-200"
                           />
                           <div className="min-w-0">
                             <h4 className="text-sm font-bold text-slate-800 truncate">
@@ -594,6 +625,64 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
+          </div>,
+          document.body,
+        )}
+
+      {/* PHOTO PREVIEW MODAL (WhatsApp-style) */}
+      {previewPhoto &&
+        createPortal(
+          <div
+            onClick={() => setPreviewPhoto(null)}
+            className="fixed inset-0 z-[10000] w-screen h-screen flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-lg"
+            style={{ animation: "fadeIn 0.2s ease-out" }}
+          >
+            {/* Top Bar */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-b from-black/60 to-transparent z-10"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <img
+                  src={previewPhoto.url}
+                  alt=""
+                  className="w-9 h-9 rounded-full object-cover border-2 border-white/30 shrink-0"
+                />
+                <span className="text-white font-bold text-sm sm:text-base truncate">
+                  {previewPhoto.name}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownloadPhoto(previewPhoto.url, previewPhoto.name);
+                  }}
+                  className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  title="Download foto"
+                >
+                  <FiDownload className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewPhoto(null)}
+                  className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  title="Tutup"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Photo */}
+            <img
+              src={previewPhoto.url}
+              alt={previewPhoto.name}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-[90vw] max-h-[75vh] rounded-2xl object-contain shadow-2xl"
+              style={{ animation: "scaleIn 0.25s ease-out" }}
+            />
           </div>,
           document.body,
         )}

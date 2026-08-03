@@ -408,14 +408,20 @@ export default function KelolaGuru() {
   });
 
   return (
-    <div className="space-y-8">
-      {/* HEADER */}
-
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">
+      {/* HEADER CARD */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/70 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 shadow-sm">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Kelola Guru</h1>
-          <p className="text-gray-500 text-sm">
-            Tambahkan dan kelola akun guru
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-wider">
+              Manajemen Guru
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+            Kelola Data Guru
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Tambahkan, sunting, dan atur akun tenaga pengajar
           </p>
         </div>
 
@@ -447,24 +453,27 @@ export default function KelolaGuru() {
             setPassword("");
             setEmail("");
           }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+          className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-md shadow-indigo-500/20 transition-all cursor-pointer w-full sm:w-auto"
         >
-          + Tambah Guru
+          <span>+ Tambah Guru Baru</span>
         </button>
       </div>
 
-      {/* SEARCH */}
+      {/* SEARCH BAR CARD */}
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-sm space-y-2">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
+          Pencarian Guru
+        </h3>
 
-      <div className="bg-white border rounded-xl p-4 space-y-2">
-        <h3 className="text-sm font-semibold text-gray-700">Pencarian Guru</h3>
-
-        <input
-          type="text"
-          placeholder="Cari nama, username, cabang atau no hp..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border rounded-lg px-4 py-2 w-full text-sm"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Cari nama, username, cabang, atau no hp..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-slate-50/80 border border-slate-200/80 focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-500/10 rounded-2xl px-4 py-3 text-sm text-slate-800 font-medium transition-all outline-none placeholder:text-slate-400 placeholder:font-normal"
+          />
+        </div>
       </div>
 
       {/* FORM */}

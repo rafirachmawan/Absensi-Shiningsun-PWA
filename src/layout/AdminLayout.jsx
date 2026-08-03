@@ -1,4 +1,4 @@
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
@@ -11,6 +11,7 @@ import {
   FiUsers,
   FiMapPin,
   FiBarChart2,
+  FiSettings,
   FiLogOut,
   FiCheckCircle,
   FiX,
@@ -19,6 +20,7 @@ import {
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [time, setTime] = useState("");
@@ -28,6 +30,22 @@ export default function AdminLayout() {
   const [aktivitas, setAktivitas] = useState([]);
 
   const notifRef = useRef();
+
+  // Dynamic header title based on route
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case "/admin/users":
+        return "Kelola Guru";
+      case "/admin/branches":
+        return "Kelola Cabang";
+      case "/admin/attendance":
+        return "Rekap Absensi";
+      case "/admin/settings":
+        return "Pengaturan Jam";
+      default:
+        return "Dashboard";
+    }
+  };
 
   useEffect(() => {
     const updateClock = () => {
@@ -90,6 +108,14 @@ export default function AdminLayout() {
     navigate("/");
   };
 
+  const navItems = [
+    { path: "/admin/dashboard", label: "Dashboard", icon: FiGrid },
+    { path: "/admin/users", label: "Kelola Guru", icon: FiUsers },
+    { path: "/admin/branches", label: "Kelola Cabang", icon: FiMapPin },
+    { path: "/admin/attendance", label: "Rekap Absensi", icon: FiBarChart2 },
+    { path: "/admin/settings", label: "Pengaturan Jam", icon: FiSettings },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50/60 via-slate-50 to-slate-50 flex font-sans text-slate-800 selection:bg-indigo-500 selection:text-white">
       {/* OVERLAY */}
@@ -133,49 +159,33 @@ export default function AdminLayout() {
 
           {/* NAVIGATION LINKS */}
           <nav className="p-3.5 space-y-1.5">
-            <button
-              onClick={() => {
-                navigate("/admin/dashboard");
-                setSidebarOpen(false);
-              }}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 group"
-            >
-              <FiGrid className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-              <span>Dashboard</span>
-            </button>
-
-            <button
-              onClick={() => {
-                navigate("/admin/users");
-                setSidebarOpen(false);
-              }}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 group"
-            >
-              <FiUsers className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-              <span>Kelola Guru</span>
-            </button>
-
-            <button
-              onClick={() => {
-                navigate("/admin/branches");
-                setSidebarOpen(false);
-              }}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 group"
-            >
-              <FiMapPin className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-              <span>Kelola Cabang</span>
-            </button>
-
-            <button
-              onClick={() => {
-                navigate("/admin/attendance");
-                setSidebarOpen(false);
-              }}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 group"
-            >
-              <FiBarChart2 className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
-              <span>Rekap Absensi</span>
-            </button>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => {
+                    navigate(item.path);
+                    setSidebarOpen(false);
+                  }}
+                  className={`flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 group cursor-pointer ${
+                    isActive
+                      ? "bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-500/25 scale-[1.02]"
+                      : "text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
+                  }`}
+                >
+                  <Icon
+                    className={`w-4 h-4 transition-colors ${
+                      isActive
+                        ? "text-white"
+                        : "text-slate-400 group-hover:text-indigo-600"
+                    }`}
+                  />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
           </nav>
         </div>
 
@@ -183,7 +193,7 @@ export default function AdminLayout() {
         <div className="p-3.5 border-t border-slate-100 mb-2 bg-slate-50/30">
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2.5 text-rose-600 font-bold text-sm w-full px-4 py-3 rounded-2xl bg-rose-50/70 hover:bg-rose-100 transition-all duration-200 shadow-2xs"
+            className="flex items-center justify-center gap-2.5 text-rose-600 font-bold text-sm w-full px-4 py-3 rounded-2xl bg-rose-50/70 hover:bg-rose-100 transition-all duration-200 shadow-2xs cursor-pointer"
           >
             <FiLogOut className="w-4 h-4" />
             <span>Logout Account</span>
@@ -194,39 +204,38 @@ export default function AdminLayout() {
       {/* MAIN */}
       <div className="flex-1 flex flex-col w-full min-w-0">
         {/* HEADER NAVBAR */}
-        <header className="sticky top-0 z-40 bg-white/75 backdrop-blur-xl border-b border-slate-200/80 h-[70px] flex items-center justify-between px-4 sm:px-8 shadow-sm">
-          {/* LEFT NAVBAR */}
-          <div className="flex items-center gap-3.5">
+        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 h-16 flex items-center justify-between px-4 sm:px-8 shadow-xs">
+          {/* LEFT NAVBAR: Sidebar Toggle & Breadcrumbs */}
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100/80 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition-all duration-200 shadow-2xs group"
-              title="Buka Sidebar"
+              className="w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-100/80 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition-all duration-200 cursor-pointer group"
+              title="Toggle Sidebar"
             >
               <FiMenu className="w-5 h-5 group-hover:scale-110 transition-transform" />
             </button>
 
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100/80">
-                  Super Admin
-                </span>
-                <span className="text-slate-300 text-xs">•</span>
-                <h1
-                  onClick={() => navigate("/admin/dashboard")}
-                  className="cursor-pointer font-extrabold text-slate-800 text-base sm:text-lg hover:text-indigo-600 transition-colors tracking-tight"
-                >
-                  Dashboard
-                </h1>
-              </div>
-              <p className="text-xs font-medium text-slate-400 hidden sm:flex items-center gap-1.5 mt-0.5">
-                <FiClock className="w-3.5 h-3.5 text-indigo-500" />
-                <span>{time}</span>
-              </p>
+            <div className="h-5 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
+
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-indigo-50/90 text-indigo-600 border border-indigo-100/80">
+                Super Admin
+              </span>
+              <span className="text-slate-300 text-sm font-light">/</span>
+              <h1 className="font-extrabold text-slate-800 text-sm sm:text-base tracking-tight">
+                {getPageTitle()}
+              </h1>
             </div>
           </div>
 
-          {/* RIGHT NAVBAR */}
-          <div className="flex items-center gap-3.5">
+          {/* RIGHT NAVBAR: Clock Pill & Notification Bell */}
+          <div className="flex items-center gap-3">
+            {/* REAL-TIME CLOCK PILL */}
+            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-slate-100/70 border border-slate-200/60 text-slate-600 text-xs font-semibold">
+              <FiClock className="w-3.5 h-3.5 text-indigo-600" />
+              <span>{time}</span>
+            </div>
+
             {/* NOTIF BUTTON */}
             <div ref={notifRef} className="relative">
               <button
@@ -235,8 +244,8 @@ export default function AdminLayout() {
                   setShowNotif(!showNotif);
                   await loadNotif();
                 }}
-                className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100/80 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition-all duration-200 shadow-2xs group"
-                title="Notifikasi"
+                className="relative w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-100/80 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition-all duration-200 cursor-pointer group"
+                title="Notifikasi Aktivitas"
               >
                 <FiBell className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full animate-pulse" />

@@ -205,52 +205,72 @@ export default function RekapAbsensi() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-800">Rekap Absensi</h1>
-        <p className="text-gray-500 text-sm">
-          Laporan kehadiran guru berdasarkan tanggal dan cabang
-        </p>
+    <div className="space-y-6">
+      {/* HEADER CARD */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/70 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-bold uppercase tracking-wider">
+              Laporan Presensi
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+            Rekap Absensi
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Laporan kehadiran guru berdasarkan rentang tanggal dan cabang
+          </p>
+        </div>
+
+        {filtered.length > 0 && (
+          <button
+            onClick={exportExcel}
+            className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
+          >
+            📊 Export Excel
+          </button>
+        )}
       </div>
 
-      {/* FILTER */}
-      <div className="bg-white border rounded-2xl shadow-sm p-5 md:p-6 space-y-3">
-        <h3 className="text-sm font-semibold text-gray-700">Filter Absensi</h3>
+      {/* FILTER CARD */}
+      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm p-5 md:p-6 space-y-4">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          Filter Absensi
+        </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
           <div className="flex flex-col">
-            <label className="text-xs text-gray-500 mb-0.5">
+            <label className="text-xs font-semibold text-slate-700 mb-1">
               Tanggal Mulai
             </label>
             <input
               type="date"
               value={tanggalMulai}
               onChange={(e) => setTanggalMulai(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm w-full"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium"
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs text-gray-500 mb-0.5">
+            <label className="text-xs font-semibold text-slate-700 mb-1">
               Tanggal Selesai
             </label>
             <input
               type="date"
               value={tanggalSelesai}
               onChange={(e) => setTanggalSelesai(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm w-full"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium"
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs text-gray-500 mb-0.5 invisible">
-              Cabang
+            <label className="text-xs font-semibold text-slate-700 mb-1">
+              Pilih Cabang
             </label>
             <select
               value={cabang}
               onChange={(e) => setCabang(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm w-full"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium"
             >
               <option value="">Semua Cabang</option>
               {cabangList.map((c, i) => (
@@ -262,39 +282,29 @@ export default function RekapAbsensi() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs text-gray-500 mb-0.5 invisible">
-              Search
+            <label className="text-xs font-semibold text-slate-700 mb-1">
+              Cari Nama Guru
             </label>
             <input
               placeholder="Cari nama guru..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm w-full"
+              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium placeholder:font-normal placeholder:text-slate-400"
             />
           </div>
 
           <button
             onClick={applyFilter}
-            className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm w-full"
+            className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl px-4 py-2.5 text-sm w-full shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
           >
-            Filter
+            Tampilkan Data
           </button>
         </div>
       </div>
 
-      {/* EXPORT */}
-      {filtered.length > 0 && (
-        <button
-          onClick={exportExcel}
-          className="bg-green-600 text-white rounded-lg px-4 py-2 text-sm"
-        >
-          Export Excel
-        </button>
-      )}
-
       {/* TABLE */}
       {filtered.length > 0 && (
-        <div className="bg-white border rounded-2xl shadow-sm overflow-x-auto">
+        <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-x-auto p-2">
           {(() => {
             // 🔥 ambil nama unik
             const namaList = [...new Set(filtered.map((d) => d.nama))];
