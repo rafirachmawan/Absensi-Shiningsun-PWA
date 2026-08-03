@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   createUserWithEmailAndPassword,
   signOut,
@@ -468,297 +469,333 @@ export default function KelolaGuru() {
 
       {/* FORM */}
 
-      {showForm && (
-        <div className="bg-white border rounded-2xl shadow-sm p-6 space-y-6">
-          <h2 className="text-lg font-semibold">{editMode ? "Edit Guru" : "Tambah Guru"}</h2>
-
-          {/* FOTO PROFIL UPLOAD */}
-          <div className="flex flex-col items-center gap-3">
-            <div className="relative group">
-              {photoPreview ? (
-                <div className="relative">
-                  <img
-                    src={photoPreview}
-                    alt="Preview"
-                    className="w-24 h-24 rounded-2xl object-cover border-2 border-blue-100 shadow-md"
-                  />
-                  <button
-                    type="button"
-                    onClick={clearPhoto}
-                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md transition-colors"
-                  >
-                    <FiX className="w-3.5 h-3.5" />
-                  </button>
+      {showForm &&
+        createPortal(
+          <div
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowForm(false);
+            }}
+            className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+          >
+            <div className="bg-white border border-slate-200/90 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in duration-200">
+              {/* MODAL HEADER */}
+              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between shrink-0">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800">
+                    {editMode ? "Edit Data Guru" : "Tambah Guru Baru"}
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    {editMode
+                      ? "Perbarui informasi profil dan kredensial guru"
+                      : "Isi formulir untuk menambahkan akun guru baru"}
+                  </p>
                 </div>
-              ) : (
-                <label className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-300 hover:border-blue-400 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-blue-50 transition-colors">
-                  <FiCamera className="w-6 h-6 text-gray-400" />
-                  <span className="text-[10px] text-gray-400 mt-1 font-medium">Upload Foto</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    onChange={handlePhotoSelect}
-                  />
-                </label>
-              )}
-            </div>
-            {photoPreview && (
-              <label className="text-xs text-blue-600 hover:text-blue-700 font-semibold cursor-pointer hover:underline">
-                Ganti Foto
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={handlePhotoSelect}
-                />
-              </label>
-            )}
-            {uploadingPhoto && (
-              <p className="text-xs text-gray-400 animate-pulse">Mengupload foto...</p>
-            )}
-          </div>
-
-          <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-            <div>
-              <label className="text-sm text-gray-600">Nama Lengkap</label>
-              <input
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={namaLengkap}
-                onChange={(e) => setNamaLengkap(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Tempat Lahir</label>
-              <input
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={tempatLahir}
-                onChange={(e) => setTempatLahir(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Tanggal Lahir</label>
-              <input
-                type="date"
-                className={`border rounded-lg px-3 py-2 w-full appearance-none ${
-                  !tanggalLahir ? "text-gray-400" : "text-gray-800"
-                }`}
-                value={tanggalLahir}
-                onChange={(e) => setTanggalLahir(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Alamat</label>
-              <input
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={alamat}
-                onChange={(e) => setAlamat(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">No HP</label>
-              <input
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={noHp}
-                onChange={(e) => setNoHp(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Cabang</label>
-              <select
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={cabang}
-                onChange={(e) => setCabang(e.target.value)}
-              >
-                <option value="">Pilih Cabang</option>
-                {branches.map((b) => (
-                  <option key={b.id} value={b.nama}>
-                    {b.nama}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Jabatan</label>
-              <input
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="Contoh: Guru Kelas / Koordinator"
-                value={jabatan}
-                onChange={(e) => setJabatan(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Tanggal Masuk</label>
-              <input
-                type="date"
-                className={`border rounded-lg px-3 py-2 w-full appearance-none ${
-                  !tglMasuk ? "text-gray-400" : "text-gray-800"
-                }`}
-                value={tglMasuk}
-                onChange={(e) => setTglMasuk(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-              <div>
-                <label className="text-sm text-gray-600">Jam Masuk</label>
-                <input
-                  type="time"
-                  className={`border rounded-lg px-3 py-2 w-full appearance-none ${
-                    !jamMasuk ? "text-gray-400" : "text-gray-800"
-                  }`}
-                  value={jamMasuk}
-                  onChange={(e) => setJamMasuk(e.target.value)}
-                />
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
               </div>
 
-              <div>
-                <label className="text-sm text-gray-600">Jam Mulai Absen</label>
-                <input
-                  type="time"
-                  className={`border rounded-lg px-3 py-2 w-full appearance-none ${
-                    !jamMulaiAbsen ? "text-gray-400" : "text-gray-800"
-                  }`}
-                  value={jamMulaiAbsen}
-                  onChange={(e) => setJamMulaiAbsen(e.target.value)}
-                />
+              {/* MODAL BODY (SCROLLABLE FORM CONTENT) */}
+              <div className="p-6 overflow-y-auto space-y-6 flex-1">
+                {/* FOTO PROFIL UPLOAD */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="relative group">
+                    {photoPreview ? (
+                      <div className="relative">
+                        <img
+                          src={photoPreview}
+                          alt="Preview"
+                          className="w-24 h-24 rounded-2xl object-cover border-2 border-blue-100 shadow-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={clearPhoto}
+                          className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md transition-colors"
+                        >
+                          <FiX className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-300 hover:border-blue-400 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-blue-50 transition-colors">
+                        <FiCamera className="w-6 h-6 text-gray-400" />
+                        <span className="text-[10px] text-gray-400 mt-1 font-medium">Upload Foto</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          onChange={handlePhotoSelect}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  {photoPreview && (
+                    <label className="text-xs text-blue-600 hover:text-blue-700 font-semibold cursor-pointer hover:underline">
+                      Ganti Foto
+                      <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={handlePhotoSelect}
+                      />
+                    </label>
+                  )}
+                  {uploadingPhoto && (
+                    <p className="text-xs text-gray-400 animate-pulse">Mengupload foto...</p>
+                  )}
+                </div>
+
+                <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Nama Lengkap</label>
+                    <input
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={namaLengkap}
+                      onChange={(e) => setNamaLengkap(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Tempat Lahir</label>
+                    <input
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={tempatLahir}
+                      onChange={(e) => setTempatLahir(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Tanggal Lahir</label>
+                    <input
+                      type="date"
+                      className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
+                        !tanggalLahir ? "text-gray-400" : "text-gray-800"
+                      }`}
+                      value={tanggalLahir}
+                      onChange={(e) => setTanggalLahir(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Alamat</label>
+                    <input
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={alamat}
+                      onChange={(e) => setAlamat(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">No HP</label>
+                    <input
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={noHp}
+                      onChange={(e) => setNoHp(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Cabang</label>
+                    <select
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={cabang}
+                      onChange={(e) => setCabang(e.target.value)}
+                    >
+                      <option value="">Pilih Cabang</option>
+                      {branches.map((b) => (
+                        <option key={b.id} value={b.nama}>
+                          {b.nama}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Jabatan</label>
+                    <input
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      placeholder="Contoh: Guru Kelas / Koordinator"
+                      value={jabatan}
+                      onChange={(e) => setJabatan(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Tanggal Masuk</label>
+                    <input
+                      type="date"
+                      className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
+                        !tglMasuk ? "text-gray-400" : "text-gray-800"
+                      }`}
+                      value={tglMasuk}
+                      onChange={(e) => setTglMasuk(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700">Jam Masuk</label>
+                      <input
+                        type="time"
+                        className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
+                          !jamMasuk ? "text-gray-400" : "text-gray-800"
+                        }`}
+                        value={jamMasuk}
+                        onChange={(e) => setJamMasuk(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700">Jam Mulai Absen</label>
+                      <input
+                        type="time"
+                        className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
+                          !jamMulaiAbsen ? "text-gray-400" : "text-gray-800"
+                        }`}
+                        value={jamMulaiAbsen}
+                        onChange={(e) => setJamMulaiAbsen(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700">Jam Pulang</label>
+                      <input
+                        type="time"
+                        className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
+                          !jamPulang ? "text-gray-400" : "text-gray-800"
+                        }`}
+                        value={jamPulang}
+                        onChange={(e) => setJamPulang(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700">
+                        Batas Telat (menit)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Contoh: 15"
+                        className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        value={batasTelat}
+                        onChange={(e) => setBatasTelat(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Gaji Pokok</label>
+                    <input
+                      inputMode="numeric"
+                      placeholder="Contoh: 2.000.000"
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={gajiPokok}
+                      onChange={(e) =>
+                        handleCurrencyInput(e.target.value, setGajiPokok)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Insentif</label>
+                    <input
+                      inputMode="numeric"
+                      placeholder="Contoh: 2.000.000"
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={insentif}
+                      onChange={(e) =>
+                        handleCurrencyInput(e.target.value, setInsentif)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Bonus Kehadiran</label>
+                    <input
+                      inputMode="numeric"
+                      placeholder="Contoh: 2.000.000"
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={bonusKehadiran}
+                      onChange={(e) =>
+                        handleCurrencyInput(e.target.value, setBonusKehadiran)
+                      }
+                    />
+                  </div>
+
+                  {/* EMAIL */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Email</label>
+                    <input
+                      type="email"
+                      placeholder="contoh: guru@gmail.com"
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+
+                  {/* USERNAME */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">Nama Login (Username)</label>
+                    <input
+                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <label className="text-sm font-semibold text-gray-700">
+                      Password {editMode && "(Opsional)"}
+                    </label>
+
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none pr-10 text-sm"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* MODAL FOOTER */}
+              <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/80 flex items-center justify-end gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm font-semibold transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={editMode ? updateGuru : tambahGuru}
+                  disabled={loading || uploadingPhoto}
+                  className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {loading ? "Menyimpan..." : editMode ? "Simpan Perubahan" : "Simpan Guru"}
+                </button>
               </div>
             </div>
-
-            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-              <div>
-                <label className="text-sm text-gray-600">Jam Pulang</label>
-                <input
-                  type="time"
-                  className={`border rounded-lg px-3 py-2 w-full appearance-none ${
-                    !jamPulang ? "text-gray-400" : "text-gray-800"
-                  }`}
-                  value={jamPulang}
-                  onChange={(e) => setJamPulang(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-600">
-                  Batas Keterlambatan (menit)
-                </label>
-                <input
-                  type="number"
-                  placeholder="Contoh: 15"
-                  className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                  value={batasTelat}
-                  onChange={(e) => setBatasTelat(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Gaji Pokok</label>
-              <input
-                inputMode="numeric"
-                placeholder="Contoh: 2.000.000"
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={gajiPokok}
-                onChange={(e) =>
-                  handleCurrencyInput(e.target.value, setGajiPokok)
-                }
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Insentif</label>
-              <input
-                inputMode="numeric"
-                placeholder="Contoh: 2.000.000"
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={insentif}
-                onChange={(e) =>
-                  handleCurrencyInput(e.target.value, setInsentif)
-                }
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-600">Bonus Kehadiran</label>
-              <input
-                inputMode="numeric"
-                placeholder="Contoh: 2.000.000"
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={bonusKehadiran}
-                onChange={(e) =>
-                  handleCurrencyInput(e.target.value, setBonusKehadiran)
-                }
-              />
-            </div>
-
-            {/* EMAIL */}
-            <div>
-              <label className="text-sm text-gray-600">Email</label>
-              <input
-                type="email"
-                placeholder="contoh: guru@gmail.com"
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            {/* USERNAME */}
-            <div>
-              <label className="text-sm text-gray-600">Nama Login</label>
-              <input
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-
-            <div className="relative">
-              <label className="text-sm text-gray-600">
-                Password {editMode && "(Isi jika ubah email / password)"}
-              </label>
-
-              <input
-                type={showPassword ? "text" : "password"}
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none pr-10"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-9 text-gray-500"
-              >
-                {showPassword ? <FiEyeOff /> : <FiEye />}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={editMode ? updateGuru : tambahGuru}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-            >
-              Simpan
-            </button>
-
-            <button
-              onClick={() => setShowForm(false)}
-              className="border px-4 py-2 rounded-lg"
-            >
-              Batal
-            </button>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       {/* TABLE + MOBILE CARD */}
 

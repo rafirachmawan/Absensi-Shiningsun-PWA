@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
@@ -351,244 +352,251 @@ export default function AdminDashboard() {
       </div>
 
       {/* DETAIL MODAL */}
-      {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[85vh]">
-            {/* MODAL HEADER */}
-            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
-                    activeModal === "guru"
-                      ? "bg-indigo-50 text-indigo-600"
-                      : activeModal === "cabang"
-                        ? "bg-purple-50 text-purple-600"
-                        : "bg-rose-50 text-rose-600"
-                  }`}
-                >
-                  {activeModal === "guru" && <FiUsers className="w-5 h-5" />}
-                  {activeModal === "cabang" && <FiMapPin className="w-5 h-5" />}
-                  {activeModal === "nonaktif" && <FiUserX className="w-5 h-5" />}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-extrabold text-slate-800">
-                      {activeModal === "guru" && "Daftar Guru Terdaftar"}
-                      {activeModal === "cabang" && "Daftar Cabang Presensi"}
-                      {activeModal === "nonaktif" && "Daftar Guru Nonaktif"}
-                    </h2>
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
-                        activeModal === "guru"
-                          ? "bg-indigo-100 text-indigo-700"
-                          : activeModal === "cabang"
-                            ? "bg-purple-100 text-purple-700"
-                            : "bg-rose-100 text-rose-700"
-                      }`}
-                    >
-                      {activeModal === "guru" && guruList.length}
-                      {activeModal === "cabang" && cabangList.length}
-                      {activeModal === "nonaktif" && nonaktifList.length}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {activeModal === "guru" &&
-                      "Rincian data seluruh tenaga pengajar terdaftar"}
-                    {activeModal === "cabang" &&
-                      "Rincian lokasi & radius titik presensi cabang"}
-                    {activeModal === "nonaktif" &&
-                      "Data akun guru yang saat ini sedang dinonaktifkan"}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setActiveModal(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-              >
-                <FiX className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* SEARCH BAR IN MODAL */}
-            <div className="px-5 py-3.5 border-b border-slate-100">
-              <div className="flex items-center gap-2.5 bg-slate-100/80 border border-slate-200/80 rounded-xl px-3.5 py-2.5 focus-within:border-indigo-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 transition-all">
-                <FiSearch className="w-4.5 h-4.5 text-slate-400 shrink-0" />
-                <input
-                  type="text"
-                  placeholder={
-                    activeModal === "cabang"
-                      ? "Ketik nama cabang untuk mencari..."
-                      : "Ketik nama, cabang, jabatan, atau no hp..."
-                  }
-                  value={modalSearch}
-                  onChange={(e) => setModalSearch(e.target.value)}
-                  className="w-full bg-transparent text-sm text-slate-800 font-medium focus:outline-hidden placeholder:text-slate-400 placeholder:font-normal"
-                />
-                {modalSearch && (
-                  <button
-                    type="button"
-                    onClick={() => setModalSearch("")}
-                    className="shrink-0 px-2.5 py-1 bg-slate-200/80 hover:bg-slate-300 text-[11px] text-slate-600 font-bold rounded-lg transition-colors cursor-pointer"
+      {activeModal &&
+        createPortal(
+          <div
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setActiveModal(null);
+            }}
+            className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fadeIn"
+          >
+            <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[85vh]">
+              {/* MODAL HEADER */}
+              <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
+                      activeModal === "guru"
+                        ? "bg-indigo-50 text-indigo-600"
+                        : activeModal === "cabang"
+                          ? "bg-purple-50 text-purple-600"
+                          : "bg-rose-50 text-rose-600"
+                    }`}
                   >
-                    Hapus
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* MODAL BODY (CONTENT LIST) */}
-            <div className="p-5 overflow-y-auto flex-1 divide-y divide-slate-100">
-              {activeModal === "cabang" ? (
-                (() => {
-                  const filtered = cabangList.filter((b) =>
-                    (b.nama || "").toLowerCase().includes(modalSearch.toLowerCase()),
-                  );
-
-                  if (filtered.length === 0) {
-                    return (
-                      <div className="py-8 text-center text-slate-400 text-xs font-medium">
-                        Tidak ada data cabang ditemukan
-                      </div>
-                    );
-                  }
-
-                  return filtered.map((b) => (
-                    <div
-                      key={b.id}
-                      className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 font-bold flex items-center justify-center text-sm border border-purple-100/60 shadow-xs">
-                          <FiMapPin className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-800">
-                            {b.nama}
-                          </h4>
-                          <p className="text-xs text-slate-400 mt-0.5">
-                            Lat: {b.latitude ?? "-"} | Long: {b.longitude ?? "-"}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <span className="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200/80 rounded-full text-[11px] font-bold">
-                          {b.radius ? `${b.radius} Meter` : "Bebas Lokasi"}
-                        </span>
-                      </div>
+                    {activeModal === "guru" && <FiUsers className="w-5 h-5" />}
+                    {activeModal === "cabang" && <FiMapPin className="w-5 h-5" />}
+                    {activeModal === "nonaktif" && <FiUserX className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-lg font-extrabold text-slate-800">
+                        {activeModal === "guru" && "Daftar Guru Terdaftar"}
+                        {activeModal === "cabang" && "Daftar Cabang Presensi"}
+                        {activeModal === "nonaktif" && "Daftar Guru Nonaktif"}
+                      </h2>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                          activeModal === "guru"
+                            ? "bg-indigo-100 text-indigo-700"
+                            : activeModal === "cabang"
+                              ? "bg-purple-100 text-purple-700"
+                              : "bg-rose-100 text-rose-700"
+                        }`}
+                      >
+                        {activeModal === "guru" && guruList.length}
+                        {activeModal === "cabang" && cabangList.length}
+                        {activeModal === "nonaktif" && nonaktifList.length}
+                      </span>
                     </div>
-                  ));
-                })()
-              ) : (
-                (() => {
-                  const source =
-                    activeModal === "guru" ? guruList : nonaktifList;
-                  const filtered = source.filter((g) => {
-                    const q = modalSearch.toLowerCase();
-                    return (
-                      (g.namaLengkap || "").toLowerCase().includes(q) ||
-                      (g.username || "").toLowerCase().includes(q) ||
-                      (g.cabang || "").toLowerCase().includes(q) ||
-                      (g.noHp || "").toLowerCase().includes(q) ||
-                      (g.email || "").toLowerCase().includes(q)
-                    );
-                  });
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {activeModal === "guru" &&
+                        "Rincian data seluruh tenaga pengajar terdaftar"}
+                      {activeModal === "cabang" &&
+                        "Rincian lokasi & radius titik presensi cabang"}
+                      {activeModal === "nonaktif" &&
+                        "Data akun guru yang saat ini sedang dinonaktifkan"}
+                    </p>
+                  </div>
+                </div>
 
-                  if (filtered.length === 0) {
-                    return (
-                      <div className="py-8 text-center text-slate-400 text-xs font-medium">
-                        Tidak ada data guru ditemukan
-                      </div>
-                    );
-                  }
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
 
-                  return filtered.map((g) => (
-                    <div
-                      key={g.id || g.uid || g.username}
-                      className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3"
+              {/* SEARCH BAR IN MODAL */}
+              <div className="px-5 py-3.5 border-b border-slate-100">
+                <div className="flex items-center gap-2.5 bg-slate-100/80 border border-slate-200/80 rounded-xl px-3.5 py-2.5 focus-within:border-indigo-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/10 transition-all">
+                  <FiSearch className="w-4.5 h-4.5 text-slate-400 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder={
+                      activeModal === "cabang"
+                        ? "Ketik nama cabang untuk mencari..."
+                        : "Ketik nama, cabang, jabatan, atau no hp..."
+                    }
+                    value={modalSearch}
+                    onChange={(e) => setModalSearch(e.target.value)}
+                    className="w-full bg-transparent text-sm text-slate-800 font-medium focus:outline-hidden placeholder:text-slate-400 placeholder:font-normal"
+                  />
+                  {modalSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setModalSearch("")}
+                      className="shrink-0 px-2.5 py-1 bg-slate-200/80 hover:bg-slate-300 text-[11px] text-slate-600 font-bold rounded-lg transition-colors cursor-pointer"
                     >
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={
-                            g.photoURL ||
-                            `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true&size=80`
-                          }
-                          alt={g.namaLengkap || "Guru"}
-                          className="w-11 h-11 rounded-2xl object-cover border border-indigo-100/60 shadow-sm shrink-0"
-                        />
-                        <div className="min-w-0">
-                          <h4 className="text-sm font-bold text-slate-800 truncate">
-                            {g.namaLengkap || "Tanpa Nama"}
-                          </h4>
-                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-0.5 text-xs text-slate-500">
-                            <span className="font-semibold bg-slate-100 px-2 py-0.5 rounded-md text-[11px] text-slate-600">
-                              {g.cabang || "Tanpa Cabang"}
-                            </span>
-                            {g.jabatan && (
-                              <span className="text-[11px] text-slate-400">
-                                • {g.jabatan}
-                              </span>
-                            )}
-                            {g.noHp && (
-                              <span className="text-[11px] text-slate-400">
-                                • {g.noHp}
-                              </span>
-                            )}
+                      Hapus
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* MODAL BODY (CONTENT LIST) */}
+              <div className="p-5 overflow-y-auto flex-1 divide-y divide-slate-100">
+                {activeModal === "cabang" ? (
+                  (() => {
+                    const filtered = cabangList.filter((b) =>
+                      (b.nama || "").toLowerCase().includes(modalSearch.toLowerCase()),
+                    );
+
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="py-8 text-center text-slate-400 text-xs font-medium">
+                          Tidak ada data cabang ditemukan
+                        </div>
+                      );
+                    }
+
+                    return filtered.map((b) => (
+                      <div
+                        key={b.id}
+                        className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 font-bold flex items-center justify-center text-sm border border-purple-100/60 shadow-xs">
+                            <FiMapPin className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-800">
+                              {b.nama}
+                            </h4>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              Lat: {b.latitude ?? "-"} | Long: {b.longitude ?? "-"}
+                            </p>
                           </div>
                         </div>
-                      </div>
-                      <div className="shrink-0">
-                        {g.aktif !== false ? (
-                          <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            Aktif
+                        <div>
+                          <span className="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200/80 rounded-full text-[11px] font-bold">
+                            {b.radius ? `${b.radius} Meter` : "Bebas Lokasi"}
                           </span>
-                        ) : (
-                          <span className="px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200/80 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                            Nonaktif
-                          </span>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  ));
-                })()
-              )}
-            </div>
+                    ));
+                  })()
+                ) : (
+                  (() => {
+                    const source =
+                      activeModal === "guru" ? guruList : nonaktifList;
+                    const filtered = source.filter((g) => {
+                      const q = modalSearch.toLowerCase();
+                      return (
+                        (g.namaLengkap || "").toLowerCase().includes(q) ||
+                        (g.username || "").toLowerCase().includes(q) ||
+                        (g.cabang || "").toLowerCase().includes(q) ||
+                        (g.noHp || "").toLowerCase().includes(q) ||
+                        (g.email || "").toLowerCase().includes(q)
+                      );
+                    });
 
-            {/* MODAL FOOTER */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => {
-                  const path =
-                    activeModal === "cabang"
-                      ? "/admin/branches"
-                      : "/admin/users";
-                  setActiveModal(null);
-                  navigate(path);
-                }}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline cursor-pointer"
-              >
-                <span>
-                  Kelola {activeModal === "cabang" ? "Cabang" : "Guru"} di Halaman
-                  Kelola
-                </span>
-                <FiExternalLink className="w-3.5 h-3.5" />
-              </button>
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="py-8 text-center text-slate-400 text-xs font-medium">
+                          Tidak ada data guru ditemukan
+                        </div>
+                      );
+                    }
 
-              <button
-                type="button"
-                onClick={() => setActiveModal(null)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-              >
-                Tutup
-              </button>
+                    return filtered.map((g) => (
+                      <div
+                        key={g.id || g.uid || g.username}
+                        className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={
+                              g.photoURL ||
+                              `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true&size=80`
+                            }
+                            alt={g.namaLengkap || "Guru"}
+                            className="w-11 h-11 rounded-2xl object-cover border border-indigo-100/60 shadow-sm shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <h4 className="text-sm font-bold text-slate-800 truncate">
+                              {g.namaLengkap || "Tanpa Nama"}
+                            </h4>
+                            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-0.5 text-xs text-slate-500">
+                              <span className="font-semibold bg-slate-100 px-2 py-0.5 rounded-md text-[11px] text-slate-600">
+                                {g.cabang || "Tanpa Cabang"}
+                              </span>
+                              {g.jabatan && (
+                                <span className="text-[11px] text-slate-400">
+                                  • {g.jabatan}
+                                </span>
+                              )}
+                              {g.noHp && (
+                                <span className="text-[11px] text-slate-400">
+                                  • {g.noHp}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="shrink-0">
+                          {g.aktif !== false ? (
+                            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                              Aktif
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200/80 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                              Nonaktif
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ));
+                  })()
+                )}
+              </div>
+
+              {/* MODAL FOOTER */}
+              <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const path =
+                      activeModal === "cabang"
+                        ? "/admin/branches"
+                        : "/admin/users";
+                    setActiveModal(null);
+                    navigate(path);
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline cursor-pointer"
+                >
+                  <span>
+                    Kelola {activeModal === "cabang" ? "Cabang" : "Guru"} di Halaman
+                    Kelola
+                  </span>
+                  <FiExternalLink className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                >
+                  Tutup
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
