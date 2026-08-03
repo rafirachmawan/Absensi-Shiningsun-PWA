@@ -85,6 +85,7 @@ export default function AdminLayout() {
   }, []);
 
   const handleLogout = async () => {
+    localStorage.removeItem("autoLogin");
     await signOut(auth);
     navigate("/");
   };

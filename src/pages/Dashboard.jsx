@@ -123,6 +123,7 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
+      localStorage.removeItem("autoLogin");
       await signOut(auth);
       navigate("/");
     } catch (err) {

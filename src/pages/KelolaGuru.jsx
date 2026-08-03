@@ -15,7 +15,7 @@ import {
   setDoc,
   deleteDoc, // ✅ TAMBAHKAN INI
 } from "firebase/firestore";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiCamera, FiX } from "react-icons/fi";
 
 export default function KelolaGuru() {
   const [guru, setGuru] = useState([]);
@@ -30,6 +30,11 @@ export default function KelolaGuru() {
   const [alamat, setAlamat] = useState("");
   const [noHp, setNoHp] = useState("");
   const [cabang, setCabang] = useState("");
+  const [jabatan, setJabatan] = useState("");
+  const [photoURL, setPhotoURL] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const [tglMasuk, setTglMasuk] = useState("");
   const [jamMasuk, setJamMasuk] = useState("");
@@ -74,6 +79,37 @@ export default function KelolaGuru() {
 
   const getNumber = (value) => {
     return value.replace(/[^\d]/g, "");
+  };
+
+  /* UPLOAD FOTO KE CLOUDINARY */
+  const uploadPhoto = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "absensi_upload");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dbefoaekm/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    const data = await res.json();
+    return data.secure_url;
+  };
+
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const clearPhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview("");
+    setPhotoURL("");
   };
 
   const loadGuru = async () => {
@@ -132,6 +168,14 @@ export default function KelolaGuru() {
 
       const uid = userCredential.user.uid;
 
+      // Upload foto jika ada
+      let finalPhotoURL = photoURL;
+      if (photoFile) {
+        setUploadingPhoto(true);
+        finalPhotoURL = await uploadPhoto(photoFile);
+        setUploadingPhoto(false);
+      }
+
       await setDoc(doc(db, "users", uid), {
         uid,
         namaLengkap,
@@ -140,6 +184,8 @@ export default function KelolaGuru() {
         alamat,
         noHp,
         cabang,
+        jabatan,
+        photoURL: finalPhotoURL,
         tglMasuk,
         jamMasuk,
         jamPulang,
@@ -163,6 +209,10 @@ export default function KelolaGuru() {
       setAlamat("");
       setNoHp("");
       setCabang("");
+      setJabatan("");
+      setPhotoURL("");
+      setPhotoFile(null);
+      setPhotoPreview("");
       setTglMasuk("");
       setJamMasuk("");
       setJamPulang("");
@@ -196,6 +246,10 @@ export default function KelolaGuru() {
     setAlamat(g.alamat || "");
     setNoHp(g.noHp || "");
     setCabang(g.cabang || "");
+    setJabatan(g.jabatan || "");
+    setPhotoURL(g.photoURL || "");
+    setPhotoFile(null);
+    setPhotoPreview(g.photoURL || "");
 
     setTglMasuk(g.tglMasuk || "");
     setJamMasuk(g.jamMasuk || "");
@@ -243,6 +297,14 @@ export default function KelolaGuru() {
 
       const ref = doc(db, "users", editId);
 
+      // Upload foto baru jika ada
+      let finalPhotoURL = photoURL;
+      if (photoFile) {
+        setUploadingPhoto(true);
+        finalPhotoURL = await uploadPhoto(photoFile);
+        setUploadingPhoto(false);
+      }
+
       await updateDoc(ref, {
         namaLengkap,
         tempatLahir,
@@ -250,6 +312,8 @@ export default function KelolaGuru() {
         alamat,
         noHp,
         cabang,
+        jabatan,
+        photoURL: finalPhotoURL,
         tglMasuk,
         jamMasuk,
         jamPulang,
@@ -280,6 +344,8 @@ export default function KelolaGuru() {
       setEditMode(false);
       setShowForm(false);
       setPassword("");
+      setPhotoFile(null);
+      setPhotoPreview("");
 
       loadGuru();
     } catch (err) {
@@ -364,6 +430,10 @@ export default function KelolaGuru() {
             setAlamat("");
             setNoHp("");
             setCabang("");
+            setJabatan("");
+            setPhotoURL("");
+            setPhotoFile(null);
+            setPhotoPreview("");
             setTglMasuk("");
             setJamMasuk("");
             setJamPulang("");
@@ -400,7 +470,54 @@ export default function KelolaGuru() {
 
       {showForm && (
         <div className="bg-white border rounded-2xl shadow-sm p-6 space-y-6">
-          <h2 className="text-lg font-semibold">Tambah Guru</h2>
+          <h2 className="text-lg font-semibold">{editMode ? "Edit Guru" : "Tambah Guru"}</h2>
+
+          {/* FOTO PROFIL UPLOAD */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative group">
+              {photoPreview ? (
+                <div className="relative">
+                  <img
+                    src={photoPreview}
+                    alt="Preview"
+                    className="w-24 h-24 rounded-2xl object-cover border-2 border-blue-100 shadow-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearPhoto}
+                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md transition-colors"
+                  >
+                    <FiX className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <label className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-300 hover:border-blue-400 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-blue-50 transition-colors">
+                  <FiCamera className="w-6 h-6 text-gray-400" />
+                  <span className="text-[10px] text-gray-400 mt-1 font-medium">Upload Foto</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handlePhotoSelect}
+                  />
+                </label>
+              )}
+            </div>
+            {photoPreview && (
+              <label className="text-xs text-blue-600 hover:text-blue-700 font-semibold cursor-pointer hover:underline">
+                Ganti Foto
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handlePhotoSelect}
+                />
+              </label>
+            )}
+            {uploadingPhoto && (
+              <p className="text-xs text-gray-400 animate-pulse">Mengupload foto...</p>
+            )}
+          </div>
 
           <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
             <div>
@@ -465,6 +582,16 @@ export default function KelolaGuru() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Jabatan</label>
+              <input
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="Contoh: Guru Kelas / Koordinator"
+                value={jabatan}
+                onChange={(e) => setJabatan(e.target.value)}
+              />
             </div>
 
             <div>
@@ -651,7 +778,24 @@ export default function KelolaGuru() {
             <tbody>
               {filteredGuru.map((g) => (
                 <tr key={g.id} className="border-t">
-                  <td className="p-4 font-medium">{g.namaLengkap}</td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={
+                          g.photoURL ||
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true`
+                        }
+                        alt={g.namaLengkap}
+                        className="w-9 h-9 rounded-xl object-cover border border-gray-200 shadow-sm"
+                      />
+                      <div>
+                        <p className="font-medium text-gray-800">{g.namaLengkap}</p>
+                        {g.jabatan && (
+                          <p className="text-xs text-gray-400">{g.jabatan}</p>
+                        )}
+                      </div>
+                    </div>
+                  </td>
                   <td className="p-4">{g.cabang}</td>
 
                   <td className="p-4">
@@ -706,8 +850,23 @@ export default function KelolaGuru() {
           {filteredGuru.map((g) => (
             <div key={g.id} className="p-4 space-y-3">
               {/* HEADER */}
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-gray-800">{g.namaLengkap}</h3>
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={
+                      g.photoURL ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true`
+                    }
+                    alt={g.namaLengkap}
+                    className="w-11 h-11 rounded-xl object-cover border border-gray-200 shadow-sm"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{g.namaLengkap}</h3>
+                    {g.jabatan && (
+                      <p className="text-xs text-gray-400">{g.jabatan}</p>
+                    )}
+                  </div>
+                </div>
 
                 <span
                   className={`text-xs px-2 py-1 rounded ${

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import {
   FiEye,
   FiEyeOff,
@@ -36,11 +36,39 @@ export default function Login() {
 
   useEffect(() => {
     const saved = localStorage.getItem("rememberUser");
+    const isAutoLogin = localStorage.getItem("autoLogin") === "true";
+
     if (saved) {
       setIdentifier(saved);
       setRemember(true);
     }
-  }, []);
+
+    if (isAutoLogin) {
+      const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        if (currentUser) {
+          try {
+            const userRef = doc(db, "users", currentUser.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+              const userData = userSnap.data();
+              if (userData.aktif !== false) {
+                if (userData.role === "superadmin") {
+                  navigate("/admin/dashboard");
+                } else {
+                  navigate("/dashboard");
+                }
+              }
+            }
+          } catch (err) {
+            console.error("Auto login check error:", err);
+          }
+        }
+      });
+
+      return () => unsubscribe();
+    }
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
@@ -100,8 +128,10 @@ export default function Login() {
 
       if (remember) {
         localStorage.setItem("rememberUser", cleanIdentifier);
+        localStorage.setItem("autoLogin", "true");
       } else {
         localStorage.removeItem("rememberUser");
+        localStorage.removeItem("autoLogin");
       }
 
       if (userData.role === "superadmin") {
