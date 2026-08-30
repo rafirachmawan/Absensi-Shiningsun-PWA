@@ -207,17 +207,17 @@ export default function RekapAbsensi() {
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/70 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-sm">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
               Laporan Presensi
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             Rekap Absensi
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
             Laporan kehadiran guru berdasarkan rentang tanggal dan cabang
           </p>
         </div>
@@ -225,7 +225,7 @@ export default function RekapAbsensi() {
         {filtered.length > 0 && (
           <button
             onClick={exportExcel}
-            className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer"
           >
             📊 Export Excel
           </button>
@@ -233,7 +233,7 @@ export default function RekapAbsensi() {
       </div>
 
       {/* FILTER CARD */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm p-5 md:p-6 space-y-4">
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs p-5 md:p-6 space-y-4">
         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
           Filter Absensi
         </h3>
@@ -247,7 +247,7 @@ export default function RekapAbsensi() {
               type="date"
               value={tanggalMulai}
               onChange={(e) => setTanggalMulai(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium"
+              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all"
             />
           </div>
 
@@ -259,7 +259,7 @@ export default function RekapAbsensi() {
               type="date"
               value={tanggalSelesai}
               onChange={(e) => setTanggalSelesai(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium"
+              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all"
             />
           </div>
 
@@ -270,7 +270,7 @@ export default function RekapAbsensi() {
             <select
               value={cabang}
               onChange={(e) => setCabang(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium"
+              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all"
             >
               <option value="">Semua Cabang</option>
               {cabangList.map((c, i) => (
@@ -289,13 +289,13 @@ export default function RekapAbsensi() {
               placeholder="Cari nama guru..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none text-slate-800 font-medium placeholder:font-normal placeholder:text-slate-400"
+              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all placeholder:font-normal placeholder:text-slate-400"
             />
           </div>
 
           <button
             onClick={applyFilter}
-            className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl px-4 py-2.5 text-sm w-full shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-2.5 text-sm w-full shadow-xs transition-all cursor-pointer"
           >
             Tampilkan Data
           </button>
@@ -304,7 +304,7 @@ export default function RekapAbsensi() {
 
       {/* TABLE */}
       {filtered.length > 0 && (
-        <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-x-auto p-2">
+        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-x-auto p-3">
           {(() => {
             // 🔥 ambil nama unik
             const namaList = [...new Set(filtered.map((d) => d.nama))];
@@ -319,12 +319,12 @@ export default function RekapAbsensi() {
             const tanggalList = Object.keys(grouped).sort();
 
             return (
-              <table className="min-w-[800px] w-full text-sm border">
-                <thead className="bg-gray-50 text-gray-700">
+              <table className="min-w-[800px] w-full text-sm border border-slate-200">
+                <thead className="bg-slate-100/80 text-slate-700 font-bold text-xs uppercase">
                   {/* HEADER 1 */}
                   <tr>
                     <th
-                      className="border border-gray-300 border-r-2 p-2 text-left"
+                      className="border border-slate-200 border-r-2 p-2.5 text-left bg-slate-100 text-slate-800 font-extrabold"
                       rowSpan={2}
                     >
                       Tanggal
@@ -334,7 +334,7 @@ export default function RekapAbsensi() {
                       <th
                         key={i}
                         colSpan={6}
-                        className="border border-gray-300 border-r-2 p-2 text-center bg-gray-100"
+                        className="border border-slate-200 border-r-2 p-2.5 text-center bg-slate-200/60 text-slate-900 font-extrabold"
                       >
                         {nama}
                       </th>
@@ -345,23 +345,23 @@ export default function RekapAbsensi() {
                   <tr>
                     {namaList.map((_, i) => (
                       <Fragment key={i}>
-                        <th className="border border-gray-300 p-2 text-center text-green-700">
+                        <th className="border border-slate-200 p-2 text-center text-emerald-700 font-extrabold">
                           Masuk
                         </th>
-                        <th className="border border-gray-300 p-2 text-center">
+                        <th className="border border-slate-200 p-2 text-center text-slate-600">
                           Status
                         </th>
-                        <th className="border border-gray-300 p-2 text-center">
+                        <th className="border border-slate-200 p-2 text-center text-slate-600">
                           Keterangan
                         </th>
 
-                        <th className="border border-gray-300 p-2 text-center text-red-600">
+                        <th className="border border-slate-200 p-2 text-center text-rose-600 font-extrabold">
                           Pulang
                         </th>
-                        <th className="border border-gray-300 p-2 text-center">
+                        <th className="border border-slate-200 p-2 text-center text-slate-600">
                           Status
                         </th>
-                        <th className="border border-gray-300 border-r-2 p-2 text-center">
+                        <th className="border border-slate-200 border-r-2 p-2 text-center text-slate-600">
                           Keterangan
                         </th>
                       </Fragment>
@@ -369,11 +369,11 @@ export default function RekapAbsensi() {
                   </tr>
                 </thead>
 
-                <tbody>
+                <tbody className="divide-y divide-slate-100 text-xs">
                   {tanggalList.map((tgl, i) => (
-                    <tr key={i}>
+                    <tr key={i} className="hover:bg-slate-50/80 transition-colors">
                       {/* TANGGAL */}
-                      <td className="border border-gray-300 border-r-2 p-2 font-medium">
+                      <td className="border border-slate-200 border-r-2 p-2.5 font-bold text-slate-900 bg-slate-50/50">
                         {formatTanggal(tgl)}
                       </td>
 
@@ -384,28 +384,28 @@ export default function RekapAbsensi() {
 
                         return (
                           <Fragment key={j}>
-                            <td className="border border-gray-300 p-2 text-center text-green-700 font-semibold">
+                            <td className="border border-slate-200 p-2 text-center text-emerald-700 font-bold font-mono">
                               {dataHari?.waktu || "-"}
                             </td>
 
-                            <td className="border border-gray-300 p-2 text-center text-blue-600 text-xs">
+                            <td className="border border-slate-200 p-2 text-center text-slate-700 text-xs font-semibold">
                               {dataHari?.status || "-"}
                             </td>
 
-                            <td className="border border-gray-300 p-2 text-xs text-gray-500">
+                            <td className="border border-slate-200 p-2 text-xs text-slate-500">
                               {dataHari?.keterangan || "-"}
                             </td>
 
-                            <td className="border border-gray-300 p-2 text-center text-red-600 font-semibold">
+                            <td className="border border-slate-200 p-2 text-center text-rose-600 font-bold font-mono">
                               {dataHari?.jamPulang || "-"}
                             </td>
 
-                            <td className="border border-gray-300 p-2 text-center text-blue-600 text-xs">
+                            <td className="border border-slate-200 p-2 text-center text-slate-700 text-xs font-semibold">
                               {dataHari?.statusPulang || "-"}
                             </td>
 
                             {/* 🔥 KOLOM TERAKHIR TIAP GURU */}
-                            <td className="border border-gray-300 border-r-2 p-2 text-xs text-gray-500">
+                            <td className="border border-slate-200 border-r-2 p-2 text-xs text-slate-500">
                               {dataHari?.keteranganPulang || "-"}
                             </td>
                           </Fragment>

@@ -412,17 +412,17 @@ export default function KelolaGuru() {
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-sm">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200/80 text-slate-700 text-[11px] font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
               Manajemen Guru
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             Kelola Data Guru
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
             Tambahkan, sunting, dan atur akun tenaga pengajar
           </p>
         </div>
@@ -455,7 +455,7 @@ export default function KelolaGuru() {
             setPassword("");
             setEmail("");
           }}
-          className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-100 active:scale-[0.99] text-slate-900 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer w-full sm:w-auto"
         >
           <span>+ Tambah Guru Baru</span>
         </button>
@@ -490,9 +490,9 @@ export default function KelolaGuru() {
           >
             <div className="bg-white border border-slate-200/90 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in duration-200">
               {/* MODAL HEADER */}
-              <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between shrink-0">
+              <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-800">
+                  <h2 className="text-lg font-bold text-white tracking-tight">
                     {editMode ? "Edit Data Guru" : "Tambah Guru Baru"}
                   </h2>
                   <p className="text-xs text-slate-400">
@@ -504,7 +504,7 @@ export default function KelolaGuru() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                  className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 >
                   <FiX className="w-5 h-5" />
                 </button>
