@@ -47,28 +47,30 @@ export default function AbsenPulang() {
 
   const getLocation = () => {
     return new Promise((resolve, reject) => {
+      // 1. Coba dengan High Accuracy dulu (timeout 7d, maximumAge 3d)
       navigator.geolocation.getCurrentPosition(
         (position) => resolve(position),
-
-        (error) => {
-          console.log("GPS gagal, mencoba ulang...");
-
+        (err) => {
+          console.log(
+            "GPS High Accuracy gagal/timeout, mencoba Fallback Jaringan...",
+            err
+          );
+          // 2. Fallback ke Low Accuracy (WiFi/Cellular) jika High Accuracy gagal/timeout
           navigator.geolocation.getCurrentPosition(
             (position) => resolve(position),
             (error) => reject(error),
             {
-              enableHighAccuracy: true,
-              timeout: 15000,
-              maximumAge: 0,
-            },
+              enableHighAccuracy: false,
+              timeout: 10000,
+              maximumAge: 5000,
+            }
           );
         },
-
         {
           enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0,
-        },
+          timeout: 7000,
+          maximumAge: 3000,
+        }
       );
     });
   };
@@ -226,12 +228,18 @@ export default function AbsenPulang() {
       setShowResult(true);
       setStatusType("error");
 
-      if (err.code === 1) {
-        setMessage("❌ Izin lokasi ditolak. Aktifkan GPS di browser.");
-      } else if (err.code === 2) {
-        setMessage("❌ Lokasi tidak tersedia.");
-      } else if (err.code === 3) {
-        setMessage("❌ GPS terlalu lama mendapatkan lokasi.");
+      if (err && err.code === 1) {
+        setMessage(
+          "❌ Izin lokasi ditolak. Aktifkan GPS di HP & izinkan lokasi di browser."
+        );
+      } else if (err && err.code === 2) {
+        setMessage(
+          "❌ Sinyal lokasi tidak tersedia. Pastikan GPS HP aktif & berada di tempat terbuka."
+        );
+      } else if (err && err.code === 3) {
+        setMessage(
+          "❌ Waktu pencarian lokasi habis. Silakan tekan tombol Absen sekali lagi."
+        );
       } else {
         setMessage("❌ Gagal mendapatkan lokasi.");
       }

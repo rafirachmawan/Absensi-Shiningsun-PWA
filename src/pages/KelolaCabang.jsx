@@ -122,18 +122,21 @@ export default function KelolaCabang() {
         </div>
       </div>
 
-      {/* FORM TAMBAH */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm p-6 space-y-4">
-        <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-          Tambah Cabang Baru
-        </h2>
+      {/* FORM TAMBAH CABANG */}
+      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-xs p-5 sm:p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-indigo-600" />
+          <h2 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">
+            Tambah Cabang Baru
+          </h2>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* NAMA CABANG */}
           <div>
-            <label className="text-xs font-semibold text-slate-700">Nama Cabang</label>
+            <label className="text-xs font-bold text-slate-700">Nama Cabang</label>
             <input
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+              className="border border-slate-200/80 rounded-2xl px-3.5 py-2.5 text-sm w-full mt-1.5 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800 bg-slate-50/50 focus:bg-white transition-all placeholder:text-slate-400 placeholder:font-normal"
               placeholder="Contoh: Cabang Gragalan"
               value={nama}
               onChange={(e) => setNama(e.target.value)}
@@ -142,23 +145,23 @@ export default function KelolaCabang() {
 
           {/* LATITUDE */}
           <div>
-            <label className="text-xs font-semibold text-slate-700">Latitude</label>
+            <label className="text-xs font-bold text-slate-700">Latitude</label>
             <input
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+              className="border border-slate-200/80 rounded-2xl px-3.5 py-2.5 text-sm w-full mt-1.5 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800 bg-slate-50/50 focus:bg-white transition-all placeholder:text-slate-400 placeholder:font-normal"
               placeholder="-6.200000"
               value={latitude}
               onChange={(e) => setLatitude(e.target.value)}
             />
-            <p className="text-[10px] text-slate-400 mt-1 font-normal">
-              Dari Google Maps
+            <p className="text-[10px] text-slate-400 mt-1 font-medium">
+              Koordinat dari Google Maps
             </p>
           </div>
 
           {/* LONGITUDE */}
           <div>
-            <label className="text-xs font-semibold text-slate-700">Longitude</label>
+            <label className="text-xs font-bold text-slate-700">Longitude</label>
             <input
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+              className="border border-slate-200/80 rounded-2xl px-3.5 py-2.5 text-sm w-full mt-1.5 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800 bg-slate-50/50 focus:bg-white transition-all placeholder:text-slate-400 placeholder:font-normal"
               placeholder="106.816666"
               value={longitude}
               onChange={(e) => setLongitude(e.target.value)}
@@ -167,118 +170,149 @@ export default function KelolaCabang() {
 
           {/* RADIUS */}
           <div>
-            <label className="text-xs font-semibold text-slate-700">Radius (meter)</label>
+            <label className="text-xs font-bold text-slate-700">Radius (meter)</label>
             <input
               type="number"
-              className="border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm w-full mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+              className="border border-slate-200/80 rounded-2xl px-3.5 py-2.5 text-sm w-full mt-1.5 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800 bg-slate-50/50 focus:bg-white transition-all placeholder:text-slate-400 placeholder:font-normal"
               placeholder="100"
               value={radius}
               onChange={(e) => setRadius(e.target.value)}
             />
-            <p className="text-[10px] text-slate-400 mt-1 font-normal">
+            <p className="text-[10px] text-slate-400 mt-1 font-medium">
               Kosongkan = Bebas Lokasi
             </p>
           </div>
+        </div>
 
-          {/* BUTTON */}
-          <div className="flex items-start pt-[25px]">
-            <button
-              onClick={tambahCabang}
-              disabled={loading}
-              className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl text-sm px-4 py-2.5 w-full shadow-md shadow-indigo-500/20 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {loading ? "Menyimpan..." : "Tambah Cabang"}
-            </button>
-          </div>
+        {/* BUTTON */}
+        <div className="flex justify-end pt-2 border-t border-slate-100">
+          <button
+            onClick={tambahCabang}
+            disabled={loading}
+            className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-2xl text-sm px-6 py-3 shadow-md shadow-indigo-500/20 transition-all cursor-pointer disabled:opacity-50 w-full sm:w-auto"
+          >
+            {loading ? "Menyimpan..." : "+ Tambah Cabang Baru"}
+          </button>
         </div>
       </div>
 
       {/* DATA CABANG */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-3xl shadow-xs overflow-hidden">
         {/* DESKTOP TABLE */}
-
-        <div className="hidden md:block">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-slate-50/80 border-b border-slate-100 text-slate-500 text-xs uppercase font-extrabold tracking-wider">
               <tr>
-                <th className="p-4 text-left">Nama Cabang</th>
-                <th className="p-4 text-left">Latitude</th>
-                <th className="p-4 text-left">Longitude</th>
-                <th className="p-4 text-left">Radius</th>
-                <th className="p-4 text-left">Aksi</th>
+                <th className="py-4 px-6 text-left">Nama Cabang</th>
+                <th className="py-4 px-6 text-left">Koordinat (Lat, Long)</th>
+                <th className="py-4 px-6 text-left">Batas Radius</th>
+                <th className="py-4 px-6 text-right">Aksi</th>
               </tr>
             </thead>
 
-            <tbody>
-              {branches.map((b) => (
-                <tr key={b.id} className="border-t">
-                  <td className="p-4 font-medium">{b.nama}</td>
-
-                  <td className="p-4 text-gray-500">{b.latitude ?? "-"}</td>
-
-                  <td className="p-4 text-gray-500">{b.longitude ?? "-"}</td>
-
-                  <td className="p-4">
-                    {b.radius ? `${b.radius} meter` : "Bebas Lokasi"}
-                  </td>
-
-                  <td className="p-4">
-                    <button
-                      onClick={() => setEditData(b)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
-                    >
-                      Edit
-                    </button>
+            <tbody className="divide-y divide-slate-100 font-medium">
+              {branches.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="py-10 text-center text-slate-400 text-sm">
+                    Belum ada data cabang
                   </td>
                 </tr>
-              ))}
+              ) : (
+                branches.map((b) => (
+                  <tr key={b.id} className="hover:bg-indigo-50/30 transition-colors">
+                    <td className="py-4 px-6">
+                      <p className="font-bold text-slate-800 text-sm">{b.nama}</p>
+                    </td>
+
+                    <td className="py-4 px-6 text-slate-500 font-mono text-xs">
+                      {b.latitude && b.longitude
+                        ? `${b.latitude}, ${b.longitude}`
+                        : "Tidak diatur"}
+                    </td>
+
+                    <td className="py-4 px-6">
+                      {b.radius ? (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+                          {b.radius} Meter
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                          Bebas Lokasi
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="py-4 px-6 text-right">
+                      <button
+                        onClick={() => setEditData(b)}
+                        className="px-4 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 font-bold text-xs transition-colors cursor-pointer"
+                      >
+                        Edit Cabang
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* MOBILE CARD */}
-
-        <div className="md:hidden p-4 space-y-4">
-          {branches.map((b) => (
-            <div key={b.id} className="border rounded-xl p-4 shadow-sm">
-              <h3 className="font-semibold text-gray-800">{b.nama}</h3>
-
-              <p className="text-sm text-gray-500 break-all mt-1">
-                Latitude: {b.latitude ?? "-"}
-              </p>
-
-              <p className="text-sm text-gray-500 break-all">
-                Longitude: {b.longitude ?? "-"}
-              </p>
-
-              <p className="text-sm mt-1">
-                Radius: {b.radius ? `${b.radius} meter` : "Bebas Lokasi"}
-              </p>
-
-              <button
-                onClick={() => setEditData(b)}
-                className="w-full bg-yellow-500 text-white py-2 rounded-lg text-sm mt-3"
-              >
-                Edit Cabang
-              </button>
+        {/* MOBILE CARD LIST */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {branches.length === 0 ? (
+            <div className="py-8 text-center text-slate-400 text-xs font-medium">
+              Belum ada data cabang
             </div>
-          ))}
+          ) : (
+            branches.map((b) => (
+              <div key={b.id} className="p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-bold text-slate-800 text-base">{b.nama}</h3>
+                  {b.radius ? (
+                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+                      {b.radius}m
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                      Bebas
+                    </span>
+                  )}
+                </div>
+
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-1 font-mono text-xs text-slate-600">
+                  <p>Lat: {b.latitude ?? "-"}</p>
+                  <p>Long: {b.longitude ?? "-"}</p>
+                </div>
+
+                <button
+                  onClick={() => setEditData(b)}
+                  className="w-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 font-bold py-2.5 rounded-2xl text-xs transition-colors cursor-pointer text-center"
+                >
+                  Edit Cabang
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
-      {/* MODAL EDIT */}
-
+      {/* MODAL EDIT CABANG */}
       {editData && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md rounded-xl shadow-xl border p-6">
-            <h2 className="text-lg font-semibold text-gray-800">Edit Cabang</h2>
+        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white border border-slate-200/90 w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">Edit Data Cabang</h2>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Perbarui koordinat dan batas radius cabang
+              </p>
+            </div>
 
-            <div className="space-y-4 mt-4">
+            <div className="space-y-4">
               {/* NAMA CABANG */}
               <div>
-                <label className="text-xs text-gray-600">Nama Cabang</label>
+                <label className="text-xs font-bold text-slate-700">Nama Cabang</label>
                 <input
-                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
+                  className="border border-slate-200 rounded-2xl px-4 py-2.5 w-full text-sm mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
                   value={editData.nama}
                   onChange={(e) =>
                     setEditData({ ...editData, nama: e.target.value })
@@ -288,10 +322,10 @@ export default function KelolaCabang() {
 
               {/* LATITUDE */}
               <div>
-                <label className="text-xs text-gray-600">Latitude</label>
+                <label className="text-xs font-bold text-slate-700">Latitude</label>
                 <input
-                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
-                  value={editData.latitude}
+                  className="border border-slate-200 rounded-2xl px-4 py-2.5 w-full text-sm mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+                  value={editData.latitude || ""}
                   onChange={(e) =>
                     setEditData({ ...editData, latitude: e.target.value })
                   }
@@ -300,10 +334,10 @@ export default function KelolaCabang() {
 
               {/* LONGITUDE */}
               <div>
-                <label className="text-xs text-gray-600">Longitude</label>
+                <label className="text-xs font-bold text-slate-700">Longitude</label>
                 <input
-                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
-                  value={editData.longitude}
+                  className="border border-slate-200 rounded-2xl px-4 py-2.5 w-full text-sm mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+                  value={editData.longitude || ""}
                   onChange={(e) =>
                     setEditData({ ...editData, longitude: e.target.value })
                   }
@@ -312,10 +346,11 @@ export default function KelolaCabang() {
 
               {/* RADIUS */}
               <div>
-                <label className="text-xs text-gray-600">Radius (meter)</label>
+                <label className="text-xs font-bold text-slate-700">Radius (meter)</label>
                 <input
-                  className="border rounded-lg px-4 py-2 w-full text-sm mt-1"
-                  value={editData.radius}
+                  type="number"
+                  className="border border-slate-200 rounded-2xl px-4 py-2.5 w-full text-sm mt-1 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 outline-none font-medium text-slate-800"
+                  value={editData.radius || ""}
                   onChange={(e) =>
                     setEditData({ ...editData, radius: e.target.value })
                   }
@@ -323,19 +358,21 @@ export default function KelolaCabang() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-3 pt-2">
               <button
+                type="button"
                 onClick={() => setEditData(null)}
-                className="px-4 py-2 border rounded-lg text-sm"
+                className="px-5 py-2.5 rounded-2xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-xs font-bold transition-colors cursor-pointer"
               >
                 Batal
               </button>
 
               <button
+                type="button"
                 onClick={updateCabang}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+                className="px-6 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
               >
-                Simpan
+                Simpan Perubahan
               </button>
             </div>
           </div>

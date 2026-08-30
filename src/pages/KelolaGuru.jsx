@@ -121,8 +121,10 @@ export default function KelolaGuru() {
       ...doc.data(),
     }));
 
-    // HANYA AMBIL USER ROLE GURU
-    const onlyGuru = data.filter((u) => u.role === "guru");
+    // HANYA AMBIL USER ROLE GURU (NON-SUPERADMIN)
+    const onlyGuru = data.filter(
+      (u) => (u.role || "guru").toLowerCase().trim() !== "superadmin",
+    );
 
     // SORT BERDASARKAN NAMA A-Z
     const sortedGuru = onlyGuru.sort((a, b) =>
@@ -410,14 +412,14 @@ export default function KelolaGuru() {
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/70 backdrop-blur-md p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200/80 text-slate-700 text-[11px] font-bold uppercase tracking-wider">
               Manajemen Guru
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Kelola Data Guru
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
@@ -453,14 +455,14 @@ export default function KelolaGuru() {
             setPassword("");
             setEmail("");
           }}
-          className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-md shadow-indigo-500/20 transition-all cursor-pointer w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer w-full sm:w-auto"
         >
           <span>+ Tambah Guru Baru</span>
         </button>
       </div>
 
       {/* SEARCH BAR CARD */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 shadow-sm space-y-2">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs space-y-2">
         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
           Pencarian Guru
         </h3>
@@ -471,7 +473,7 @@ export default function KelolaGuru() {
             placeholder="Cari nama, username, cabang, atau no hp..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-50/80 border border-slate-200/80 focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-500/10 rounded-2xl px-4 py-3 text-sm text-slate-800 font-medium transition-all outline-none placeholder:text-slate-400 placeholder:font-normal"
+            className="w-full bg-slate-50 border border-slate-200/90 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-900/5 rounded-xl px-4 py-2.5 text-sm text-slate-800 font-medium transition-all outline-hidden placeholder:text-slate-400 placeholder:font-normal"
           />
         </div>
       </div>
@@ -806,160 +808,201 @@ export default function KelolaGuru() {
           document.body,
         )}
 
-      {/* TABLE + MOBILE CARD */}
-
-      <div className="bg-white border rounded-2xl shadow-sm">
+      {/* TABLE + MOBILE CARD LIST */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
         {/* ================= DESKTOP TABLE ================= */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="min-w-[900px] w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50/80 border-b border-slate-100 text-slate-500 text-xs uppercase font-extrabold tracking-wider">
               <tr>
-                <th className="p-4 text-left">Nama Lengkap</th>
-                <th className="p-4 text-left">Cabang</th>
-                <th className="p-4 text-left">Status</th>
-                <th className="p-4 text-left">Aksi</th>
+                <th className="py-4 px-6 text-left">Nama & Profil Guru</th>
+                <th className="py-4 px-6 text-left">Cabang Sekolah</th>
+                <th className="py-4 px-6 text-left">Status Akun</th>
+                <th className="py-4 px-6 text-right">Tindakan Admin</th>
               </tr>
             </thead>
 
-            <tbody>
-              {filteredGuru.map((g) => (
-                <tr key={g.id} className="border-t">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={
-                          g.photoURL ||
-                          `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true`
-                        }
-                        alt={g.namaLengkap}
-                        className="w-9 h-9 rounded-xl object-cover border border-gray-200 shadow-sm"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-800">{g.namaLengkap}</p>
-                        {g.jabatan && (
-                          <p className="text-xs text-gray-400">{g.jabatan}</p>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-4">{g.cabang}</td>
-
-                  <td className="p-4">
-                    {g.aktif ? (
-                      <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-                        Aktif
-                      </span>
-                    ) : (
-                      <span className="bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full">
-                        Nonaktif
-                      </span>
-                    )}
-                  </td>
-
-                  <td className="p-4 flex gap-2 flex-wrap">
-                    <button
-                      onClick={() => handleEdit(g)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded text-xs"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => toggleStatus(g)}
-                      className="bg-gray-700 text-white px-3 py-1 rounded text-xs"
-                    >
-                      {g.aktif ? "Nonaktifkan" : "Aktifkan"}
-                    </button>
-
-                    <button
-                      onClick={() => handleDelete(g.id)}
-                      className="bg-red-600 text-white px-3 py-1 rounded text-xs"
-                    >
-                      Hapus
-                    </button>
-
-                    <button
-                      onClick={() => handleResetPassword(g)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded text-xs"
-                    >
-                      Reset
-                    </button>
+            <tbody className="divide-y divide-slate-100 font-medium">
+              {filteredGuru.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="py-10 text-center text-slate-400 text-sm">
+                    Tidak ada data guru ditemukan
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredGuru.map((g) => (
+                  <tr key={g.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3.5">
+                        <img
+                          src={
+                            g.photoURL ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=F1F5F9&color=0F172A&bold=true`
+                          }
+                          alt={g.namaLengkap}
+                          className="w-10 h-10 rounded-full object-cover border border-slate-200/80 shadow-xs shrink-0"
+                        />
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm">{g.namaLengkap}</p>
+                          <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+                            <span>@{g.username || "guru"}</span>
+                            {g.jabatan && <span className="text-slate-300">•</span>}
+                            {g.jabatan && <span>{g.jabatan}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="py-4 px-6">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200/60">
+                        {g.cabang || "Tanpa Cabang"}
+                      </span>
+                    </td>
+
+                    <td className="py-4 px-6">
+                      {g.aktif ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          Aktif
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200/80">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                          Nonaktif
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="py-4 px-6 text-right">
+                      <div className="inline-flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(g)}
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-bold text-xs transition-colors cursor-pointer"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => toggleStatus(g)}
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold text-xs transition-colors cursor-pointer"
+                        >
+                          {g.aktif ? "Nonaktifkan" : "Aktifkan"}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleResetPassword(g)}
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold text-xs transition-colors cursor-pointer"
+                        >
+                          Reset
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(g.id)}
+                          className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 font-bold text-xs transition-colors cursor-pointer"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* ================= MOBILE CARD ================= */}
-        <div className="md:hidden divide-y">
-          {filteredGuru.map((g) => (
-            <div key={g.id} className="p-4 space-y-3">
-              {/* HEADER */}
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={
-                      g.photoURL ||
-                      `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=EEF2FF&color=4F46E5&bold=true`
-                    }
-                    alt={g.namaLengkap}
-                    className="w-11 h-11 rounded-xl object-cover border border-gray-200 shadow-sm"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-gray-800">{g.namaLengkap}</h3>
-                    {g.jabatan && (
-                      <p className="text-xs text-gray-400">{g.jabatan}</p>
-                    )}
+        {/* ================= MOBILE CARD LIST ================= */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {filteredGuru.length === 0 ? (
+            <div className="py-8 text-center text-slate-400 text-xs font-medium">
+              Tidak ada data guru ditemukan
+            </div>
+          ) : (
+            filteredGuru.map((g) => (
+              <div key={g.id} className="p-4 space-y-3">
+                {/* HEADER */}
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img
+                      src={
+                        g.photoURL ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=F1F5F9&color=0F172A&bold=true`
+                      }
+                      alt={g.namaLengkap}
+                      className="w-11 h-11 rounded-full object-cover border border-slate-200/80 shadow-xs shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-slate-900 text-sm truncate">
+                        {g.namaLengkap}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-0.5 truncate">
+                        @{g.username || "guru"} {g.jabatan ? `• ${g.jabatan}` : ""}
+                      </p>
+                    </div>
                   </div>
+
+                  <span
+                    className={`shrink-0 text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                      g.aktif
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
+                        : "bg-rose-50 text-rose-700 border-rose-200/80"
+                    }`}
+                  >
+                    {g.aktif ? "Aktif" : "Nonaktif"}
+                  </span>
                 </div>
 
-                <span
-                  className={`text-xs px-2 py-1 rounded ${
-                    g.aktif
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {g.aktif ? "Aktif" : "Nonaktif"}
-                </span>
+                {/* INFO PILLS */}
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="font-semibold bg-slate-100 px-2.5 py-0.5 rounded-md text-slate-700 border border-slate-200/60">
+                    Cabang: {g.cabang || "-"}
+                  </span>
+                  {g.noHp && (
+                    <span className="text-slate-500 font-mono text-[11px]">HP: {g.noHp}</span>
+                  )}
+                </div>
+
+                {/* ACTION BUTTONS GRID */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleEdit(g)}
+                    className="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
+                  >
+                    Edit Data
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => toggleStatus(g)}
+                    className="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
+                  >
+                    {g.aktif ? "Nonaktifkan" : "Aktifkan"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleResetPassword(g)}
+                    className="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
+                  >
+                    Reset Pass
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(g.id)}
+                    className="py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 text-xs font-bold transition-colors cursor-pointer text-center"
+                  >
+                    Hapus
+                  </button>
+                </div>
               </div>
-
-              {/* CABANG */}
-              <p className="text-sm text-gray-500">Cabang: {g.cabang}</p>
-
-              {/* ACTION */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => handleEdit(g)}
-                  className="bg-yellow-500 text-white py-2 rounded text-xs"
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => toggleStatus(g)}
-                  className="bg-gray-700 text-white py-2 rounded text-xs"
-                >
-                  {g.aktif ? "Nonaktifkan" : "Aktifkan"}
-                </button>
-
-                <button
-                  onClick={() => handleDelete(g.id)}
-                  className="bg-red-600 text-white py-2 rounded text-xs"
-                >
-                  Hapus
-                </button>
-
-                <button
-                  onClick={() => handleResetPassword(g)}
-                  className="bg-blue-500 text-white py-2 rounded text-xs"
-                >
-                  Reset
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
