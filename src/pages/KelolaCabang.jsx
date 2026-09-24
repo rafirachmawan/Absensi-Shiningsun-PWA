@@ -6,6 +6,7 @@ import {
   getDocs,
   updateDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 
 export default function KelolaCabang() {
@@ -103,6 +104,28 @@ export default function KelolaCabang() {
     }
   };
 
+  /* HAPUS CABANG */
+
+  const hapusCabang = async (id) => {
+    const branch = branches.find((b) => b.id === id);
+    const confirmed = window.confirm(
+      `Apakah Anda yakin ingin menghapus cabang "${branch?.nama}"?`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+      await deleteDoc(doc(db, "branches", id));
+      loadBranches();
+      alert("Cabang berhasil dihapus");
+    } catch (err) {
+      alert(err.message);
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
@@ -134,7 +157,9 @@ export default function KelolaCabang() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* NAMA CABANG */}
           <div>
-            <label className="text-xs font-bold text-slate-700">Nama Cabang</label>
+            <label className="text-xs font-bold text-slate-700">
+              Nama Cabang
+            </label>
             <input
               className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full mt-1.5 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden font-medium text-slate-800 transition-all placeholder:text-slate-400 placeholder:font-normal"
               placeholder="Contoh: Cabang Gragalan"
@@ -159,7 +184,9 @@ export default function KelolaCabang() {
 
           {/* LONGITUDE */}
           <div>
-            <label className="text-xs font-bold text-slate-700">Longitude</label>
+            <label className="text-xs font-bold text-slate-700">
+              Longitude
+            </label>
             <input
               className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full mt-1.5 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden font-medium text-slate-800 transition-all placeholder:text-slate-400 placeholder:font-normal"
               placeholder="106.816666"
@@ -170,7 +197,9 @@ export default function KelolaCabang() {
 
           {/* RADIUS */}
           <div>
-            <label className="text-xs font-bold text-slate-700">Radius (meter)</label>
+            <label className="text-xs font-bold text-slate-700">
+              Radius (meter)
+            </label>
             <input
               type="number"
               className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full mt-1.5 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden font-medium text-slate-800 transition-all placeholder:text-slate-400 placeholder:font-normal"
@@ -213,15 +242,23 @@ export default function KelolaCabang() {
             <tbody className="divide-y divide-slate-100 font-medium">
               {branches.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="py-10 text-center text-slate-400 text-sm">
+                  <td
+                    colSpan="4"
+                    className="py-10 text-center text-slate-400 text-sm"
+                  >
                     Belum ada data cabang
                   </td>
                 </tr>
               ) : (
                 branches.map((b) => (
-                  <tr key={b.id} className="hover:bg-slate-50/80 transition-colors">
+                  <tr
+                    key={b.id}
+                    className="hover:bg-slate-50/80 transition-colors"
+                  >
                     <td className="py-4 px-6">
-                      <p className="font-bold text-slate-800 text-sm">{b.nama}</p>
+                      <p className="font-bold text-slate-800 text-sm">
+                        {b.nama}
+                      </p>
                     </td>
 
                     <td className="py-4 px-6 text-slate-500 font-mono text-xs">
@@ -245,9 +282,16 @@ export default function KelolaCabang() {
                     <td className="py-4 px-6 text-right">
                       <button
                         onClick={() => setEditData(b)}
-                        className="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-bold text-xs transition-colors cursor-pointer"
+                        className="px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-bold text-xs transition-colors cursor-pointer mr-2"
                       >
                         Edit Cabang
+                      </button>
+                      <button
+                        onClick={() => hapusCabang(b.id)}
+                        disabled={loading}
+                        className="px-4 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        Hapus
                       </button>
                     </td>
                   </tr>
@@ -267,7 +311,9 @@ export default function KelolaCabang() {
             branches.map((b) => (
               <div key={b.id} className="p-4 space-y-3">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-bold text-slate-800 text-base">{b.nama}</h3>
+                  <h3 className="font-bold text-slate-800 text-base">
+                    {b.nama}
+                  </h3>
                   {b.radius ? (
                     <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-800 border border-slate-200/80">
                       {b.radius}m
@@ -286,9 +332,16 @@ export default function KelolaCabang() {
 
                 <button
                   onClick={() => setEditData(b)}
-                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-bold py-2 rounded-xl text-xs transition-colors cursor-pointer text-center"
+                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-bold py-2 rounded-xl text-xs transition-colors cursor-pointer text-center mb-2"
                 >
                   Edit Cabang
+                </button>
+                <button
+                  onClick={() => hapusCabang(b.id)}
+                  disabled={loading}
+                  className="w-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold py-2 rounded-xl text-xs transition-colors cursor-pointer text-center disabled:opacity-50"
+                >
+                  Hapus Cabang
                 </button>
               </div>
             ))
@@ -302,7 +355,9 @@ export default function KelolaCabang() {
           <div className="bg-white border border-slate-200/90 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-white tracking-tight">Edit Data Cabang</h2>
+                <h2 className="text-lg font-bold text-white tracking-tight">
+                  Edit Data Cabang
+                </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
                   Perbarui koordinat dan batas radius cabang
                 </p>
@@ -320,7 +375,9 @@ export default function KelolaCabang() {
               <div className="space-y-4">
                 {/* NAMA CABANG */}
                 <div>
-                  <label className="text-xs font-bold text-slate-700">Nama Cabang</label>
+                  <label className="text-xs font-bold text-slate-700">
+                    Nama Cabang
+                  </label>
                   <input
                     className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 w-full text-sm mt-1 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden font-medium text-slate-800 transition-all"
                     value={editData.nama}
@@ -332,7 +389,9 @@ export default function KelolaCabang() {
 
                 {/* LATITUDE */}
                 <div>
-                  <label className="text-xs font-bold text-slate-700">Latitude</label>
+                  <label className="text-xs font-bold text-slate-700">
+                    Latitude
+                  </label>
                   <input
                     className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 w-full text-sm mt-1 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden font-medium text-slate-800 transition-all"
                     value={editData.latitude || ""}
@@ -344,7 +403,9 @@ export default function KelolaCabang() {
 
                 {/* LONGITUDE */}
                 <div>
-                  <label className="text-xs font-bold text-slate-700">Longitude</label>
+                  <label className="text-xs font-bold text-slate-700">
+                    Longitude
+                  </label>
                   <input
                     className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 w-full text-sm mt-1 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden font-medium text-slate-800 transition-all"
                     value={editData.longitude || ""}
@@ -356,7 +417,9 @@ export default function KelolaCabang() {
 
                 {/* RADIUS */}
                 <div>
-                  <label className="text-xs font-bold text-slate-700">Radius (meter)</label>
+                  <label className="text-xs font-bold text-slate-700">
+                    Radius (meter)
+                  </label>
                   <input
                     type="number"
                     className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 w-full text-sm mt-1 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden font-medium text-slate-800 transition-all"
