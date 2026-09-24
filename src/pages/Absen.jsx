@@ -52,7 +52,7 @@ export default function Absen() {
         (err) => {
           console.log(
             "GPS High Accuracy gagal/timeout, mencoba Fallback Jaringan...",
-            err
+            err,
           );
           // 2. Fallback ke Low Accuracy (WiFi/Cellular) jika High Accuracy gagal/timeout
           navigator.geolocation.getCurrentPosition(
@@ -62,14 +62,14 @@ export default function Absen() {
               enableHighAccuracy: false,
               timeout: 10000,
               maximumAge: 5000,
-            }
+            },
           );
         },
         {
           enableHighAccuracy: true,
           timeout: 7000,
           maximumAge: 3000,
-        }
+        },
       );
     });
   };
@@ -93,7 +93,9 @@ export default function Absen() {
         });
 
         if (permission.state === "denied") {
-          alert("Izin lokasi ditolak. Aktifkan lokasi di pengaturan browser/HP.");
+          alert(
+            "Izin lokasi ditolak. Aktifkan lokasi di pengaturan browser/HP.",
+          );
           setLoading(false);
           return;
         }
@@ -204,12 +206,14 @@ export default function Absen() {
 
       if (nowMinutes < startAbsensi) {
         const alasan = prompt(
-          "⏰ Anda absen di luar jadwal.\nSilakan tulis alasan (contoh: Kelas Tambahan Pagi):"
+          "⏰ Anda absen di luar jadwal.\nSilakan tulis alasan (contoh: Kelas Tambahan Pagi):",
         );
 
         if (!alasan || alasan.trim() === "") {
           setStatusType("warning");
-          setMessage("Absensi dibatalkan. Alasan wajib diisi untuk absen di luar jadwal.");
+          setMessage(
+            "Absensi dibatalkan. Alasan wajib diisi untuk absen di luar jadwal.",
+          );
           setShowResult(true);
           setLoading(false);
           return;
@@ -241,22 +245,22 @@ export default function Absen() {
         const lebihAwal = Math.abs(selisihMenit);
 
         status = "Lebih Awal";
-        attention = `Anda datang ${lebihAwal} menit lebih awal.`;
+        attention = `📍 Anda datang ${lebihAwal} menit lebih awal.`;
       } else if (selisihMenit === 0) {
         status = "Tepat Waktu";
 
         attention =
-          "Hadir tepat waktu. Terima kasih atas kedisiplinan Anda.";
+          "✅ Hadir tepat waktu. Terima kasih atas kedisiplinan Anda.";
       } else if (selisihMenit <= batasTelat) {
         status = "Terlambat";
 
         terlambatMenit = selisihMenit;
-        attention = `Anda terlambat ${selisihMenit} menit.`;
+        attention = `⏰ Anda terlambat ${selisihMenit} menit.`;
       } else {
         status = "Terlambat Berat";
 
         terlambatMenit = selisihMenit;
-        attention = `Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
+        attention = `⚠️ Anda terlambat ${selisihMenit} menit dan melewati batas toleransi.`;
       }
 
       const attendanceId = `${user.uid}_${today}`;
@@ -307,15 +311,15 @@ export default function Absen() {
 
       if (err && err.code === 1) {
         setMessage(
-          "❌ Izin lokasi ditolak. Aktifkan GPS di HP & izinkan lokasi di browser."
+          "❌ Izin lokasi ditolak. Aktifkan GPS di HP & izinkan lokasi di browser.",
         );
       } else if (err && err.code === 2) {
         setMessage(
-          "❌ Sinyal lokasi tidak tersedia. Pastikan GPS HP aktif & berada di tempat terbuka."
+          "❌ Sinyal lokasi tidak tersedia. Pastikan GPS HP aktif & berada di tempat terbuka.",
         );
       } else if (err && err.code === 3) {
         setMessage(
-          "❌ Waktu pencarian lokasi habis. Silakan tekan tombol Absen sekali lagi."
+          "❌ Waktu pencarian lokasi habis. Silakan tekan tombol Absen sekali lagi.",
         );
       } else {
         setMessage("❌ Gagal mendapatkan lokasi.");
