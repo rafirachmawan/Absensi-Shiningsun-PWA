@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import logo from "../assets/logo.png";
 
-import InstallAPK from "../components/InstallAPK";
+import InstallPWA from "../components/InstallPWA";
 
 import {
   doc,
@@ -186,22 +186,22 @@ export default function Login() {
           }}
         />
 
-        <div className="relative px-6 pb-14 pt-10 sm:px-10 lg:flex lg:min-h-screen lg:flex-col lg:px-12 lg:py-12">
+        <div className="relative px-6 pb-16 pt-12 sm:px-10 lg:flex lg:min-h-screen lg:flex-col lg:px-12 lg:py-12">
           {/* MOBILE: brand tengah */}
-          <div className="flex flex-col items-center text-center lg:hidden">
+          <div className="flex flex-col items-center px-2 text-center lg:hidden">
             <img
               src={logo}
               alt="Logo Shiningsun"
-              className="h-14 w-14 rounded-2xl bg-white object-contain p-1.5 shadow-lg shadow-black/30"
+              className="h-[76px] w-[76px] rounded-[22px] bg-white object-contain p-2 shadow-xl shadow-black/40 ring-1 ring-white/20"
             />
-            <p className="mt-3 text-sm font-bold tracking-[0.18em] text-white">
+            <p className="mt-4 text-[17px] font-extrabold tracking-[0.24em] text-white">
               SHININGSUN
             </p>
-            <p className="mt-0.5 text-xs text-stone-400">
+            <p className="mt-1.5 text-[13.5px] font-medium tracking-wide text-stone-400">
               Presensi &amp; Kehadiran Digital
             </p>
-            <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-3.5 py-1.5 text-xs text-stone-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+            <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-4 py-[7px] text-[12.5px] font-medium text-stone-200 backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]" />
               {todayLong}
             </p>
           </div>
@@ -295,7 +295,7 @@ export default function Login() {
       </aside>
 
       {/* ===== FORM ===== */}
-      <main className="relative z-10 px-5 pb-10 sm:px-8 -mt-8 lg:mt-0 lg:flex lg:items-center lg:justify-center lg:px-12 lg:py-12">
+      <main className="relative z-10 px-5 pb-10 sm:px-8 -mt-10 lg:mt-0 lg:flex lg:items-center lg:justify-center lg:px-12 lg:py-12">
         <div className="mx-auto w-full max-w-[430px]">
           <div className="rounded-2xl border border-stone-200/90 bg-white p-6 shadow-[0_12px_40px_rgba(28,25,23,0.08)] sm:p-8">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-800 ring-1 ring-inset ring-amber-200/70">
@@ -305,14 +305,9 @@ export default function Login() {
             <h2 className="mt-3 text-[22px] font-semibold tracking-tight">
               Selamat datang kembali
             </h2>
-            <div className="mt-1 space-y-0.5">
-              <p className="text-sm leading-relaxed text-stone-500">
-                Masuk untuk mencatat kehadiran.
-              </p>
-              <p className="text-sm font-medium leading-relaxed text-stone-700">
-                {todayLong}.
-              </p>
-            </div>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-stone-500">
+              Masuk untuk mencatat kehadiran.
+            </p>
 
             <form
               className="mt-6"
@@ -426,7 +421,7 @@ export default function Login() {
 
             <div className="my-5 h-px bg-stone-100" />
 
-            <InstallAPK />
+            <InstallPWA />
 
             <p className="mt-4 text-center text-[13px] leading-relaxed text-stone-500">
               Kendala masuk? Hubungi admin cabang masing-masing.
