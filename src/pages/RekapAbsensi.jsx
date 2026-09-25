@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FiDownload } from "react-icons/fi";
 import { db } from "../firebase";
 
 import { Fragment } from "react";
@@ -207,36 +208,45 @@ export default function RekapAbsensi() {
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-slate-900" />
               Laporan Presensi
-            </span>
+            </p>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+              Rekap Absensi
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Laporan kehadiran guru berdasarkan rentang tanggal dan cabang
+            </p>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Rekap Absensi
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-            Laporan kehadiran guru berdasarkan rentang tanggal dan cabang
-          </p>
-        </div>
 
-        {filtered.length > 0 && (
-          <button
-            onClick={exportExcel}
-            className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer"
-          >
-            📊 Export Excel
-          </button>
-        )}
+          {filtered.length > 0 && (
+            <button
+              onClick={exportExcel}
+              className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 active:scale-[0.99] sm:w-auto"
+            >
+              <FiDownload className="h-4 w-4" />
+              Export Excel
+            </button>
+          )}
+        </div>
       </div>
 
       {/* FILTER CARD */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs p-5 md:p-6 space-y-4">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-          Filter Absensi
-        </h3>
+      <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Filter Absensi
+          </h3>
+          {filtered.length > 0 && (
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold tabular-nums text-slate-600">
+              {filtered.length} data
+            </span>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
           <div className="flex flex-col">
@@ -247,7 +257,7 @@ export default function RekapAbsensi() {
               type="date"
               value={tanggalMulai}
               onChange={(e) => setTanggalMulai(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none text-slate-800 font-medium transition-all"
             />
           </div>
 
@@ -259,7 +269,7 @@ export default function RekapAbsensi() {
               type="date"
               value={tanggalSelesai}
               onChange={(e) => setTanggalSelesai(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none text-slate-800 font-medium transition-all"
             />
           </div>
 
@@ -270,7 +280,7 @@ export default function RekapAbsensi() {
             <select
               value={cabang}
               onChange={(e) => setCabang(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none text-slate-800 font-medium transition-all"
             >
               <option value="">Semua Cabang</option>
               {cabangList.map((c, i) => (
@@ -289,13 +299,13 @@ export default function RekapAbsensi() {
               placeholder="Cari nama guru..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden text-slate-800 font-medium transition-all placeholder:font-normal placeholder:text-slate-400"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-3.5 py-2.5 text-sm w-full focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none text-slate-800 font-medium transition-all placeholder:font-normal placeholder:text-slate-400"
             />
           </div>
 
           <button
             onClick={applyFilter}
-            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-2.5 text-sm w-full shadow-xs transition-all cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-2.5 text-sm w-full shadow-sm transition-all cursor-pointer"
           >
             Tampilkan Data
           </button>
@@ -304,7 +314,7 @@ export default function RekapAbsensi() {
 
       {/* TABLE */}
       {filtered.length > 0 && (
-        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-x-auto p-3">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-x-auto p-3">
           {(() => {
             // 🔥 ambil nama unik
             const namaList = [...new Set(filtered.map((d) => d.nama))];

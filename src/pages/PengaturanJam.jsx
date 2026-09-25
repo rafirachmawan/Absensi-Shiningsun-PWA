@@ -57,24 +57,21 @@ export default function PengaturanJam() {
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
-              Konfigurasi Absen
-            </span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Pengaturan Jam Absensi
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-            Atur jam operasional & batas keterlambatan presensi guru
-          </p>
-        </div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <p className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-slate-900" />
+          Konfigurasi Absen
+        </p>
+        <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+          Pengaturan Jam Absensi
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Atur jam operasional & batas keterlambatan presensi guru
+        </p>
       </div>
 
       {/* FORM CARD */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs p-5 sm:p-6 max-w-xl space-y-6">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 sm:p-6 max-w-xl space-y-6">
         <div className="space-y-5">
           {/* JAM BUKA */}
           <div>
@@ -88,7 +85,7 @@ export default function PengaturanJam() {
               type="time"
               value={jamBuka}
               onChange={(e) => setJamBuka(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden transition-all"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
             />
           </div>
 
@@ -104,7 +101,7 @@ export default function PengaturanJam() {
               type="time"
               value={jamMasuk}
               onChange={(e) => setJamMasuk(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden transition-all"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
             />
           </div>
 
@@ -120,7 +117,7 @@ export default function PengaturanJam() {
               type="time"
               value={jamPulang}
               onChange={(e) => setJamPulang(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden transition-all"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
             />
           </div>
 
@@ -136,7 +133,7 @@ export default function PengaturanJam() {
               type="number"
               value={batasTelat}
               onChange={(e) => setBatasTelat(e.target.value)}
-              className="border border-slate-200/90 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-400 focus:ring-2 focus:ring-slate-900/5 outline-hidden transition-all"
+              className="border border-slate-200 bg-slate-50 focus:bg-white rounded-xl px-4 py-2.5 w-full text-sm font-semibold text-slate-800 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
             />
           </div>
 
@@ -144,7 +141,7 @@ export default function PengaturanJam() {
           <button
             onClick={simpan}
             disabled={loading}
-            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-3 w-full text-sm shadow-xs transition-all cursor-pointer disabled:opacity-50"
+            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-3 w-full text-sm shadow-sm transition-all cursor-pointer disabled:opacity-50"
           >
             {loading ? "Menyimpan..." : "Simpan Pengaturan"}
           </button>

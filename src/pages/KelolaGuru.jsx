@@ -16,7 +16,7 @@ import {
   setDoc,
   deleteDoc, // ✅ TAMBAHKAN INI
 } from "firebase/firestore";
-import { FiEye, FiEyeOff, FiCamera, FiX } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiCamera, FiX, FiSearch } from "react-icons/fi";
 
 export default function KelolaGuru() {
   const [guru, setGuru] = useState([]);
@@ -412,17 +412,16 @@ export default function KelolaGuru() {
   return (
     <div className="space-y-6">
       {/* HEADER CARD */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
-              Manajemen Guru
-            </span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="min-w-0">
+          <p className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-slate-900" />
+            Manajemen Guru
+          </p>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
             Kelola Data Guru
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+          <p className="mt-1 text-sm text-slate-500">
             Tambahkan, sunting, dan atur akun tenaga pengajar
           </p>
         </div>
@@ -455,25 +454,31 @@ export default function KelolaGuru() {
             setPassword("");
             setEmail("");
           }}
-          className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-100 active:scale-[0.99] text-slate-900 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer w-full sm:w-auto"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.99] sm:w-auto"
         >
           <span>+ Tambah Guru Baru</span>
         </button>
       </div>
 
       {/* SEARCH BAR CARD */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs space-y-2">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
-          Pencarian Guru
-        </h3>
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="mb-2.5 flex items-center justify-between gap-3 px-1">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Pencarian Guru
+          </h3>
+          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold tabular-nums text-slate-600">
+            {filteredGuru.length} guru
+          </span>
+        </div>
 
         <div className="relative">
+          <FiSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Cari nama, username, cabang, atau no hp..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200/90 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-900/5 rounded-xl px-4 py-2.5 text-sm text-slate-800 font-medium transition-all outline-hidden placeholder:text-slate-400 placeholder:font-normal"
+            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-slate-500 focus:bg-white focus:ring-2 focus:ring-slate-200"
           />
         </div>
       </div>
@@ -486,16 +491,16 @@ export default function KelolaGuru() {
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowForm(false);
             }}
-            className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200"
+            className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center overflow-y-auto bg-slate-950/70 p-3 backdrop-blur-sm animate-fadeIn sm:p-6"
           >
-            <div className="bg-white border border-slate-200/90 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in duration-200">
+            <div className="my-auto flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
               {/* MODAL HEADER */}
-              <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
-                <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">
+              <div className="flex shrink-0 items-center justify-between bg-black px-6 py-4">
+                <div className="min-w-0">
+                  <h2 className="truncate text-lg font-bold tracking-tight text-white">
                     {editMode ? "Edit Data Guru" : "Tambah Guru Baru"}
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="truncate text-xs text-stone-400">
                     {editMode
                       ? "Perbarui informasi profil dan kredensial guru"
                       : "Isi formulir untuk menambahkan akun guru baru"}
@@ -504,7 +509,8 @@ export default function KelolaGuru() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                  aria-label="Tutup"
+                  className="shrink-0 rounded-xl p-2 text-stone-400 transition-colors hover:bg-white/10 hover:text-white"
                 >
                   <FiX className="w-5 h-5" />
                 </button>
@@ -520,7 +526,7 @@ export default function KelolaGuru() {
                         <img
                           src={photoPreview}
                           alt="Preview"
-                          className="w-24 h-24 rounded-2xl object-cover border-2 border-blue-100 shadow-md"
+                          className="w-24 h-24 rounded-2xl object-cover border-2 border-slate-200 shadow-md"
                         />
                         <button
                           type="button"
@@ -531,9 +537,9 @@ export default function KelolaGuru() {
                         </button>
                       </div>
                     ) : (
-                      <label className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-300 hover:border-blue-400 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-blue-50 transition-colors">
-                        <FiCamera className="w-6 h-6 text-gray-400" />
-                        <span className="text-[10px] text-gray-400 mt-1 font-medium">Upload Foto</span>
+                      <label className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-300 hover:border-slate-400 flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <FiCamera className="w-6 h-6 text-slate-400" />
+                        <span className="text-[10px] text-slate-400 mt-1 font-medium">Upload Foto</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -544,7 +550,7 @@ export default function KelolaGuru() {
                     )}
                   </div>
                   {photoPreview && (
-                    <label className="text-xs text-blue-600 hover:text-blue-700 font-semibold cursor-pointer hover:underline">
+                    <label className="text-xs text-slate-700 hover:text-slate-900 font-semibold cursor-pointer hover:underline">
                       Ganti Foto
                       <input
                         type="file"
@@ -555,35 +561,35 @@ export default function KelolaGuru() {
                     </label>
                   )}
                   {uploadingPhoto && (
-                    <p className="text-xs text-gray-400 animate-pulse">Mengupload foto...</p>
+                    <p className="text-xs text-slate-400 animate-pulse">Mengupload foto...</p>
                   )}
                 </div>
 
                 <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Nama Lengkap</label>
+                    <label className="text-sm font-semibold text-slate-700">Nama Lengkap</label>
                     <input
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={namaLengkap}
                       onChange={(e) => setNamaLengkap(e.target.value)}
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Tempat Lahir</label>
+                    <label className="text-sm font-semibold text-slate-700">Tempat Lahir</label>
                     <input
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={tempatLahir}
                       onChange={(e) => setTempatLahir(e.target.value)}
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Tanggal Lahir</label>
+                    <label className="text-sm font-semibold text-slate-700">Tanggal Lahir</label>
                     <input
                       type="date"
-                      className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
-                        !tanggalLahir ? "text-gray-400" : "text-gray-800"
+                      className={`border border-slate-200 rounded-lg px-3 py-2 w-full text-sm outline-none focus:border-slate-500 appearance-none ${
+                        !tanggalLahir ? "text-slate-400" : "text-slate-800"
                       }`}
                       value={tanggalLahir}
                       onChange={(e) => setTanggalLahir(e.target.value)}
@@ -591,27 +597,27 @@ export default function KelolaGuru() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Alamat</label>
+                    <label className="text-sm font-semibold text-slate-700">Alamat</label>
                     <input
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={alamat}
                       onChange={(e) => setAlamat(e.target.value)}
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">No HP</label>
+                    <label className="text-sm font-semibold text-slate-700">No HP</label>
                     <input
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={noHp}
                       onChange={(e) => setNoHp(e.target.value)}
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Cabang</label>
+                    <label className="text-sm font-semibold text-slate-700">Cabang</label>
                     <select
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={cabang}
                       onChange={(e) => setCabang(e.target.value)}
                     >
@@ -625,9 +631,9 @@ export default function KelolaGuru() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Jabatan</label>
+                    <label className="text-sm font-semibold text-slate-700">Jabatan</label>
                     <input
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       placeholder="Contoh: Guru Kelas / Koordinator"
                       value={jabatan}
                       onChange={(e) => setJabatan(e.target.value)}
@@ -635,11 +641,11 @@ export default function KelolaGuru() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Tanggal Masuk</label>
+                    <label className="text-sm font-semibold text-slate-700">Tanggal Masuk</label>
                     <input
                       type="date"
-                      className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
-                        !tglMasuk ? "text-gray-400" : "text-gray-800"
+                      className={`border border-slate-200 rounded-lg px-3 py-2 w-full text-sm outline-none focus:border-slate-500 appearance-none ${
+                        !tglMasuk ? "text-slate-400" : "text-slate-800"
                       }`}
                       value={tglMasuk}
                       onChange={(e) => setTglMasuk(e.target.value)}
@@ -648,11 +654,11 @@ export default function KelolaGuru() {
 
                   <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                     <div>
-                      <label className="text-sm font-semibold text-gray-700">Jam Masuk</label>
+                      <label className="text-sm font-semibold text-slate-700">Jam Masuk</label>
                       <input
                         type="time"
-                        className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
-                          !jamMasuk ? "text-gray-400" : "text-gray-800"
+                        className={`border border-slate-200 rounded-lg px-3 py-2 w-full text-sm outline-none focus:border-slate-500 appearance-none ${
+                          !jamMasuk ? "text-slate-400" : "text-slate-800"
                         }`}
                         value={jamMasuk}
                         onChange={(e) => setJamMasuk(e.target.value)}
@@ -660,11 +666,11 @@ export default function KelolaGuru() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-semibold text-gray-700">Jam Mulai Absen</label>
+                      <label className="text-sm font-semibold text-slate-700">Jam Mulai Absen</label>
                       <input
                         type="time"
-                        className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
-                          !jamMulaiAbsen ? "text-gray-400" : "text-gray-800"
+                        className={`border border-slate-200 rounded-lg px-3 py-2 w-full text-sm outline-none focus:border-slate-500 appearance-none ${
+                          !jamMulaiAbsen ? "text-slate-400" : "text-slate-800"
                         }`}
                         value={jamMulaiAbsen}
                         onChange={(e) => setJamMulaiAbsen(e.target.value)}
@@ -674,11 +680,11 @@ export default function KelolaGuru() {
 
                   <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
                     <div>
-                      <label className="text-sm font-semibold text-gray-700">Jam Pulang</label>
+                      <label className="text-sm font-semibold text-slate-700">Jam Pulang</label>
                       <input
                         type="time"
-                        className={`border rounded-lg px-3 py-2 w-full text-sm appearance-none ${
-                          !jamPulang ? "text-gray-400" : "text-gray-800"
+                        className={`border border-slate-200 rounded-lg px-3 py-2 w-full text-sm outline-none focus:border-slate-500 appearance-none ${
+                          !jamPulang ? "text-slate-400" : "text-slate-800"
                         }`}
                         value={jamPulang}
                         onChange={(e) => setJamPulang(e.target.value)}
@@ -686,13 +692,13 @@ export default function KelolaGuru() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-semibold text-gray-700">
+                      <label className="text-sm font-semibold text-slate-700">
                         Batas Telat (menit)
                       </label>
                       <input
                         type="number"
                         placeholder="Contoh: 15"
-                        className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                         value={batasTelat}
                         onChange={(e) => setBatasTelat(e.target.value)}
                       />
@@ -700,11 +706,11 @@ export default function KelolaGuru() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Gaji Pokok</label>
+                    <label className="text-sm font-semibold text-slate-700">Gaji Pokok</label>
                     <input
                       inputMode="numeric"
                       placeholder="Contoh: 2.000.000"
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={gajiPokok}
                       onChange={(e) =>
                         handleCurrencyInput(e.target.value, setGajiPokok)
@@ -713,11 +719,11 @@ export default function KelolaGuru() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Insentif</label>
+                    <label className="text-sm font-semibold text-slate-700">Insentif</label>
                     <input
                       inputMode="numeric"
                       placeholder="Contoh: 2.000.000"
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={insentif}
                       onChange={(e) =>
                         handleCurrencyInput(e.target.value, setInsentif)
@@ -726,11 +732,11 @@ export default function KelolaGuru() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Bonus Kehadiran</label>
+                    <label className="text-sm font-semibold text-slate-700">Bonus Kehadiran</label>
                     <input
                       inputMode="numeric"
                       placeholder="Contoh: 2.000.000"
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={bonusKehadiran}
                       onChange={(e) =>
                         handleCurrencyInput(e.target.value, setBonusKehadiran)
@@ -740,11 +746,11 @@ export default function KelolaGuru() {
 
                   {/* EMAIL */}
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Email</label>
+                    <label className="text-sm font-semibold text-slate-700">Email</label>
                     <input
                       type="email"
                       placeholder="contoh: guru@gmail.com"
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
@@ -752,23 +758,23 @@ export default function KelolaGuru() {
 
                   {/* USERNAME */}
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Nama Login (Username)</label>
+                    <label className="text-sm font-semibold text-slate-700">Nama Login (Username)</label>
                     <input
-                      className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 text-sm"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
 
                   <div className="relative">
-                    <label className="text-sm font-semibold text-gray-700">
+                    <label className="text-sm font-semibold text-slate-700">
                       Password {editMode && "(Opsional)"}
                     </label>
 
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
-                        className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none pr-10 text-sm"
+                        className="border border-slate-200 rounded-lg px-3 py-2 w-full outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 pr-10 text-sm"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
@@ -776,7 +782,7 @@ export default function KelolaGuru() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
                       >
                         {showPassword ? <FiEyeOff /> : <FiEye />}
                       </button>
@@ -786,11 +792,11 @@ export default function KelolaGuru() {
               </div>
 
               {/* MODAL FOOTER */}
-              <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/80 flex items-center justify-end gap-3 shrink-0">
+              <div className="flex shrink-0 items-center justify-end gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm font-semibold transition-colors cursor-pointer"
+                  className="cursor-pointer rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100"
                 >
                   Batal
                 </button>
@@ -798,7 +804,7 @@ export default function KelolaGuru() {
                   type="button"
                   onClick={editMode ? updateGuru : tambahGuru}
                   disabled={loading || uploadingPhoto}
-                  className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
+                  className="cursor-pointer rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-800 active:scale-[0.99] disabled:opacity-50"
                 >
                   {loading ? "Menyimpan..." : editMode ? "Simpan Perubahan" : "Simpan Guru"}
                 </button>
@@ -809,7 +815,7 @@ export default function KelolaGuru() {
         )}
 
       {/* TABLE + MOBILE CARD LIST */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
         {/* ================= DESKTOP TABLE ================= */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
@@ -840,7 +846,7 @@ export default function KelolaGuru() {
                             `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=F1F5F9&color=0F172A&bold=true`
                           }
                           alt={g.namaLengkap}
-                          className="w-10 h-10 rounded-full object-cover border border-slate-200/80 shadow-xs shrink-0"
+                          className="w-10 h-10 rounded-full object-cover border border-slate-200/80 shadow-sm shrink-0"
                         />
                         <div>
                           <p className="font-bold text-slate-900 text-sm">{g.namaLengkap}</p>
@@ -933,7 +939,7 @@ export default function KelolaGuru() {
                         `https://ui-avatars.com/api/?name=${encodeURIComponent(g.namaLengkap || "G")}&background=F1F5F9&color=0F172A&bold=true`
                       }
                       alt={g.namaLengkap}
-                      className="w-11 h-11 rounded-full object-cover border border-slate-200/80 shadow-xs shrink-0"
+                      className="w-11 h-11 rounded-full object-cover border border-slate-200/80 shadow-sm shrink-0"
                     />
                     <div className="min-w-0">
                       <h3 className="font-bold text-slate-900 text-sm truncate">
@@ -946,12 +952,17 @@ export default function KelolaGuru() {
                   </div>
 
                   <span
-                    className={`shrink-0 text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold ${
                       g.aktif
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
-                        : "bg-rose-50 text-rose-700 border-rose-200/80"
+                        ? "border-emerald-200/80 bg-emerald-50 text-emerald-700"
+                        : "border-rose-200/80 bg-rose-50 text-rose-700"
                     }`}
                   >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        g.aktif ? "bg-emerald-500" : "bg-rose-500"
+                      }`}
+                    />
                     {g.aktif ? "Aktif" : "Nonaktif"}
                   </span>
                 </div>

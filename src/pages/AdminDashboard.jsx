@@ -11,12 +11,12 @@ import {
   FiUserX,
   FiClock,
   FiArrowUpRight,
-  FiCalendar,
   FiX,
   FiSearch,
   FiExternalLink,
   FiChevronRight,
   FiDownload,
+  FiPieChart,
 } from "react-icons/fi";
 
 export default function AdminDashboard() {
@@ -103,6 +103,26 @@ export default function AdminDashboard() {
     year: "numeric",
   });
 
+  // Presentational only — sapaan waktu & ringkasan turunan dari state yang sudah ada
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 11
+      ? "Selamat pagi"
+      : hour < 15
+        ? "Selamat siang"
+        : hour < 19
+          ? "Selamat sore"
+          : "Selamat malam";
+
+  const latest = aktivitas.length > 0 ? aktivitas[0] : null;
+
+  const tepatCount = aktivitas.filter((a) => a.status === "Tepat Waktu").length;
+  const awalCount = aktivitas.filter((a) => a.status === "Lebih Awal").length;
+  const lainCount = aktivitas.length - tepatCount - awalCount;
+  const totalAkt = aktivitas.length;
+  const pct = (n) => (totalAkt === 0 ? 0 : (n / totalAkt) * 100);
+  const donutBg = `conic-gradient(#10b981 0% ${pct(tepatCount)}%, #64748b ${pct(tepatCount)}% ${pct(tepatCount) + pct(awalCount)}%, #f43f5e ${pct(tepatCount) + pct(awalCount)}% 100%)`;
+
   const openModal = (type) => {
     setActiveModal(type);
     setModalSearch("");
@@ -127,178 +147,276 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* 🚀 CLEAN ENTERPRISE HEADER BANNER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-bold uppercase tracking-wider">
-              Super Admin
-            </span>
+    <div className="space-y-5">
+      {/* GREETING CARD — terang bertekstur pola titik */}
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(15,23,42,0.10) 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
+          }}
+        />
+        <div className="relative flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <p className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+              {formattedDate}
+            </p>
+            <h1 className="mt-3 text-balance text-2xl font-bold tracking-tight text-slate-900 sm:text-[28px] sm:leading-tight">
+              {greeting}, Admin
+            </h1>
+            <p className="mt-1.5 max-w-md text-sm leading-relaxed text-slate-500">
+              Pantau kehadiran guru dan kelola data dari satu tempat.
+            </p>
+            <p className="mt-3 inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+              <span className="font-bold tabular-nums text-slate-900">
+                {totalGuru} guru
+              </span>
+              <span aria-hidden className="text-slate-300">
+                •
+              </span>
+              <span className="font-bold tabular-nums text-slate-900">
+                {totalCabang} cabang
+              </span>
+              <span aria-hidden className="text-slate-300">
+                •
+              </span>
+              <span className="tabular-nums">
+                {totalAkt} absensi terakhir dimuat
+              </span>
+            </p>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Dashboard Monitoring
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-            Monitoring sistem absensi & kelola data guru secara real-time
-          </p>
-        </div>
 
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-semibold text-slate-300 w-fit shrink-0">
-          <FiCalendar className="w-4 h-4 text-slate-400" />
-          <span>{formattedDate}</span>
+          {latest && (
+            <div className="flex shrink-0 items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-3.5 lg:w-[300px]">
+              <span
+                aria-hidden
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-700 sm:h-11 sm:w-11 sm:text-base"
+              >
+                {latest.nama?.charAt(0) || "G"}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                  <span>Terakhir tercatat</span>
+                  <span aria-hidden className="text-slate-300">
+                    •
+                  </span>
+                  <span className="font-mono font-bold tabular-nums text-slate-700">
+                    {latest.waktu}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold normal-case tracking-normal ${
+                      latest.status === "Tepat Waktu"
+                        ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                        : latest.status === "Lebih Awal"
+                          ? "border border-slate-200 bg-slate-100 text-slate-700"
+                          : "border border-rose-200 bg-rose-50 text-rose-700"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        latest.status === "Tepat Waktu"
+                          ? "bg-emerald-500"
+                          : latest.status === "Lebih Awal"
+                            ? "bg-slate-500"
+                            : "bg-rose-500"
+                      }`}
+                    />
+                    {latest.status}
+                  </span>
+                </p>
+                <p className="mt-1 truncate text-[15px] font-semibold text-slate-900">
+                  {latest.nama || "Guru"}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* STANDALONE CLEAN METRICS GRID */}
+      {/* STAT CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* TOTAL GURU */}
         <div
           onClick={() => openModal("guru")}
-          className="group bg-white hover:bg-slate-50/80 border border-slate-200/80 hover:border-slate-300 rounded-2xl p-5 shadow-xs transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.99]"
+          className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99]"
         >
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-              <span>Total Guru</span>
-              <FiChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-            </p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-1.5 tracking-tight">
-              {totalGuru}
-            </h2>
-            <p className="text-xs text-slate-500 mt-1 font-medium">
-              Guru Terdaftar <span className="text-slate-400 font-normal">(Klik detail)</span>
-            </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                Total Guru
+              </p>
+              <p className="mt-1.5 text-4xl font-bold tracking-tight text-slate-900 tabular-nums">
+                {totalGuru}
+              </p>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+              <FiUsers className="h-5 w-5" />
+            </div>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition-colors shrink-0">
-            <FiUsers className="w-5 h-5" />
-          </div>
+          <p className="mt-3 flex items-center gap-1 text-xs text-slate-500">
+            Guru terdaftar
+            <span className="inline-flex items-center gap-0.5 font-semibold text-slate-800">
+              Lihat detail
+              <FiChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </p>
         </div>
 
         {/* TOTAL CABANG */}
         <div
           onClick={() => openModal("cabang")}
-          className="group bg-white hover:bg-slate-50/80 border border-slate-200/80 hover:border-slate-300 rounded-2xl p-5 shadow-xs transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.99]"
+          className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99]"
         >
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-              <span>Total Cabang</span>
-              <FiChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-            </p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-1.5 tracking-tight">
-              {totalCabang}
-            </h2>
-            <p className="text-xs text-slate-500 mt-1 font-medium">
-              Lokasi Presensi <span className="text-slate-400 font-normal">(Klik detail)</span>
-            </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                Total Cabang
+              </p>
+              <p className="mt-1.5 text-4xl font-bold tracking-tight text-slate-900 tabular-nums">
+                {totalCabang}
+              </p>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+              <FiMapPin className="h-5 w-5" />
+            </div>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition-colors shrink-0">
-            <FiMapPin className="w-5 h-5" />
-          </div>
+          <p className="mt-3 flex items-center gap-1 text-xs text-slate-500">
+            Lokasi presensi
+            <span className="inline-flex items-center gap-0.5 font-semibold text-slate-800">
+              Lihat detail
+              <FiChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </p>
         </div>
 
         {/* GURU NONAKTIF */}
         <div
           onClick={() => openModal("nonaktif")}
-          className="group bg-white hover:bg-slate-50/80 border border-slate-200/80 hover:border-slate-300 rounded-2xl p-5 shadow-xs transition-all duration-150 cursor-pointer flex items-center justify-between active:scale-[0.99]"
+          className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99]"
         >
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-              <span>Guru Nonaktif</span>
-              <FiChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-            </p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mt-1.5 tracking-tight">
-              {nonaktif}
-            </h2>
-            <p className="text-xs text-slate-500 mt-1 font-medium">
-              Akun Nonaktif <span className="text-slate-400 font-normal">(Klik detail)</span>
-            </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                Guru Nonaktif
+              </p>
+              <p className="mt-1.5 text-4xl font-bold tracking-tight tabular-nums text-slate-900">
+                {nonaktif}
+              </p>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+              <FiUserX className="h-5 w-5" />
+            </div>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition-colors shrink-0">
-            <FiUserX className="w-5 h-5" />
-          </div>
+          <p className="mt-3 flex items-center gap-1 text-xs text-slate-500">
+            Akun nonaktif
+            <span className="inline-flex items-center gap-0.5 font-semibold text-slate-800">
+              Lihat detail
+              <FiChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </p>
         </div>
       </div>
 
-      {/* QUICK ACTIONS TOOLBAR */}
+      {/* QUICK ACTIONS — ikon solid gelap = tombol aksi, beda bahasa visual dari kartu statistik */}
       <div>
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">
-          Akses Cepat
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
+        <h2 className="mb-3 flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-slate-500">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-slate-900" />
+          Aksi Cepat
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
             onClick={() => navigate("/admin/users")}
-            className="group bg-white hover:bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 shadow-xs transition-all duration-150 text-left flex items-center justify-between cursor-pointer active:scale-[0.99]"
+            className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-slate-400 hover:shadow active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold group-hover:bg-slate-900 group-hover:text-white transition-colors shrink-0">
-                <FiUserPlus className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-900">Tambah Guru</p>
-                <p className="text-xs text-slate-400">Registrasi akun baru</p>
-              </div>
-            </div>
-            <FiArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                <FiUserPlus className="h-5 w-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-slate-900">
+                  Tambah Guru
+                </span>
+                <span className="block truncate text-xs text-slate-500">
+                  Registrasi akun baru
+                </span>
+              </span>
+            </span>
+            <FiArrowUpRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-slate-900" />
           </button>
 
           <button
             type="button"
             onClick={() => navigate("/admin/branches")}
-            className="group bg-white hover:bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 shadow-xs transition-all duration-150 text-left flex items-center justify-between cursor-pointer active:scale-[0.99]"
+            className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-slate-400 hover:shadow active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold group-hover:bg-slate-900 group-hover:text-white transition-colors shrink-0">
-                <FiMapPin className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-900">Tambah Cabang</p>
-                <p className="text-xs text-slate-400">Lokasi unit presensi</p>
-              </div>
-            </div>
-            <FiArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                <FiMapPin className="h-5 w-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-slate-900">
+                  Tambah Cabang
+                </span>
+                <span className="block truncate text-xs text-slate-500">
+                  Lokasi unit presensi
+                </span>
+              </span>
+            </span>
+            <FiArrowUpRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-slate-900" />
           </button>
 
           <button
             type="button"
             onClick={() => navigate("/admin/attendance")}
-            className="group bg-white hover:bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 shadow-xs transition-all duration-150 text-left flex items-center justify-between cursor-pointer active:scale-[0.99]"
+            className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:border-slate-400 hover:shadow active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold group-hover:bg-slate-900 group-hover:text-white transition-colors shrink-0">
-                <FiFileText className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-900">Lihat Laporan</p>
-                <p className="text-xs text-slate-400">Rekapitulasi absensi</p>
-              </div>
-            </div>
-            <FiArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                <FiFileText className="h-5 w-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-slate-900">
+                  Lihat Laporan
+                </span>
+                <span className="block truncate text-xs text-slate-500">
+                  Rekapitulasi absensi
+                </span>
+              </span>
+            </span>
+            <FiArrowUpRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-slate-900" />
           </button>
         </div>
       </div>
 
-      {/* AKTIVITAS TABLE / LIST */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-        <div className="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 flex items-center justify-center font-bold">
-              <FiClock className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-white text-sm tracking-tight">
+      {/* ACTIVITY + KETEPATAN */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-2">
+        <div className="flex items-center justify-between gap-3 bg-black px-5 py-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-amber-400">
+              <FiClock className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate text-sm font-bold text-white">
                 Aktivitas Absensi Terbaru
-              </h3>
-              <p className="text-xs text-slate-400">Log kehadiran paling akhir</p>
+              </h2>
+              <p className="truncate text-xs text-stone-400">
+                Log kehadiran paling akhir
+              </p>
             </div>
           </div>
-          <span className="text-[11px] font-bold text-slate-300 bg-slate-800 border border-slate-700 px-3 py-1 rounded-full">
+          <span className="shrink-0 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] font-semibold text-stone-200">
             5 Terakhir
           </span>
         </div>
 
         {aktivitas.length === 0 ? (
-          <div className="p-10 text-center text-slate-400 text-sm font-medium">
+          <div className="p-10 text-center text-sm font-medium text-slate-400">
             Belum ada aktivitas absensi tercatat
           </div>
         ) : (
@@ -306,18 +424,18 @@ export default function AdminDashboard() {
             {aktivitas.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between p-4 hover:bg-slate-50/80 transition-colors"
+                className="flex items-center justify-between gap-3 p-4 transition-colors hover:bg-slate-50"
               >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 font-bold border border-slate-200/60 flex items-center justify-center text-sm shrink-0">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-sm font-bold text-slate-700">
                     {item.nama?.charAt(0) || "G"}
                   </div>
 
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">
+                    <p className="truncate text-sm font-semibold text-slate-900">
                       {item.nama || "Guru"}
                     </p>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="mt-0.5 truncate text-xs text-slate-400">
                       {new Date(item.tanggal).toLocaleDateString("id-ID", {
                         weekday: "short",
                         day: "numeric",
@@ -328,22 +446,22 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="text-right flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
-                  <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                <div className="flex shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-2">
+                  <span className="rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-slate-700">
                     {item.waktu}
                   </span>
 
                   <span
-                    className={`text-xs font-semibold px-3 py-1 rounded-full inline-flex items-center gap-1.5 ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
                       item.status === "Tepat Waktu"
-                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
+                        ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
                         : item.status === "Lebih Awal"
-                          ? "bg-slate-100 text-slate-700 border border-slate-200/80"
-                          : "bg-rose-50 text-rose-700 border border-rose-200/80"
+                          ? "border border-slate-200 bg-slate-100 text-slate-700"
+                          : "border border-rose-200 bg-rose-50 text-rose-700"
                     }`}
                   >
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${
+                      className={`h-1.5 w-1.5 rounded-full ${
                         item.status === "Tepat Waktu"
                           ? "bg-emerald-500"
                           : item.status === "Lebih Awal"
@@ -360,6 +478,64 @@ export default function AdminDashboard() {
         )}
       </div>
 
+        {/* KETEPATAN — donat CSS murni dari 5 data aktivitas yang sama, tanpa lib tambahan */}
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center gap-3 bg-black px-5 py-4">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-amber-400">
+              <FiPieChart className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="truncate text-sm font-bold text-white">Ketepatan Absensi</h2>
+              <p className="truncate text-xs text-stone-400">
+                Berdasarkan 5 data terakhir
+              </p>
+            </div>
+          </div>
+
+          <div className="p-5">
+          {totalAkt === 0 ? (
+            <p className="py-10 text-center text-sm text-slate-400">
+              Belum ada data absensi
+            </p>
+          ) : (
+            <>
+              <div className="relative mx-auto mt-5 h-36 w-36">
+                <div
+                  className="h-full w-full rounded-full"
+                  style={{ background: donutBg }}
+                />
+                <div className="absolute inset-4 flex flex-col items-center justify-center rounded-full bg-white">
+                  <p className="text-2xl font-bold tabular-nums text-slate-900">
+                    {tepatCount}
+                    <span className="text-sm font-semibold text-slate-400">
+                      /{totalAkt}
+                    </span>
+                  </p>
+                  <p className="text-[11px] text-slate-500">tepat waktu</p>
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-2.5">
+                {[
+                  ["Tepat Waktu", tepatCount, "bg-emerald-500"],
+                  ["Lebih Awal", awalCount, "bg-slate-400"],
+                  ["Lainnya", lainCount, "bg-rose-500"],
+                ].map(([label, count, dot]) => (
+                  <div key={label} className="flex items-center gap-2 text-sm">
+                    <span className={`h-2.5 w-2.5 rounded-full ${dot}`} />
+                    <span className="flex-1 text-slate-600">{label}</span>
+                    <span className="font-bold tabular-nums text-slate-900">
+                      {count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          </div>
+        </div>
+      </div>
+
       {/* DETAIL MODAL */}
       {activeModal &&
         createPortal(
@@ -367,37 +543,37 @@ export default function AdminDashboard() {
             onClick={(e) => {
               if (e.target === e.currentTarget) setActiveModal(null);
             }}
-            className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fadeIn"
+            className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-fadeIn sm:p-6"
           >
-            <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
               {/* MODAL HEADER */}
-              <div className="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 font-bold flex items-center justify-center shrink-0">
-                    {activeModal === "guru" && <FiUsers className="w-5 h-5" />}
-                    {activeModal === "cabang" && <FiMapPin className="w-5 h-5" />}
-                    {activeModal === "nonaktif" && <FiUserX className="w-5 h-5" />}
-                  </div>
-                  <div>
+              <div className="flex items-center justify-between gap-3 bg-black p-4 sm:p-5">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-amber-400">
+                    {activeModal === "guru" && <FiUsers className="h-5 w-5" />}
+                    {activeModal === "cabang" && <FiMapPin className="h-5 w-5" />}
+                    {activeModal === "nonaktif" && <FiUserX className="h-5 w-5" />}
+                  </span>
+                  <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                      <h2 className="truncate text-[15px] font-bold tracking-tight text-white sm:text-base">
                         {activeModal === "guru" && "Daftar Guru Terdaftar"}
                         {activeModal === "cabang" && "Daftar Cabang Presensi"}
                         {activeModal === "nonaktif" && "Daftar Guru Nonaktif"}
                       </h2>
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-800 text-slate-300 border border-slate-700">
+                      <span className="shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-bold tabular-nums text-stone-200">
                         {activeModal === "guru" && guruList.length}
                         {activeModal === "cabang" && cabangList.length}
                         {activeModal === "nonaktif" && nonaktifList.length}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="mt-0.5 truncate text-xs text-stone-400">
                       {activeModal === "guru" &&
-                        "Rincian seluruh tenaga pengajar yang terdaftar di sistem"}
+                        "Tenaga pengajar yang terdaftar"}
                       {activeModal === "cabang" &&
-                        "Rincian lokasi & radius titik presensi cabang"}
+                        "Titik presensi tiap cabang"}
                       {activeModal === "nonaktif" &&
-                        "Data akun guru yang saat ini sedang dinonaktifkan"}
+                        "Akun guru yang dinonaktifkan"}
                     </p>
                   </div>
                 </div>
@@ -405,16 +581,17 @@ export default function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                  aria-label="Tutup"
+                  className="shrink-0 rounded-xl p-2 text-stone-400 transition-colors hover:bg-white/10 hover:text-white"
                 >
-                  <FiX className="w-5 h-5" />
+                  <FiX className="h-5 w-5" />
                 </button>
               </div>
 
               {/* SEARCH BAR IN MODAL */}
-              <div className="px-5 py-3.5 border-b border-slate-100 bg-white">
-                <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200/90 rounded-xl px-3.5 py-2.5 focus-within:border-slate-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-slate-900/5 transition-all">
-                  <FiSearch className="w-4 h-4 text-slate-400 shrink-0" />
+              <div className="border-b border-slate-100 bg-slate-50 px-4 py-3 sm:px-5">
+                <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-sm transition-colors focus-within:border-slate-500">
+                  <FiSearch className="h-4 w-4 shrink-0 text-slate-400" />
                   <input
                     type="text"
                     placeholder={
@@ -424,13 +601,13 @@ export default function AdminDashboard() {
                     }
                     value={modalSearch}
                     onChange={(e) => setModalSearch(e.target.value)}
-                    className="w-full bg-transparent text-sm text-slate-800 font-medium focus:outline-hidden placeholder:text-slate-400 placeholder:font-normal"
+                    className="w-full bg-transparent text-sm font-medium text-slate-800 placeholder:font-normal placeholder:text-slate-400 focus:outline-none"
                   />
                   {modalSearch && (
                     <button
                       type="button"
                       onClick={() => setModalSearch("")}
-                      className="shrink-0 px-2.5 py-1 bg-slate-200/80 hover:bg-slate-300 text-[11px] text-slate-700 font-bold rounded-lg transition-colors cursor-pointer"
+                      className="shrink-0 rounded-lg bg-slate-200/80 px-2.5 py-1 text-[11px] font-bold text-slate-700 transition-colors hover:bg-slate-300"
                     >
                       Hapus
                     </button>
@@ -439,7 +616,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* MODAL BODY (CONTENT LIST) */}
-              <div className="p-4 sm:p-5 overflow-y-auto flex-1 divide-y divide-slate-100 bg-white">
+              <div className="flex-1 divide-y divide-slate-100 overflow-y-auto bg-white p-4 sm:p-5">
                 {activeModal === "cabang" ? (
                   (() => {
                     const filtered = cabangList.filter((b) =>
@@ -448,7 +625,7 @@ export default function AdminDashboard() {
 
                     if (filtered.length === 0) {
                       return (
-                        <div className="py-10 text-center text-slate-400 text-xs font-medium">
+                        <div className="py-10 text-center text-xs font-medium text-slate-400">
                           Tidak ada data cabang ditemukan
                         </div>
                       );
@@ -457,23 +634,23 @@ export default function AdminDashboard() {
                     return filtered.map((b) => (
                       <div
                         key={b.id}
-                        className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 hover:bg-slate-50/80 px-2.5 rounded-xl transition-colors"
+                        className="flex items-center justify-between gap-3 rounded-xl px-2.5 py-3.5 transition-colors first:pt-0 last:pb-0 hover:bg-slate-50"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 font-bold flex items-center justify-center text-sm border border-slate-200/60 shadow-xs shrink-0">
-                            <FiMapPin className="w-5 h-5" />
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 font-bold text-slate-700 shadow-sm">
+                            <FiMapPin className="h-5 w-5" />
                           </div>
-                          <div>
-                            <h4 className="text-sm font-bold text-slate-900">
+                          <div className="min-w-0">
+                            <h4 className="truncate text-sm font-semibold text-slate-900">
                               {b.nama}
                             </h4>
-                            <p className="text-xs text-slate-500 font-mono mt-0.5">
+                            <p className="mt-0.5 truncate font-mono text-[11px] text-slate-400">
                               Lat: {b.latitude ?? "-"} | Long: {b.longitude ?? "-"}
                             </p>
                           </div>
                         </div>
-                        <div>
-                          <span className="px-2.5 py-1 bg-slate-100 text-slate-700 border border-slate-200/80 rounded-full text-[11px] font-bold">
+                        <div className="shrink-0">
+                          <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700">
                             {b.radius ? `${b.radius} Meter` : "Bebas Lokasi"}
                           </span>
                         </div>
@@ -497,7 +674,7 @@ export default function AdminDashboard() {
 
                     if (filtered.length === 0) {
                       return (
-                        <div className="py-10 text-center text-slate-400 text-xs font-medium">
+                        <div className="py-10 text-center text-xs font-medium text-slate-400">
                           Tidak ada data guru ditemukan
                         </div>
                       );
@@ -506,9 +683,9 @@ export default function AdminDashboard() {
                     return filtered.map((g) => (
                       <div
                         key={g.id || g.uid || g.username}
-                        className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 hover:bg-slate-50/80 px-2.5 rounded-xl transition-colors"
+                        className="flex items-center justify-between gap-3 rounded-xl px-2.5 py-3.5 transition-colors first:pt-0 last:pb-0 hover:bg-slate-50"
                       >
-                        <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="flex min-w-0 items-center gap-3.5">
                           <img
                             src={
                               g.photoURL ||
@@ -524,24 +701,21 @@ export default function AdminDashboard() {
                                 name: g.namaLengkap || "Guru",
                               });
                             }}
-                            className="w-10 h-10 rounded-full object-cover border border-slate-200/80 shadow-xs shrink-0 cursor-pointer hover:ring-2 hover:ring-slate-400/50 hover:scale-105 transition-all duration-200"
+                            className="h-10 w-10 shrink-0 cursor-pointer rounded-full border border-slate-200 object-cover shadow-sm transition-all duration-200 hover:scale-105 hover:ring-2 hover:ring-slate-400/50"
                           />
                           <div className="min-w-0">
-                            <h4 className="text-sm font-bold text-slate-900 truncate">
+                            <h4 className="truncate text-sm font-semibold text-slate-900">
                               {g.namaLengkap || "Tanpa Nama"}
                             </h4>
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-xs text-slate-500">
-                              <span className="font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md text-[11px] border border-slate-200/60">
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                              <span className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-600">
                                 {g.cabang || "Tanpa Cabang"}
                               </span>
-                              {g.jabatan && (
-                                <span className="text-[11px] text-slate-500 font-medium">
-                                  {g.jabatan}
-                                </span>
-                              )}
-                              {g.noHp && (
-                                <span className="text-[11px] text-slate-400 font-mono">
-                                  {g.noHp}
+                              {(g.jabatan || g.noHp) && (
+                                <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-slate-400">
+                                  {[g.jabatan, g.noHp]
+                                    .filter(Boolean)
+                                    .join("  •  ")}
                                 </span>
                               )}
                             </div>
@@ -549,13 +723,13 @@ export default function AdminDashboard() {
                         </div>
                         <div className="shrink-0">
                           {g.aktif !== false ? (
-                            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                               Aktif
                             </span>
                           ) : (
-                            <span className="px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200/80 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700">
+                              <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
                               Nonaktif
                             </span>
                           )}
@@ -567,7 +741,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* MODAL FOOTER */}
-              <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+              <div className="flex flex-col-reverse gap-2.5 border-t border-slate-100 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={() => {
@@ -578,19 +752,19 @@ export default function AdminDashboard() {
                     setActiveModal(null);
                     navigate(path);
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+                  className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-200/60 hover:text-slate-900 sm:justify-start sm:py-1.5"
                 >
-                  <span>
+                  <span className="truncate">
                     Kelola {activeModal === "cabang" ? "Cabang" : "Guru"} di Halaman
                     Kelola
                   </span>
-                  <FiExternalLink className="w-3.5 h-3.5" />
+                  <FiExternalLink className="h-3.5 w-3.5 shrink-0" />
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer"
+                  className="w-full shrink-0 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-slate-800 sm:w-auto"
                 >
                   Tutup
                 </button>
@@ -605,43 +779,43 @@ export default function AdminDashboard() {
         createPortal(
           <div
             onClick={() => setPreviewPhoto(null)}
-            className="fixed inset-0 z-[10000] w-screen h-screen flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-lg"
+            className="fixed inset-0 z-[10000] flex h-screen w-screen flex-col items-center justify-center bg-slate-950/90 backdrop-blur-lg"
             style={{ animation: "fadeIn 0.2s ease-out" }}
           >
             {/* Top Bar */}
             <div
               onClick={(e) => e.stopPropagation()}
-              className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-b from-black/60 to-transparent z-10"
+              className="absolute left-0 right-0 top-0 z-10 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent px-4 py-3 sm:px-6 sm:py-4"
             >
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex min-w-0 items-center gap-3">
                 <img
                   src={previewPhoto.url}
                   alt=""
-                  className="w-9 h-9 rounded-full object-cover border-2 border-white/30 shrink-0"
+                  className="h-9 w-9 shrink-0 rounded-full border-2 border-white/30 object-cover"
                 />
-                <span className="text-white font-bold text-sm sm:text-base truncate">
+                <span className="truncate text-sm font-bold text-white sm:text-base">
                   {previewPhoto.name}
                 </span>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDownloadPhoto(previewPhoto.url, previewPhoto.name);
                   }}
-                  className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  className="cursor-pointer rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20"
                   title="Download foto"
                 >
-                  <FiDownload className="w-5 h-5" />
+                  <FiDownload className="h-5 w-5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreviewPhoto(null)}
-                  className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  className="cursor-pointer rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20"
                   title="Tutup"
                 >
-                  <FiX className="w-5 h-5" />
+                  <FiX className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -651,7 +825,7 @@ export default function AdminDashboard() {
               src={previewPhoto.url}
               alt={previewPhoto.name}
               onClick={(e) => e.stopPropagation()}
-              className="max-w-[90vw] max-h-[75vh] rounded-2xl object-contain shadow-2xl"
+              className="max-h-[75vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl"
               style={{ animation: "scaleIn 0.25s ease-out" }}
             />
           </div>,
@@ -660,5 +834,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-

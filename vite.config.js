@@ -9,6 +9,11 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
 
+      // Jangan precache file APK (ukurannya besar) ke service worker
+      workbox: {
+        globIgnores: ["**/*.apk"],
+      },
+
       devOptions: {
         enabled: true, // WAJIB agar PWA aktif saat development
       },

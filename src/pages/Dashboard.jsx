@@ -45,7 +45,7 @@ export default function Dashboard() {
         return "bg-emerald-50 text-emerald-700 border border-emerald-200";
 
       case "Tepat Waktu":
-        return "bg-indigo-50 text-indigo-700 border border-indigo-200";
+        return "bg-indigo-50 text-slate-900 border border-indigo-200";
 
       case "Terlambat":
         return "bg-amber-50 text-amber-700 border border-amber-200";
@@ -59,6 +59,18 @@ export default function Dashboard() {
       default:
         return "bg-slate-100 text-slate-600 border border-slate-200";
     }
+  };
+
+  // Format tampil saja — "2001-01-28" menjadi "28 Jan 2001"
+  const formatTgl = (v) => {
+    if (!v) return "-";
+    const d = new Date(v);
+    if (Number.isNaN(d.getTime())) return v;
+    return d.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   useEffect(() => {
@@ -168,50 +180,38 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50/80 flex flex-col font-sans">
-      {/* HEADER GLASSMORPHISM */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-2xs">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
-          <div>
+      {/* HEADER */}
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <h1 className="text-base font-extrabold text-slate-800 tracking-tight">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+              <h1 className="truncate text-base font-extrabold tracking-tight text-slate-900">
                 SHININGSUN
               </h1>
             </div>
-            <p className="text-xs text-slate-400 font-medium flex items-center gap-1.5 mt-0.5">
-              <FiClock className="w-3 h-3 text-indigo-500" />
-              <span>{time}</span>
+            <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400">
+              <FiClock className="h-3 w-3 shrink-0 text-slate-400" />
+              <span className="truncate tabular-nums">{time}</span>
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200/80">
-              <img
-                onClick={() => setPreview(true)}
-                src={
-                  user?.photoURL ||
-                  "https://ui-avatars.com/api/?name=" +
-                    (user?.namaLengkap || "Guru")
-                }
-                alt="Profile"
-                className="w-9 h-9 rounded-xl object-cover ring-2 ring-indigo-500/20 cursor-pointer hover:opacity-90 transition-all shadow-xs"
-              />
-              <div className="hidden sm:flex flex-col text-left">
-                <span className="text-xs font-bold text-slate-800 leading-tight">
-                  {user?.namaLengkap || "Guru"}
-                </span>
-                <span className="text-[10px] font-medium text-slate-400">
-                  {user?.cabang || "Pengajar"}
-                </span>
-              </div>
+          <div className="flex shrink-0 items-center gap-2.5">
+            <div className="hidden min-w-0 max-w-[200px] flex-col border-l border-slate-200 pl-3 text-right sm:flex">
+              <span className="truncate text-xs font-bold leading-tight text-slate-900">
+                {user?.namaLengkap || "Guru"}
+              </span>
+              <span className="truncate text-[10px] font-medium text-slate-400">
+                {user?.cabang || "Pengajar"}
+              </span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="px-3 py-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-xl transition-all border border-rose-100 flex items-center gap-1.5"
+              className="flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-600 transition-colors hover:bg-rose-100"
               title="Keluar"
             >
-              <FiLogOut className="w-3.5 h-3.5" />
+              <FiLogOut className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Keluar</span>
             </button>
           </div>
@@ -222,7 +222,7 @@ export default function Dashboard() {
       {preview && (
         <div
           onClick={() => setPreview(false)}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         >
           <img
             src={
@@ -231,7 +231,7 @@ export default function Dashboard() {
                 (user?.namaLengkap || "Guru")
             }
             alt="Preview Profile"
-            className="max-h-[75vh] rounded-3xl shadow-2xl ring-4 ring-white"
+            className="max-h-[75vh] rounded-2xl shadow-2xl ring-4 ring-white"
           />
         </div>
       )}
@@ -242,64 +242,74 @@ export default function Dashboard() {
         {tab === "dashboard" && (
           <div className="space-y-6">
             {/* GREETING CARD */}
-            <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-indigo-600/15 relative overflow-hidden">
-              <div className="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-              <div className="relative z-10 space-y-1">
-                <span className="inline-block px-3 py-1 bg-white/15 backdrop-blur-md rounded-full text-[11px] font-semibold tracking-wide">
-                  Selamat Datang 👋
+            <div className="flex items-center gap-4 rounded-2xl bg-black p-4 text-white shadow-sm sm:p-5">
+              <div className="min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-3 py-1 text-[11px] font-medium text-stone-200">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                  Selamat Datang
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black tracking-tight pt-1">
+                <h2 className="text-balance pt-2 text-lg font-bold tracking-tight sm:text-2xl">
                   {user?.namaLengkap || "Guru Shiningsun"}
                 </h2>
-                <p className="text-xs sm:text-sm text-indigo-100/90 font-medium">
+                <p className="mt-1 truncate text-xs font-medium text-stone-400 sm:text-sm">
                   {user?.cabang ? `Cabang: ${user.cabang}` : "Sistem Presensi Kehadiran Online"}
                 </p>
               </div>
+              <img
+                onClick={() => setPreview(true)}
+                src={
+                  user?.photoURL ||
+                  "https://ui-avatars.com/api/?name=" +
+                    (user?.namaLengkap || "Guru")
+                }
+                alt="Foto profil"
+                className="aspect-[3/4] w-[84px] shrink-0 cursor-pointer self-start rounded-2xl bg-white/10 object-cover object-top ring-2 ring-white/25 transition hover:opacity-90 sm:w-28"
+              />
             </div>
 
             {/* ACTION BUTTONS GRID */}
             <div className="grid sm:grid-cols-2 gap-4">
               <button
                 onClick={() => navigate("/absen")}
-                className="bg-white hover:bg-emerald-50/40 border border-slate-200/80 hover:border-emerald-200/90 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-200 group text-left flex items-start justify-between"
+                className="group flex items-start justify-between border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99]"
               >
                 <div className="space-y-2">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 group-hover:bg-emerald-100 text-emerald-600 flex items-center justify-center transition-colors">
-                    <FiLogIn className="w-6 h-6" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                    <FiLogIn className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="text-base font-extrabold text-slate-800 group-hover:text-emerald-700 transition-colors">
+                    <h3 className="text-base font-bold text-slate-900">
                       Absen Masuk
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="mt-0.5 text-xs text-slate-400">
                       Catat presensi kehadiran kedatangan
                     </p>
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-emerald-50 text-slate-400 group-hover:text-emerald-600 flex items-center justify-center transition-colors">
-                  <FiArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-slate-200 group-hover:text-slate-700">
+                  <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </button>
 
               <button
                 onClick={() => navigate("/absen-pulang")}
-                className="bg-white hover:bg-rose-50/40 border border-slate-200/80 hover:border-rose-200/90 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-200 group text-left flex items-start justify-between"
+                className="group flex items-start justify-between border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99]"
               >
                 <div className="space-y-2">
-                  <div className="w-12 h-12 rounded-2xl bg-rose-50 group-hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-colors">
-                    <FiLogOut className="w-6 h-6" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+                    <FiLogOut className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="text-base font-extrabold text-slate-800 group-hover:text-rose-700 transition-colors">
+                    <h3 className="text-base font-bold text-slate-900">
                       Absen Pulang
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="mt-0.5 text-xs text-slate-400">
                       Catat waktu selesai jam mengajar
                     </p>
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-rose-50 text-slate-400 group-hover:text-rose-600 flex items-center justify-center transition-colors">
-                  <FiArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-slate-200 group-hover:text-slate-700">
+                  <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </button>
             </div>
@@ -308,7 +318,7 @@ export default function Dashboard() {
 
         {/* REKAP TAB */}
         {tab === "rekap" && (
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-5 sm:p-7 space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-7 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
               <div>
                 <h2 className="text-lg font-extrabold text-slate-800">
@@ -326,7 +336,7 @@ export default function Dashboard() {
                     type="date"
                     value={tanggalMulai}
                     onChange={(e) => setTanggalMulai(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 outline-none transition focus:border-slate-500 focus:bg-white focus:ring-2 focus:ring-slate-200"
                   />
                 </div>
                 <span className="text-slate-300 font-bold text-xs">-</span>
@@ -335,7 +345,7 @@ export default function Dashboard() {
                     type="date"
                     value={tanggalSelesai}
                     onChange={(e) => setTanggalSelesai(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 font-medium focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 outline-none transition focus:border-slate-500 focus:bg-white focus:ring-2 focus:ring-slate-200"
                   />
                 </div>
               </div>
@@ -368,15 +378,15 @@ export default function Dashboard() {
                   );
 
                   return (
-                    <table className="w-full text-xs text-left">
-                      <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-100">
-                        <tr>
-                          <th className="p-3.5">Tanggal</th>
-                          <th className="p-3.5 text-center">Masuk</th>
-                          <th className="p-3.5 text-center">Status</th>
-                          <th className="p-3.5">Keterangan</th>
-                          <th className="p-3.5 text-center">Pulang</th>
-                          <th className="p-3.5 text-center">Status Pulang</th>
+                    <table className="w-full min-w-[620px] text-left text-xs">
+                      <thead className="bg-black font-bold uppercase tracking-wider">
+                        <tr className="border-b-2 border-black">
+                          <th className="p-3.5 text-left text-white">Tanggal</th>
+                          <th className="p-3.5 text-center text-emerald-300">Masuk</th>
+                          <th className="p-3.5 text-center text-stone-300">Status</th>
+                          <th className="p-3.5 text-left text-stone-300">Keterangan</th>
+                          <th className="p-3.5 text-center text-rose-300">Pulang</th>
+                          <th className="p-3.5 text-center text-stone-300">Status Pulang</th>
                         </tr>
                       </thead>
 
@@ -386,7 +396,7 @@ export default function Dashboard() {
 
                           return (
                             <tr key={i} className="hover:bg-slate-50/60 transition-colors">
-                              <td className="p-3.5 font-bold text-slate-800">
+                              <td className="whitespace-nowrap p-3.5 font-bold tabular-nums text-slate-800">
                                 {new Date(tgl).toLocaleDateString("id-ID", {
                                   day: "numeric",
                                   month: "short",
@@ -394,14 +404,14 @@ export default function Dashboard() {
                                 })}
                               </td>
 
-                              <td className="p-3.5 text-center font-bold text-emerald-600">
+                              <td className="whitespace-nowrap p-3.5 text-center font-bold tabular-nums text-emerald-600">
                                 {dataHari?.waktu || "-"}
                               </td>
 
                               <td className="p-3.5 text-center">
                                 {dataHari?.status ? (
                                   <span
-                                    className={`inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] ${getStatusStyle(
+                                    className={`inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-bold ${getStatusStyle(
                                       dataHari.status,
                                     )}`}
                                   >
@@ -416,13 +426,13 @@ export default function Dashboard() {
                                 {dataHari?.keterangan || "-"}
                               </td>
 
-                              <td className="p-3.5 text-center font-bold text-rose-600">
+                              <td className="whitespace-nowrap p-3.5 text-center font-bold tabular-nums text-rose-600">
                                 {dataHari?.jamPulang || "-"}
                               </td>
 
                               <td className="p-3.5 text-center">
                                 {dataHari?.statusPulang ? (
-                                  <span className="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-slate-100 text-slate-600 border border-slate-200">
+                                  <span className="inline-block whitespace-nowrap rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
                                     {dataHari.statusPulang}
                                   </span>
                                 ) : (
@@ -443,7 +453,7 @@ export default function Dashboard() {
 
         {/* PROFILE TAB */}
         {tab === "profile" && (
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-8 max-w-2xl mx-auto w-full space-y-8">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 sm:p-8 max-w-2xl mx-auto w-full space-y-8">
             {/* AVATAR HEADER */}
             <div className="flex flex-col items-center text-center space-y-3">
               <div className="relative group">
@@ -455,9 +465,9 @@ export default function Dashboard() {
                       (user?.namaLengkap || "Guru")
                   }
                   alt="Profile"
-                  className="w-24 h-24 rounded-3xl object-cover ring-4 ring-indigo-500/10 shadow-lg cursor-pointer group-hover:opacity-90 transition-all"
+                  className="aspect-[3/4] w-28 cursor-pointer rounded-2xl bg-slate-100 object-cover object-top shadow-lg ring-4 ring-slate-900/10 transition group-hover:opacity-90 sm:w-32"
                 />
-                <label className="absolute -bottom-2 -right-2 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-xl shadow-md cursor-pointer transition-transform hover:scale-105">
+                <label className="absolute -bottom-2 -right-2 cursor-pointer rounded-xl bg-slate-900 p-2 text-white shadow-md transition hover:bg-slate-800">
                   <FiCamera className="w-4 h-4" />
                   <input
                     type="file"
@@ -468,10 +478,10 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <h2 className="text-xl font-black text-slate-800">
+                <h2 className="text-xl font-bold text-slate-900">
                   {user?.namaLengkap || "Nama Guru"}
                 </h2>
-                <p className="text-xs text-indigo-600 font-semibold mt-0.5">
+                <p className="mt-0.5 text-xs font-semibold text-slate-500">
                   {user?.cabang || "Cabang Belum Diset"}
                 </p>
               </div>
@@ -489,7 +499,7 @@ export default function Dashboard() {
                 <span className="text-slate-400 font-semibold block text-[10px] uppercase">
                   Username
                 </span>
-                <span className="font-bold text-slate-800 text-sm mt-0.5 block">
+                <span className="font-bold text-slate-800 text-sm mt-0.5 block break-words">
                   {user?.username || "-"}
                 </span>
               </div>
@@ -498,7 +508,7 @@ export default function Dashboard() {
                 <span className="text-slate-400 font-semibold block text-[10px] uppercase">
                   No HP
                 </span>
-                <span className="font-bold text-slate-800 text-sm mt-0.5 block">
+                <span className="mt-0.5 block break-words font-mono text-sm font-bold tabular-nums text-slate-800">
                   {user?.noHp || "-"}
                 </span>
               </div>
@@ -507,8 +517,10 @@ export default function Dashboard() {
                 <span className="text-slate-400 font-semibold block text-[10px] uppercase">
                   Tempat, Tanggal Lahir
                 </span>
-                <span className="font-bold text-slate-800 text-sm mt-0.5 block">
-                  {user?.tempatLahir || "-"}, {user?.tanggalLahir || "-"}
+                <span className="mt-0.5 block break-words font-bold text-slate-800 text-sm">
+                  {user?.tempatLahir
+                    ? `${user.tempatLahir}, ${formatTgl(user?.tanggalLahir)}`
+                    : formatTgl(user?.tanggalLahir)}
                 </span>
               </div>
 
@@ -516,8 +528,8 @@ export default function Dashboard() {
                 <span className="text-slate-400 font-semibold block text-[10px] uppercase">
                   Tanggal Masuk
                 </span>
-                <span className="font-bold text-slate-800 text-sm mt-0.5 block">
-                  {user?.tglMasuk || "-"}
+                <span className="mt-0.5 block break-words font-bold text-slate-800 text-sm">
+                  {formatTgl(user?.tglMasuk)}
                 </span>
               </div>
 
@@ -525,17 +537,17 @@ export default function Dashboard() {
                 <span className="text-slate-400 font-semibold block text-[10px] uppercase">
                   Alamat
                 </span>
-                <span className="font-bold text-slate-800 text-sm mt-0.5 block">
+                <span className="font-bold text-slate-800 text-sm mt-0.5 block break-words">
                   {user?.alamat || "-"}
                 </span>
               </div>
 
-              <div className="p-3.5 bg-indigo-50/50 rounded-2xl border border-indigo-100/80 sm:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div className="grid grid-cols-2 gap-3 border border-slate-200 bg-slate-50 p-3.5 text-center sm:col-span-2 sm:grid-cols-4 rounded-2xl">
                 <div>
                   <span className="text-slate-400 font-semibold block text-[10px]">
                     Jam Masuk
                   </span>
-                  <span className="font-extrabold text-indigo-700 text-xs">
+                  <span className="font-extrabold text-slate-900 text-xs tabular-nums">
                     {user?.jamMasuk || "07:00"}
                   </span>
                 </div>
@@ -543,7 +555,7 @@ export default function Dashboard() {
                   <span className="text-slate-400 font-semibold block text-[10px]">
                     Jam Pulang
                   </span>
-                  <span className="font-extrabold text-indigo-700 text-xs">
+                  <span className="font-extrabold text-slate-900 text-xs tabular-nums">
                     {user?.jamPulang || "16:00"}
                   </span>
                 </div>
@@ -551,7 +563,7 @@ export default function Dashboard() {
                   <span className="text-slate-400 font-semibold block text-[10px]">
                     Mulai Absen
                   </span>
-                  <span className="font-extrabold text-indigo-700 text-xs">
+                  <span className="font-extrabold text-slate-900 text-xs tabular-nums">
                     {user?.jamMulaiAbsen || "06:00"}
                   </span>
                 </div>
@@ -559,7 +571,7 @@ export default function Dashboard() {
                   <span className="text-slate-400 font-semibold block text-[10px]">
                     Batas Telat
                   </span>
-                  <span className="font-extrabold text-indigo-700 text-xs">
+                  <span className="font-extrabold text-slate-900 text-xs tabular-nums">
                     {user?.batasTelat || 15} min
                   </span>
                 </div>
@@ -569,43 +581,43 @@ export default function Dashboard() {
         )}
       </main>
 
-      {/* FLOATING BOTTOM NAV BAR */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-2xl border-t border-slate-200/80 shadow-2xl z-40">
-        <div className="max-w-md mx-auto grid grid-cols-3 py-2.5 px-4 text-xs">
+      {/* FLOATING BOTTOM NAV */}
+      <nav className="fixed inset-x-4 bottom-4 z-40 sm:bottom-6">
+        <div className="mx-auto grid max-w-md grid-cols-3 gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-[0_12px_32px_rgba(15,23,42,0.18)]">
           <button
             onClick={() => setTab("dashboard")}
-            className={`flex flex-col items-center justify-center gap-1 font-bold transition-all ${
+            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${
               tab === "dashboard"
-                ? "text-indigo-600 scale-105"
-                : "text-slate-400 hover:text-slate-600"
+                ? "bg-black text-white shadow-sm"
+                : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
             }`}
           >
-            <FiGrid className="w-5 h-5" />
-            <span className="text-[11px]">Dashboard</span>
+            <FiGrid className="h-[18px] w-[18px]" />
+            <span>Dashboard</span>
           </button>
 
           <button
             onClick={() => setTab("rekap")}
-            className={`flex flex-col items-center justify-center gap-1 font-bold transition-all ${
+            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${
               tab === "rekap"
-                ? "text-indigo-600 scale-105"
-                : "text-slate-400 hover:text-slate-600"
+                ? "bg-black text-white shadow-sm"
+                : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
             }`}
           >
-            <FiFileText className="w-5 h-5" />
-            <span className="text-[11px]">Rekapan</span>
+            <FiFileText className="h-[18px] w-[18px]" />
+            <span>Rekapan</span>
           </button>
 
           <button
             onClick={() => setTab("profile")}
-            className={`flex flex-col items-center justify-center gap-1 font-bold transition-all ${
+            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${
               tab === "profile"
-                ? "text-indigo-600 scale-105"
-                : "text-slate-400 hover:text-slate-600"
+                ? "bg-black text-white shadow-sm"
+                : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
             }`}
           >
-            <FiUser className="w-5 h-5" />
-            <span className="text-[11px]">Profil</span>
+            <FiUser className="h-[18px] w-[18px]" />
+            <span>Profil</span>
           </button>
         </div>
       </nav>
