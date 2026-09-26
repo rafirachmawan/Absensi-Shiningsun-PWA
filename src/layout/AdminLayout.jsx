@@ -128,10 +128,10 @@ export default function AdminLayout() {
 
       {/* SIDEBAR */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen w-64 bg-white border-r border-slate-200 shadow-xl shadow-slate-900/5 transform transition-transform duration-300 flex flex-col justify-between
+        className={`fixed left-0 top-0 z-40 h-screen w-64 max-w-[85vw] bg-white border-r border-slate-200 shadow-xl shadow-slate-900/5 transform transition-transform duration-300 flex flex-col justify-between
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div>
+        <div className="flex min-h-0 flex-1 flex-col">
           {/* SIDEBAR HEADER */}
           <div className="flex h-[68px] items-center justify-between border-b border-slate-100 bg-white px-4">
             <div className="flex min-w-0 items-center gap-2.5">
@@ -161,7 +161,7 @@ export default function AdminLayout() {
           </div>
 
           {/* NAVIGATION LINKS */}
-          <nav className="p-3">
+          <nav className="flex-1 overflow-y-auto p-3">
             <p className="px-3.5 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
               Menu Utama
             </p>
@@ -211,11 +211,11 @@ export default function AdminLayout() {
       </aside>
 
       {/* MAIN */}
-      <div className="flex-1 flex flex-col w-full min-w-0">
+      <div className="flex-1 flex flex-col w-full min-w-0 max-w-full overflow-x-clip">
         {/* HEADER NAVBAR */}
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-40 flex min-h-16 items-center justify-between gap-2 border-b border-slate-200 bg-white/95 px-3 backdrop-blur sm:gap-3 sm:px-6">
           {/* LEFT NAVBAR: Sidebar Toggle & Breadcrumbs */}
-          <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               aria-label="Buka menu"
@@ -227,14 +227,14 @@ export default function AdminLayout() {
 
             <div className="mx-0.5 hidden h-5 w-px bg-slate-200 sm:block" />
 
-            <div className="flex min-w-0 items-center gap-2">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               <span className="hidden shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-600 min-[420px]:inline-block">
                 Super Admin
               </span>
               <span className="hidden shrink-0 text-sm font-light text-slate-300 min-[420px]:inline">
                 /
               </span>
-              <h1 className="truncate text-[15px] font-bold tracking-tight text-slate-900 sm:text-base">
+              <h1 className="min-w-0 flex-1 truncate text-[15px] font-bold tracking-tight text-slate-900 sm:text-base">
                 {getPageTitle()}
               </h1>
             </div>
@@ -334,7 +334,7 @@ export default function AdminLayout() {
 
         </header>
 
-        <main className="flex-1 p-4 md:p-8">
+        <main className="w-full min-w-0 max-w-full flex-1 p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

@@ -206,7 +206,7 @@ export default function RekapAbsensi() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full min-w-0 max-w-full space-y-5 sm:space-y-6">
       {/* HEADER CARD */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -248,7 +248,7 @@ export default function RekapAbsensi() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:items-end">
           <div className="flex flex-col">
             <label className="text-xs font-semibold text-slate-700 mb-1">
               Tanggal Mulai
@@ -305,7 +305,7 @@ export default function RekapAbsensi() {
 
           <button
             onClick={applyFilter}
-            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-2.5 text-sm w-full shadow-sm transition-all cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-2.5 min-h-[48px] text-sm w-full shadow-sm transition-all cursor-pointer sm:col-span-2 lg:col-span-1"
           >
             Tampilkan Data
           </button>
@@ -314,7 +314,7 @@ export default function RekapAbsensi() {
 
       {/* TABLE */}
       {filtered.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-x-auto p-3">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-x-auto w-full max-w-full p-3 min-w-0">
           {(() => {
             // 🔥 ambil nama unik
             const namaList = [...new Set(filtered.map((d) => d.nama))];

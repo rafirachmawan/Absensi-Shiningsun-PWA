@@ -55,7 +55,7 @@ export default function PengaturanJam() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full min-w-0 max-w-full space-y-5 sm:space-y-6">
       {/* HEADER CARD */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <p className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
@@ -71,7 +71,7 @@ export default function PengaturanJam() {
       </div>
 
       {/* FORM CARD */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 sm:p-6 max-w-xl space-y-6">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 sm:p-6 max-w-xl w-full space-y-6 min-w-0">
         <div className="space-y-5">
           {/* JAM BUKA */}
           <div>
@@ -141,7 +141,7 @@ export default function PengaturanJam() {
           <button
             onClick={simpan}
             disabled={loading}
-            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-3 w-full text-sm shadow-sm transition-all cursor-pointer disabled:opacity-50"
+            className="bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white font-bold rounded-xl px-4 py-3 min-h-[48px] w-full text-sm shadow-sm transition-all cursor-pointer disabled:opacity-50"
           >
             {loading ? "Menyimpan..." : "Simpan Pengaturan"}
           </button>

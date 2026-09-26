@@ -15,3 +15,66 @@
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out;
 }
+
+/* ============================================================
+   Fondasi responsif global — murni layout, tanpa menyentuh logika
+   ============================================================ */
+
+/* Pakai dynamic viewport di browser HP modern agar konten tidak
+   tertutup address bar yang menyusut/membesar */
+@supports (min-height: 100dvh) {
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  /* clip (bukan hidden) agar position: sticky pada header tetap jalan */
+  overflow-x: clip;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Media & kontrol form tidak boleh meluber keluar kolom sempit */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+/* Input tanggal/waktu bawaan browser punya lebar intrinsik besar —
+   izinkan menyusut di grid/flex layar kecil */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="number"] {
+  min-width: 0;
+}
+
+/* Scroll horizontal (tabel rekap dkk) yang mulus di layar sentuh */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Cegah auto-zoom iOS Safari saat input difokuskan (font < 16px
+   memicu zoom). Hanya di layar kecil; tampilan md+ tidak berubah. */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}

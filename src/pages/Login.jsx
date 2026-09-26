@@ -169,7 +169,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF6EF] font-sans text-stone-900 antialiased lg:grid lg:grid-cols-[1.02fr_1fr]">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-[#FAF6EF] font-sans text-stone-900 antialiased lg:grid lg:grid-cols-[1.02fr_1fr]">
       {/* ===== HEADER / PANEL KIRI ===== */}
       <aside className="relative overflow-hidden bg-stone-950 text-stone-300 rounded-b-[28px] lg:rounded-none">
         {/* aksen matahari — satu sumber cahaya, bukan blob acak */}
@@ -200,9 +200,9 @@ export default function Login() {
             <p className="mt-1.5 text-[13.5px] font-medium tracking-wide text-stone-400">
               Presensi &amp; Kehadiran Digital
             </p>
-            <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-4 py-[7px] text-[12.5px] font-medium text-stone-200 backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]" />
-              {todayLong}
+            <p className="mt-5 inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-4 py-[7px] text-[12.5px] font-medium text-stone-200 backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.9)]" />
+              <span className="truncate">{todayLong}</span>
             </p>
           </div>
 
@@ -295,9 +295,9 @@ export default function Login() {
       </aside>
 
       {/* ===== FORM ===== */}
-      <main className="relative z-10 px-5 pb-10 sm:px-8 -mt-10 lg:mt-0 lg:flex lg:items-center lg:justify-center lg:px-12 lg:py-12">
-        <div className="mx-auto w-full max-w-[430px]">
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-6 shadow-[0_12px_40px_rgba(28,25,23,0.08)] sm:p-8">
+      <main className="relative z-10 min-w-0 px-4 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:px-8 -mt-10 lg:mt-0 lg:flex lg:items-center lg:justify-center lg:px-12 lg:py-12">
+        <div className="mx-auto w-full min-w-0 max-w-[430px]">
+          <div className="rounded-2xl border border-stone-200/90 bg-white p-5 shadow-[0_12px_40px_rgba(28,25,23,0.08)] sm:p-8">
             <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-800 ring-1 ring-inset ring-amber-200/70">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
               Presensi hari ini
@@ -322,7 +322,7 @@ export default function Login() {
                   className="mb-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-3.5 py-3"
                 >
                   <FiAlertCircle className="mt-0.5 h-[18px] w-[18px] shrink-0 text-red-500" />
-                  <p className="flex-1 text-sm leading-relaxed text-red-800">
+                  <p className="flex-1 min-w-0 break-words text-sm leading-relaxed text-red-800">
                     {error}
                   </p>
                   <button

@@ -79,11 +79,11 @@ export default function InstallPWA() {
 
       {showGuide && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-stone-950/60 p-4 sm:items-center"
+          className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-stone-950/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:items-center sm:p-6"
           onClick={() => setShowGuide(false)}
         >
           <div
-            className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl"
+            className="my-auto max-h-[90vh] w-full max-w-sm min-w-0 overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between">
@@ -109,9 +109,9 @@ export default function InstallPWA() {
               <ol className="mt-4 space-y-3 text-[13.5px] leading-relaxed text-stone-600">
                 <li className="flex gap-2.5">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-900 text-xs font-bold text-white">1</span>
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex min-w-0 flex-wrap items-center gap-1.5">
                     Buka situs ini di <b>Safari</b>, tap tombol
-                    <FiShare className="inline h-4 w-4" /> Share
+                    <FiShare className="inline h-4 w-4 shrink-0" /> Share
                   </span>
                 </li>
                 <li className="flex gap-2.5">
@@ -127,9 +127,9 @@ export default function InstallPWA() {
               <ol className="mt-4 space-y-3 text-[13.5px] leading-relaxed text-stone-600">
                 <li className="flex gap-2.5">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-900 text-xs font-bold text-white">1</span>
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex min-w-0 flex-wrap items-center gap-1.5">
                     Buka situs ini di <b>Chrome</b>, tap
-                    <FiMoreVertical className="inline h-4 w-4" /> titik 3 kanan atas
+                    <FiMoreVertical className="inline h-4 w-4 shrink-0" /> titik 3 kanan atas
                   </span>
                 </li>
                 <li className="flex gap-2.5">

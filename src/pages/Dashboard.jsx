@@ -179,11 +179,11 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/80 flex flex-col font-sans">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-slate-50/80 flex flex-col font-sans">
       {/* HEADER */}
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div className="min-w-0">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
               <h1 className="truncate text-base font-extrabold tracking-tight text-slate-900">
@@ -192,7 +192,7 @@ export default function Dashboard() {
             </div>
             <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-slate-400">
               <FiClock className="h-3 w-3 shrink-0 text-slate-400" />
-              <span className="truncate tabular-nums">{time}</span>
+              <span className="min-w-0 truncate tabular-nums">{time}</span>
             </p>
           </div>
 
@@ -231,24 +231,24 @@ export default function Dashboard() {
                 (user?.namaLengkap || "Guru")
             }
             alt="Preview Profile"
-            className="max-h-[75vh] rounded-2xl shadow-2xl ring-4 ring-white"
+            className="max-h-[75vh] w-auto max-w-[calc(100vw-2rem)] rounded-2xl object-contain shadow-2xl ring-4 ring-white"
           />
         </div>
       )}
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-28">
+      <main className="flex-1 max-w-5xl mx-auto w-full min-w-0 px-4 sm:px-6 pt-5 sm:pt-6 pb-32">
         {/* DASHBOARD TAB */}
         {tab === "dashboard" && (
           <div className="space-y-6">
             {/* GREETING CARD */}
-            <div className="flex items-center gap-4 rounded-2xl bg-black p-4 text-white shadow-sm sm:p-5">
+            <div className="flex items-center gap-3 rounded-2xl bg-black p-4 text-white shadow-sm sm:gap-4 sm:p-5">
               <div className="min-w-0 flex-1">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-3 py-1 text-[11px] font-medium text-stone-200">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-                  Selamat Datang
+                <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-3 py-1 text-[11px] font-medium text-stone-200">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                  <span className="truncate">Selamat Datang</span>
                 </span>
-                <h2 className="text-balance pt-2 text-lg font-bold tracking-tight sm:text-2xl">
+                <h2 className="text-balance break-words pt-2 text-lg font-bold tracking-tight sm:text-2xl">
                   {user?.namaLengkap || "Guru Shiningsun"}
                 </h2>
                 <p className="mt-1 truncate text-xs font-medium text-stone-400 sm:text-sm">
@@ -268,12 +268,12 @@ export default function Dashboard() {
             </div>
 
             {/* ACTION BUTTONS GRID */}
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <button
                 onClick={() => navigate("/absen")}
-                className="group flex items-start justify-between border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99]"
+                className="group flex min-w-0 items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99] sm:p-6"
               >
-                <div className="space-y-2">
+                <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                     <FiLogIn className="h-6 w-6" />
                   </div>
@@ -286,16 +286,16 @@ export default function Dashboard() {
                     </p>
                   </div>
                 </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-slate-200 group-hover:text-slate-700">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-slate-200 group-hover:text-slate-700">
                   <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </button>
 
               <button
                 onClick={() => navigate("/absen-pulang")}
-                className="group flex items-start justify-between border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99]"
+                className="group flex min-w-0 items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-slate-300 hover:shadow active:scale-[0.99] sm:p-6"
               >
-                <div className="space-y-2">
+                <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
                     <FiLogOut className="h-6 w-6" />
                   </div>
@@ -308,7 +308,7 @@ export default function Dashboard() {
                     </p>
                   </div>
                 </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-slate-200 group-hover:text-slate-700">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-slate-200 group-hover:text-slate-700">
                   <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </button>
@@ -330,22 +330,22 @@ export default function Dashboard() {
               </div>
 
               {/* DATE FILTERS */}
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1 sm:w-36">
+              <div className="flex w-full flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center">
+                <div className="relative w-full min-w-0 min-[420px]:flex-1 sm:w-36">
                   <input
                     type="date"
                     value={tanggalMulai}
                     onChange={(e) => setTanggalMulai(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 outline-none transition focus:border-slate-500 focus:bg-white focus:ring-2 focus:ring-slate-200"
+                    className="w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-slate-500 focus:bg-white focus:ring-2 focus:ring-slate-200"
                   />
                 </div>
-                <span className="text-slate-300 font-bold text-xs">-</span>
-                <div className="relative flex-1 sm:w-36">
+                <span className="hidden shrink-0 font-bold text-xs text-slate-300 min-[420px]:inline">-</span>
+                <div className="relative w-full min-w-0 min-[420px]:flex-1 sm:w-36">
                   <input
                     type="date"
                     value={tanggalSelesai}
                     onChange={(e) => setTanggalSelesai(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700 outline-none transition focus:border-slate-500 focus:bg-white focus:ring-2 focus:ring-slate-200"
+                    className="w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-slate-500 focus:bg-white focus:ring-2 focus:ring-slate-200"
                   />
                 </div>
               </div>
@@ -357,7 +357,7 @@ export default function Dashboard() {
                 <p className="text-xs font-semibold">Belum ada riwayat absensi</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-slate-100">
+              <div className="w-full max-w-full overflow-x-auto rounded-2xl border border-slate-100">
                 {(() => {
                   const filtered = riwayat.filter((d) => {
                     if (!tanggalMulai || !tanggalSelesai) return true;
@@ -582,42 +582,42 @@ export default function Dashboard() {
       </main>
 
       {/* FLOATING BOTTOM NAV */}
-      <nav className="fixed inset-x-4 bottom-4 z-40 sm:bottom-6">
-        <div className="mx-auto grid max-w-md grid-cols-3 gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-[0_12px_32px_rgba(15,23,42,0.18)]">
+      <nav className="fixed inset-x-3 bottom-3 z-40 pb-[env(safe-area-inset-bottom)] sm:inset-x-4 sm:bottom-6">
+        <div className="mx-auto grid w-full min-w-0 max-w-md grid-cols-3 gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-[0_12px_32px_rgba(15,23,42,0.18)]">
           <button
             onClick={() => setTab("dashboard")}
-            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${
+            className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-bold transition-colors sm:flex-row sm:gap-2 sm:px-3 sm:py-2.5 sm:text-xs ${
               tab === "dashboard"
                 ? "bg-black text-white shadow-sm"
                 : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
             }`}
           >
-            <FiGrid className="h-[18px] w-[18px]" />
-            <span>Dashboard</span>
+            <FiGrid className="h-[18px] w-[18px] shrink-0" />
+            <span className="max-w-full truncate">Dashboard</span>
           </button>
 
           <button
             onClick={() => setTab("rekap")}
-            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${
+            className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-bold transition-colors sm:flex-row sm:gap-2 sm:px-3 sm:py-2.5 sm:text-xs ${
               tab === "rekap"
                 ? "bg-black text-white shadow-sm"
                 : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
             }`}
           >
-            <FiFileText className="h-[18px] w-[18px]" />
-            <span>Rekapan</span>
+            <FiFileText className="h-[18px] w-[18px] shrink-0" />
+            <span className="max-w-full truncate">Rekapan</span>
           </button>
 
           <button
             onClick={() => setTab("profile")}
-            className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors ${
+            className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-bold transition-colors sm:flex-row sm:gap-2 sm:px-3 sm:py-2.5 sm:text-xs ${
               tab === "profile"
                 ? "bg-black text-white shadow-sm"
                 : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
             }`}
           >
-            <FiUser className="h-[18px] w-[18px]" />
-            <span>Profil</span>
+            <FiUser className="h-[18px] w-[18px] shrink-0" />
+            <span className="max-w-full truncate">Profil</span>
           </button>
         </div>
       </nav>

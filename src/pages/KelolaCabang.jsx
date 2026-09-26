@@ -128,7 +128,7 @@ export default function KelolaCabang() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full min-w-0 max-w-full space-y-5 sm:space-y-6">
       {/* HEADER CARD */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <div className="mb-2 flex items-center justify-between gap-3">
@@ -229,10 +229,10 @@ export default function KelolaCabang() {
       </div>
 
       {/* DATA CABANG */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden w-full max-w-full">
         {/* DESKTOP TABLE */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase font-extrabold tracking-wider">
               <tr>
                 <th className="py-4 px-6 text-left">Nama Cabang</th>
@@ -312,23 +312,23 @@ export default function KelolaCabang() {
             </div>
           ) : (
             branches.map((b) => (
-              <div key={b.id} className="p-4 space-y-3">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-bold text-slate-800 text-base">
+              <div key={b.id} className="p-4 space-y-3 min-w-0">
+                <div className="flex justify-between items-start gap-3">
+                  <h3 className="font-bold text-slate-800 text-base min-w-0 flex-1 break-words">
                     {b.nama}
                   </h3>
                   {b.radius ? (
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-800 border border-slate-200">
+                    <span className="shrink-0 whitespace-nowrap text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-800 border border-slate-200">
                       {b.radius}m
                     </span>
                   ) : (
-                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                    <span className="shrink-0 whitespace-nowrap text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                       Bebas
                     </span>
                   )}
                 </div>
 
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 font-mono text-xs text-slate-600">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 font-mono text-xs text-slate-600 break-all">
                   <p>Lat: {b.latitude ?? "-"}</p>
                   <p>Long: {b.longitude ?? "-"}</p>
                 </div>
@@ -336,14 +336,14 @@ export default function KelolaCabang() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setEditData(b)}
-                    className="rounded-xl border border-slate-200 bg-slate-100 py-2 text-center text-xs font-bold text-slate-800 transition-colors hover:bg-slate-200"
+                    className="rounded-xl border border-slate-200 bg-slate-100 min-h-[44px] px-2 py-2.5 text-center text-xs font-bold text-slate-800 transition-colors hover:bg-slate-200"
                   >
                     Edit Cabang
                   </button>
                   <button
                     onClick={() => hapusCabang(b.id)}
                     disabled={loading}
-                    className="rounded-xl border border-rose-200/80 bg-rose-50 py-2 text-center text-xs font-bold text-rose-700 transition-colors hover:bg-rose-100 disabled:opacity-50"
+                    className="rounded-xl border border-rose-200/80 bg-rose-50 min-h-[44px] px-2 py-2.5 text-center text-xs font-bold text-rose-700 transition-colors hover:bg-rose-100 disabled:opacity-50"
                   >
                     Hapus Cabang
                   </button>
@@ -356,9 +356,9 @@ export default function KelolaCabang() {
 
       {/* MODAL EDIT CABANG */}
       {editData && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-            <div className="flex items-center justify-between bg-black px-6 py-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-950/70 p-4 backdrop-blur-sm animate-fadeIn">
+          <div className="my-auto w-full max-w-md max-h-[90vh] overflow-y-auto min-w-0 rounded-2xl border border-slate-200 bg-white shadow-2xl">
+            <div className="flex items-center justify-between gap-3 bg-black px-4 py-4 sm:px-6">
               <div className="min-w-0">
                 <h2 className="truncate text-lg font-bold tracking-tight text-white">
                   Edit Data Cabang
@@ -377,7 +377,7 @@ export default function KelolaCabang() {
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-4 sm:p-6 space-y-5">
               <div className="space-y-4">
                 {/* NAMA CABANG */}
                 <div>
@@ -437,11 +437,11 @@ export default function KelolaCabang() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end pt-2">
                 <button
                   type="button"
                   onClick={() => setEditData(null)}
-                  className="px-5 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-xs font-bold transition-colors cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2.5 min-h-[44px] rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-xs font-bold transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
@@ -449,7 +449,7 @@ export default function KelolaCabang() {
                 <button
                   type="button"
                   onClick={updateCabang}
-                  className="px-6 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-2.5 min-h-[44px] rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                 >
                   Simpan Perubahan
                 </button>

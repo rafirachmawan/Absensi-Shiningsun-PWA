@@ -410,7 +410,7 @@ export default function KelolaGuru() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="w-full min-w-0 max-w-full space-y-5 sm:space-y-6">
       {/* HEADER CARD */}
       <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div className="min-w-0">
@@ -493,9 +493,9 @@ export default function KelolaGuru() {
             }}
             className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center overflow-y-auto bg-slate-950/70 p-3 backdrop-blur-sm animate-fadeIn sm:p-6"
           >
-            <div className="my-auto flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="my-auto flex max-h-[90vh] w-full max-w-2xl min-w-0 flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
               {/* MODAL HEADER */}
-              <div className="flex shrink-0 items-center justify-between bg-black px-6 py-4">
+              <div className="flex shrink-0 items-center justify-between gap-3 bg-black px-4 py-4 sm:px-6">
                 <div className="min-w-0">
                   <h2 className="truncate text-lg font-bold tracking-tight text-white">
                     {editMode ? "Edit Data Guru" : "Tambah Guru Baru"}
@@ -517,7 +517,7 @@ export default function KelolaGuru() {
               </div>
 
               {/* MODAL BODY (SCROLLABLE FORM CONTENT) */}
-              <div className="p-6 overflow-y-auto space-y-6 flex-1">
+              <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 min-w-0">
                 {/* FOTO PROFIL UPLOAD */}
                 <div className="flex flex-col items-center gap-3">
                   <div className="relative group">
@@ -792,11 +792,11 @@ export default function KelolaGuru() {
               </div>
 
               {/* MODAL FOOTER */}
-              <div className="flex shrink-0 items-center justify-end gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4">
+              <div className="flex shrink-0 flex-col-reverse gap-2.5 sm:flex-row sm:items-center sm:justify-end border-t border-slate-100 bg-slate-50 px-4 py-4 sm:px-6">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="cursor-pointer rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100"
+                  className="cursor-pointer w-full sm:w-auto rounded-xl border border-slate-200 px-5 py-2.5 min-h-[44px] text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100"
                 >
                   Batal
                 </button>
@@ -804,7 +804,7 @@ export default function KelolaGuru() {
                   type="button"
                   onClick={editMode ? updateGuru : tambahGuru}
                   disabled={loading || uploadingPhoto}
-                  className="cursor-pointer rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-800 active:scale-[0.99] disabled:opacity-50"
+                  className="cursor-pointer w-full sm:w-auto rounded-xl bg-slate-900 px-6 py-2.5 min-h-[44px] text-sm font-semibold text-white shadow-sm transition-colors hover:bg-slate-800 active:scale-[0.99] disabled:opacity-50"
                 >
                   {loading ? "Menyimpan..." : editMode ? "Simpan Perubahan" : "Simpan Guru"}
                 </button>
@@ -815,10 +815,10 @@ export default function KelolaGuru() {
         )}
 
       {/* TABLE + MOBILE CARD LIST */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden w-full max-w-full">
         {/* ================= DESKTOP TABLE ================= */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-slate-50/80 border-b border-slate-100 text-slate-500 text-xs uppercase font-extrabold tracking-wider">
               <tr>
                 <th className="py-4 px-6 text-left">Nama & Profil Guru</th>
@@ -968,12 +968,12 @@ export default function KelolaGuru() {
                 </div>
 
                 {/* INFO PILLS */}
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <span className="font-semibold bg-slate-100 px-2.5 py-0.5 rounded-md text-slate-700 border border-slate-200/60">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                  <span className="font-semibold bg-slate-100 px-2.5 py-0.5 rounded-md text-slate-700 border border-slate-200/60 break-words">
                     Cabang: {g.cabang || "-"}
                   </span>
                   {g.noHp && (
-                    <span className="text-slate-500 font-mono text-[11px]">HP: {g.noHp}</span>
+                    <span className="text-slate-500 font-mono text-[11px] break-all">HP: {g.noHp}</span>
                   )}
                 </div>
 
@@ -982,7 +982,7 @@ export default function KelolaGuru() {
                   <button
                     type="button"
                     onClick={() => handleEdit(g)}
-                    className="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
+                    className="min-h-[44px] px-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
                   >
                     Edit Data
                   </button>
@@ -990,7 +990,7 @@ export default function KelolaGuru() {
                   <button
                     type="button"
                     onClick={() => toggleStatus(g)}
-                    className="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
+                    className="min-h-[44px] px-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
                   >
                     {g.aktif ? "Nonaktifkan" : "Aktifkan"}
                   </button>
@@ -998,7 +998,7 @@ export default function KelolaGuru() {
                   <button
                     type="button"
                     onClick={() => handleResetPassword(g)}
-                    className="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
+                    className="min-h-[44px] px-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer text-center"
                   >
                     Reset Pass
                   </button>
@@ -1006,7 +1006,7 @@ export default function KelolaGuru() {
                   <button
                     type="button"
                     onClick={() => handleDelete(g.id)}
-                    className="py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 text-xs font-bold transition-colors cursor-pointer text-center"
+                    className="min-h-[44px] px-2 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 text-xs font-bold transition-colors cursor-pointer text-center"
                   >
                     Hapus
                   </button>

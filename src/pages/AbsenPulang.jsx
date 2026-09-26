@@ -249,9 +249,9 @@ export default function AbsenPulang() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-3xl shadow-2xl p-6 space-y-6">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center px-4 py-8 sm:p-6">
+      <div className="w-full max-w-md min-w-0">
+        <div className="bg-white rounded-3xl shadow-2xl p-5 sm:p-6 space-y-5 sm:space-y-6 min-w-0">
           <div className="text-center">
             <div className="text-4xl mb-2">🏠</div>
             <h1 className="text-xl font-bold text-gray-800">Absensi Pulang</h1>
@@ -263,7 +263,7 @@ export default function AbsenPulang() {
           <button
             onClick={handleAbsenPulang}
             disabled={loading}
-            className="w-full bg-red-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
+            className="w-full min-h-[48px] bg-red-500 text-white px-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 text-center disabled:opacity-70"
           >
             {loading && (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -277,7 +277,7 @@ export default function AbsenPulang() {
           )}
 
           {showResult && (
-            <div className="text-center p-4 rounded-xl bg-gray-50 border">
+            <div className="text-center p-4 rounded-xl bg-gray-50 border min-w-0 overflow-hidden">
               <div className="text-3xl mb-2">
                 {statusType === "success" && "✅"}
                 {statusType === "warning" && "⚠️"}
@@ -285,7 +285,7 @@ export default function AbsenPulang() {
               </div>
 
               <p
-                className={`font-semibold text-center ${
+                className={`font-semibold text-center break-words ${
                   statusType === "success"
                     ? "text-green-600"
                     : statusType === "warning"
@@ -298,7 +298,7 @@ export default function AbsenPulang() {
 
               <button
                 onClick={() => navigate("/dashboard")}
-                className="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl"
+                className="mt-4 w-full min-h-[48px] bg-blue-600 text-white px-4 py-3 rounded-xl"
               >
                 Kembali ke Dashboard
               </button>
@@ -306,7 +306,7 @@ export default function AbsenPulang() {
           )}
         </div>
 
-        <p className="text-center text-white text-xs mt-4 opacity-80">
+        <p className="text-center text-white text-xs mt-4 px-4 opacity-80 text-balance">
           Shining Sun Attendance System
         </p>
       </div>
